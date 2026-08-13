@@ -9,4 +9,14 @@ public class Inquilino
     public string Email { get; set; }
     public string Telefono { get; set; }
 
+    public Inquilino (int id, string dni, string nombre, string apellido, string telefono, string email)
+    {
+        Id = id;
+        Dni = dni;
+        Nombre = nombre;
+        Apellido = apellido;
+        Telefono = telefono;
+        Email = email;
+    }
+
 }
