@@ -18,5 +18,8 @@ public class Inquilino
         Telefono = telefono;
         Email = email;
     }
+    public Inquilino()
+    {
+    }
 
 }

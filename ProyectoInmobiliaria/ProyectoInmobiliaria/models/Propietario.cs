@@ -20,4 +20,6 @@ public class Propietario
         Telefono = telefono;
         Email = email;
     }
+    public Propietario() { 
+    }
 }
