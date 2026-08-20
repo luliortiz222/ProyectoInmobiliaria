@@ -83,5 +83,132 @@ public class PropietarioRepository
         }
         return lista;
     }
+    public Propietario ObtenerPorId(int id)
+    {
+        Propietario propietario = null;
+        string query = "SELECT * FROM Propietario WHERE IdPropietario = @IdPropietario";
+        using (MySqlConnection conexion = new MySqlConnection(_cadenaConexion))
+        {
+            using (MySqlCommand comando = new MySqlCommand(query, conexion))
+            {
+                comando.Parameters.AddWithValue("@IdPropietario", id);
+                try
+                {
+                    conexion.Open();
+                    using (MySqlDataReader reader = comando.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            propietario = new Propietario
+                            {
+                                IdPropietario = Convert.ToInt32(reader["IdPropietario"]),
+                                Dni = reader["Dni"].ToString(),
+                                Nombre = reader["Nombre"].ToString(),
+                                Apellido = reader["Apellido"].ToString(),
+                                Email = reader["Email"].ToString(),
+                                Telefono = reader["Telefono"].ToString()
+                            };
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error al obtener datos: " + ex.Message);
+                }
+            }
+        }
+        return propietario;
+    }
+    public void Actualizar(Propietario propietario)
+    {
+        string query = @"UPDATE Propietario SET Dni = @Dni, Nombre = @Nombre, Apellido = @Apellido, Email = @Email, Telefono = @Telefono WHERE IdPropietario = @IdPropietario";
+        using (MySqlConnection conexion = new MySqlConnection(_cadenaConexion))
+        {
+            using (MySqlCommand comando = new MySqlCommand(query, conexion))
+            {
+                comando.Parameters.AddWithValue("@IdPropietario", propietario.IdPropietario);
+                comando.Parameters.AddWithValue("@Dni", propietario.Dni);
+                comando.Parameters.AddWithValue("@Nombre", propietario.Nombre);
+                comando.Parameters.AddWithValue("@Apellido", propietario.Apellido);
+                comando.Parameters.AddWithValue("@Email", propietario.Email);
+                comando.Parameters.AddWithValue("@Telefono", propietario.Telefono);
+                try
+                {
+                    conexion.Open();
+                    int filasAfectadas = comando.ExecuteNonQuery();
+                    if(filasAfectadas>0) {
+                        Console.WriteLine("Propietario actualizado con éxito");
+                    } else {
+                        Console.WriteLine("No se encontró el propietario a actualizar");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error al actualizar: " + ex.Message);
+                }
+            }
+        }
+    }
+    public void Eliminar(int id)
+    {
+        string query = "DELETE FROM Propietario WHERE IdPropietario = @IdPropietario";
+        using (MySqlConnection conexion = new MySqlConnection(_cadenaConexion))
+        {
+            using (MySqlCommand comando = new MySqlCommand(query, conexion))
+            {
+                comando.Parameters.AddWithValue("@IdPropietario", id);
+                try
+                {
+                    conexion.Open();
+                    int filasAfectadas = comando.ExecuteNonQuery();
+                    if(filasAfectadas>0) {
+                        Console.WriteLine("Propietario eliminado con éxito");
+                    } else {
+                        Console.WriteLine("No se encontró el propietario a eliminar");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error al eliminar: " + ex.Message);
+                }
+            }
+        }
+    }
+    public Propietario obtenerPorDni(string dni)
+    {
+        Propietario propietario = null;
+        string query = "SELECT * FROM Propietario WHERE Dni = @Dni";
+        using (MySqlConnection conexion = new MySqlConnection(_cadenaConexion))
+        {
+            using (MySqlCommand comando = new MySqlCommand(query, conexion))
+            {
+                comando.Parameters.AddWithValue("@Dni", dni);
+                try
+                {
+                    conexion.Open();
+                    using (MySqlDataReader reader = comando.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            propietario = new Propietario
+                            {
+                                IdPropietario = Convert.ToInt32(reader["IdPropietario"]),
+                                Dni = reader["Dni"].ToString(),
+                                Nombre = reader["Nombre"].ToString(),
+                                Apellido = reader["Apellido"].ToString(),
+                                Email = reader["Email"].ToString(),
+                                Telefono = reader["Telefono"].ToString()
+                            };
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error al obtener por DNI: " + ex.Message);
+                }
+            }
+        }
+        return propietario;
+    }
 }
 
