@@ -13,7 +13,7 @@ public class PropietarioRepository
 	}
 
 
-	public void guardar(Propietario propietario)
+	public void Guardar(Propietario propietario)
 	{
 		string query = @"INSERT INTO Propietario (Dni, Nombre, Apellido, Email, Telefono) VALUES (@Dni, @Nombre, @Apellido, @Email, @Telefono)";
 
