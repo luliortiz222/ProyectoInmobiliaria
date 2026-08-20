@@ -8,12 +8,22 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Views\" />
+    <Compile Remove="Views\NewFolder1\**" />
+    <Content Remove="Views\NewFolder1\**" />
+    <EmbeddedResource Remove="Views\NewFolder1\**" />
+    <None Remove="Views\NewFolder1\**" />
   </ItemGroup>
 
   <ItemGroup>
     
     <PackageReference Include="MySql.Data" Version="26.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Views\Home\" />
+    <Folder Include="Views\Inquilinos\" />
+    <Folder Include="Views\Shared\" />
+    <Folder Include="Views\Propietarios\" />
   </ItemGroup>
 
 </Project>
