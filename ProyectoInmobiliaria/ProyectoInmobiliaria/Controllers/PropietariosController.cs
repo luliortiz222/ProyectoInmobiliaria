@@ -53,7 +53,7 @@ namespace ProyectoInmobiliaria.Controllers
 
 
         //PUT: api/propietario/5
-        [HttpPut("{id}")]
+        [HttpPut]
         public IActionResult Actualizar([FromBody] Propietario propietario)
         {
             _propietarioRepository.actualizar(propietario);
