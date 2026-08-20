@@ -13,7 +13,7 @@ public class PropietarioRepository
 	}
 
 
-	public void Guardar(Propietario propietario)
+	public void guardar(Propietario propietario)
 	{
 		string query = @"INSERT INTO Propietario (Dni, Nombre, Apellido, Email, Telefono) VALUES (@Dni, @Nombre, @Apellido, @Email, @Telefono)";
 
@@ -45,7 +45,7 @@ public class PropietarioRepository
 	}
 
 
-    public List<Propietario> ObtenerTodos()
+    public List<Propietario> obtenerTodos()
     {
         List<Propietario> lista = new List<Propietario>();
         string query = "SELECT * FROM Propietario";
@@ -83,7 +83,7 @@ public class PropietarioRepository
         }
         return lista;
     }
-    public Propietario ObtenerPorId(int id)
+    public Propietario obtenerPorId(int id)
     {
         Propietario propietario = null;
         string query = "SELECT * FROM Propietario WHERE IdPropietario = @IdPropietario";
@@ -119,7 +119,7 @@ public class PropietarioRepository
         }
         return propietario;
     }
-    public void Actualizar(Propietario propietario)
+    public void actualizar(Propietario propietario)
     {
         string query = @"UPDATE Propietario SET Dni = @Dni, Nombre = @Nombre, Apellido = @Apellido, Email = @Email, Telefono = @Telefono WHERE IdPropietario = @IdPropietario";
         using (MySqlConnection conexion = new MySqlConnection(_cadenaConexion))
@@ -149,7 +149,7 @@ public class PropietarioRepository
             }
         }
     }
-    public void Eliminar(int id)
+    public void eliminar(int id)
     {
         string query = "DELETE FROM Propietario WHERE IdPropietario = @IdPropietario";
         using (MySqlConnection conexion = new MySqlConnection(_cadenaConexion))

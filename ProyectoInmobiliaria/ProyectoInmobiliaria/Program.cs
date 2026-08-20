@@ -1,7 +1,8 @@
 ﻿using System;
 // librería de MySQL
 using MySql.Data.MySqlClient;
-
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 namespace ProyectoInmobiliaria
 
 {
@@ -9,49 +10,25 @@ namespace ProyectoInmobiliaria
     {
         static void Main(string[] args)
         {
-            
+            var builder = WebApplication.CreateBuilder(args);
+
             string cadenaConexion = "Server=localhost;Database=inmobiliaria;Uid=root;Pwd=admin;";
 
             
             using (MySqlConnection conexion = new MySqlConnection(cadenaConexion))
             {
                 try
-                {
-
+                { 
                     conexion.Open();
                     Console.WriteLine("¡Conexión a MySQL establecida con éxito!");
 
-                    PropietarioRepository repo = new PropietarioRepository(cadenaConexion);
-                    //Propietario propietario = new Propietario
-                    //{
-                    //    Nombre = "Juan",
-                    //    Apellido = "Pérez",
-                    //    Dni = "12345678",
-                    //    Email = "juanCaballo@example.com",
-                    //    Telefono = "555-1234"
-                    //};
-                    //repo.guardar(propietario);
+                    builder.Services.AddSingleton(new PropietarioRepository(cadenaConexion));
 
-                    //foreach (Propietario p in repo.ObtenerTodos())
-                    //{
-                    //    Console.WriteLine($"Nombre: {p.Nombre}, Apellido: {p.Apellido}, DNI: {p.Dni}, Email: {p.Email}, Teléfono: {p.Telefono}");
-                    //}
+                    builder.Services.AddControllers();
 
-                    InquilinoRepository repoIn = new InquilinoRepository(cadenaConexion);
-
-                    //Inquilino inquilino = new Inquilino
-                    //{
-                    //    Nombre = "María",
-                    //    Apellido = "Gómez",
-                    //    Dni = "87654321",
-                    //    Email = "Mgomez@example.com",
-                    //    Telefono = "555-5678"
-                    //};
-                    //repoIn.Guardar(inquilino);
-
-
-                    Console.WriteLine("Propietario: Dni: "+ repo.obtenerPorDni("12345678").Dni + ", Nombre: " + repo.obtenerPorDni("12345678").Nombre + ", Apellido: " + repo.obtenerPorDni("12345678").Apellido + ", Email: " + repo.obtenerPorDni("12345678").Email + ", Teléfono: " + repo.obtenerPorDni("12345678").Telefono );
-
+                    var app = builder.Build();
+                    app.MapControllers();
+                    app.Run();
                 }
                 catch (Exception ex)
                 {
@@ -59,6 +36,8 @@ namespace ProyectoInmobiliaria
                     Console.WriteLine("Error al conectar: " + ex.Message);
                 }
             }
+
+
         }
     }
 }

@@ -4,8 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
-using ProyectoInmobiliaria.Models;
-using ProyectoInmobiliaria.Repository;
+
 
 namespace ProyectoInmobiliaria.Controllers
 {
@@ -29,15 +28,15 @@ namespace ProyectoInmobiliaria.Controllers
         [HttpGet]
         public IActionResult ObtenerTodos()
         {
-            List<Propietario> lista = _propietarioRepository.ObtenerTodos();
+            List<Propietario> lista = _propietarioRepository.obtenerTodos();
             return Ok(lista);   
         }
 
         // GET api/propietario/dni/123213
         [HttpGet("dni/{dni}")]
-        public IActionResult ObtenerPorDni(string dni)
+        public IActionResult obtenerPorDni(string dni)
         {
-            Propietario propietario = _propietarioRepository.ObtenerPorDni(dni);
+            Propietario propietario = _propietarioRepository.obtenerPorDni(dni);
             if (propietario == null)
             {
                 return NotFound("Propietario no encontrado");
@@ -48,16 +47,16 @@ namespace ProyectoInmobiliaria.Controllers
         //POST: api/propietario
         [HttpPost]
         public IActionResult Crear([FromBody] Propietario propietario) {
-            _propietarioRepository.Crear(propietario);
+            _propietarioRepository.guardar(propietario);
             return Ok("Propietario creado exitosamente");
         }
 
 
         //PUT: api/propietario/5
         [HttpPut("{id}")]
-        public IActionResult Actualizar(int id, [FromBody] Propietario propietario)
+        public IActionResult Actualizar([FromBody] Propietario propietario)
         {
-            _propietarioRepository.Actualizar(id, propietario);
+            _propietarioRepository.actualizar(propietario);
             return Ok("Propietario actualizado exitosamente");
         }
 
@@ -65,7 +64,7 @@ namespace ProyectoInmobiliaria.Controllers
         [HttpDelete("{id}")]
         public IActionResult Eliminar(int id)
         {
-            _repositorio.Eliminar(id);
+            _propietarioRepository.eliminar(id);
             return Ok("Propietario eliminado correctamente.");
         }
     }
