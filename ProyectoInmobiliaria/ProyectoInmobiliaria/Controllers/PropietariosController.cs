@@ -1,10 +1,72 @@
 ﻿using System;
 using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 using System.Text;
+using Microsoft.AspNetCore.Mvc;
+using ProyectoInmobiliaria.Models;
+using ProyectoInmobiliaria.Repository;
 
 namespace ProyectoInmobiliaria.Controllers
 {
-    internal class PropietariosController
+    [ApiController]
+    [Route("api/propietario")]
+    public class PropietariosController : ControllerBase
     {
+        private readonly PropietarioRepository _propietarioRepository;
+        public PropietariosController(PropietarioRepository propietarioRepository)
+        {
+            _propietarioRepository = propietarioRepository;
+        }
+
+        
+        /*
+         * -http://localhost:5000/ 
+         */
+
+
+        // GET api/propietario
+        [HttpGet]
+        public IActionResult ObtenerTodos()
+        {
+            List<Propietario> lista = _propietarioRepository.ObtenerTodos();
+            return Ok(lista);   
+        }
+
+        // GET api/propietario/dni/123213
+        [HttpGet("dni/{dni}")]
+        public IActionResult ObtenerPorDni(string dni)
+        {
+            Propietario propietario = _propietarioRepository.ObtenerPorDni(dni);
+            if (propietario == null)
+            {
+                return NotFound("Propietario no encontrado");
+            }
+            return Ok(propietario);
+        }
+
+        //POST: api/propietario
+        [HttpPost]
+        public IActionResult Crear([FromBody] Propietario propietario) {
+            _propietarioRepository.Crear(propietario);
+            return Ok("Propietario creado exitosamente");
+        }
+
+
+        //PUT: api/propietario/5
+        [HttpPut("{id}")]
+        public IActionResult Actualizar(int id, [FromBody] Propietario propietario)
+        {
+            _propietarioRepository.Actualizar(id, propietario);
+            return Ok("Propietario actualizado exitosamente");
+        }
+
+        // DELETE: api/propietario/5
+        [HttpDelete("{id}")]
+        public IActionResult Eliminar(int id)
+        {
+            _repositorio.Eliminar(id);
+            return Ok("Propietario eliminado correctamente.");
+        }
     }
 }
