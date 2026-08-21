@@ -23,7 +23,6 @@
     <Folder Include="Views\Home\" />
     <Folder Include="Views\Inquilinos\" />
     <Folder Include="Views\Shared\" />
-    <Folder Include="Views\Propietarios\" />
   </ItemGroup>
 
 </Project>
