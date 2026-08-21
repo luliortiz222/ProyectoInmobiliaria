@@ -5,14 +5,14 @@
 
 ---
 
-## 👥 Integrantes del Grupo
+## Integrantes del Grupo
 
 * **Ortiz Paez Lourdes**
-* **Fabricio Silva**
+* **Silva Fabricio**
 
 ---
 
-## 🚀 Tecnologías Utilizadas
+## Tecnologías Utilizadas
 
 * **Lenguaje:** C# (.NET 10.0)
 * **Framework Web:** ASP.NET Core MVC
@@ -22,38 +22,34 @@
 
 ---
 
-## 📁 Estructura del Proyecto
+## Estructura del Proyecto
 
 ```text
-📁 ProyectoInmobiliaria
- ├── 📁 Controllers
- │    ├── InquilinosController.cs
- │    └── PropietariosController.cs
- ├── 📁 Models
- │    ├── Inquilino.cs
- │    └── Propietario.cs
- ├── 📁 Repository
- │    ├── InquilinoRepository.cs
- │    └── PropietarioRepository.cs
- ├── 📁 Views
- │    ├── 📁 Inquilinos
- │    │    ├── Index.cshtml
- │    │    ├── Create.cshtml
- │    │    ├── Edit.cshtml
- │    │    └── Delete.cshtml
- │    ├── 📁 Propietarios
- │    │    ├── Index.cshtml
- │    │    ├── Create.cshtml
- │    │    ├── Edit.cshtml
- │    │    └── Delete.cshtml
- │    ├── 📁 Shared
- │    │    ├── _Layout.cshtml
- │    │    └── _ValidationScriptsPartial.cshtml
- │    ├── _ViewImports.cshtml
- │    └── _ViewStart.cshtml
- ├── Program.cs
- └── appsettings.json
-
+ProyectoInmobiliaria/
+├── Controllers/
+│   ├── InquilinosController.cs
+│   └── PropietariosController.cs
+├── Models/
+│   ├── Inquilino.cs
+│   └── Propietario.cs
+├── Repository/
+│   ├── InquilinoRepository.cs
+│   └── PropietarioRepository.cs
+├── Views/
+│   ├── Inquilinos/
+│   │   ├── Index.cshtml
+│   │   ├── Create.cshtml
+│   │   ├── Edit.cshtml
+│   │   └── Delete.cshtml
+│   ├── Propietarios/
+│   │   ├── Index.cshtml
+│   │   ├── Create.cshtml
+│   │   ├── Edit.cshtml
+│   │   └── Delete.cshtml
+│   └── Shared/
+│       └── _Layout.cshtml
+├── Program.cs
+└── appsettings.json
 
 
  Diagrama de Clases UML
@@ -106,9 +102,12 @@ classDiagram
 
 
 
-    Instrucciones para Levantar la Base de Datos
+Instrucciones para Levantar la Base de Datos
+
 Para inicializar la base de datos en tu entorno local de MySQL, ejecutá el script script_inmobiliaria.sql incluido en este repositorio siguiendo estos pasos:
+
 Opción A: Desde MySQL Workbench / DBeaver
+
 Abrí tu gestor de base de datos (MySQL Workbench, DBeaver, HeidiSQL, etc.).
 
 Conéctate a tu servidor local de MySQL.
@@ -117,7 +116,9 @@ Abrí el archivo script_inmobiliaria.sql (File -> Open Script).
 
 Ejecutá todo el script para crear la base de datos inmobiliaria y sus tablas correspondientes.
 
+
 Opción B: Desde la Terminal (CMD / PowerShell)
+
 Abrí la terminal en la carpeta donde tenés el archivo .sql.
 
 Ejecutá el siguiente comando reemplazando root por tu usuario de MySQL:
@@ -126,7 +127,9 @@ Bash
 mysql -u root -p < script_inmobiliaria.sql
 Ingresá tu contraseña de MySQL cuando la consola lo solicite.
 
+
 Configuración y Ejecución (.NET Core)
+
 Abrí la solución ProyectoInmobiliaria.sln en Visual Studio.
 
 Verificá que el archivo appsettings.json tenga la cadena de conexión correspondiente a tu MySQL local:
@@ -139,25 +142,26 @@ JSON
 }
 Presioná F5 para ejecutar la aplicación en el servidor Kestrel local.
 
-Endpoints de la API REST (Postman)
-Inquilinos (/api/inquilinos)
-GET /api/inquilinos - Obtener todos los inquilinos.
+Endpoints (API REST)
 
-GET /api/inquilinos/{id} - Obtener un inquilino por su ID.
+Inquilinos
+GET /api/inquilinos
 
-POST /api/inquilinos - Crear un nuevo inquilino.
+GET /api/inquilinos/{id}
 
-PUT /api/inquilinos/{id} - Modificar los datos de un inquilino existente.
+POST /api/inquilinos
 
-DELETE /api/inquilinos/{id} - Eliminar un inquilino.
+PUT /api/inquilinos/{id}
 
-Propietarios (/api/propietarios)
-GET /api/propietarios - Obtener todos los propietarios.
+DELETE /api/inquilinos/{id}
 
-GET /api/propietarios/{id} - Obtener un propietario por su ID.
+Propietarios
+GET /api/propietarios
 
-POST /api/propietarios - Crear un nuevo propietario.
+GET /api/propietarios/{id}
 
-PUT /api/propietarios/{id} - Modificar los datos de un propietario existente.
+POST /api/propietarios
 
-DELETE /api/propietarios/{id} - Eliminar un propietario.
+PUT /api/propietarios/{id}
+
+DELETE /api/propietarios/{id}
