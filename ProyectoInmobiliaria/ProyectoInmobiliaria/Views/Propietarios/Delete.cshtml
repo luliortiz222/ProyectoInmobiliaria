@@ -1,0 +1,27 @@
+﻿
+    <nav class="navbar navbar-dark bg-primary mb-4">
+        <div class="container"><a class="navbar-brand" href="index.html">Sistema Inmobiliaria</a></div>
+    </nav>
+
+    <div class="container" style="max-width: 600px;">
+        <div class="card shadow-sm border-danger">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0">¿Estás seguro de que deseas eliminar este registro?</h4>
+            </div>
+            <div class="card-body text-center">
+                <h5 class="card-title text-danger mb-4">Esta acción no se puede deshacer.</h5>
+
+                
+                <div class="alert alert-secondary text-start" role="alert">
+                    <strong>DNI:</strong> <span id="verDni">...</span><br>
+                    <strong>Nombre:</strong> <span id="verNombre">...</span><br>
+                    <strong>Apellido:</strong> <span id="verApellido">...</span>
+                </div>
+
+                <div class="d-flex justify-content-center gap-3 mt-4">
+                    <a href="index.html" class="btn btn-secondary">Cancelar y Volver</a>
+                    <button id="btnConfirmarEliminar" class="btn btn-danger">Sí, Eliminar Definitivamente</button>
+                </div>
+            </div>
+        </div>
+    </div>
