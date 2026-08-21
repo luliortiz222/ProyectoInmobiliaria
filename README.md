@@ -48,8 +48,7 @@ ProyectoInmobiliaria/
 │   │   └── Delete.cshtml
 │   └── Shared/
 │       └── _Layout.cshtml
-├── Program.cs
-└── appsettings.json
+└── Program.cs
 
 
  Diagrama de Clases UML
