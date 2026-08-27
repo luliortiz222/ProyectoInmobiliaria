@@ -12,28 +12,24 @@
     <div class="col-md-6">
         <form action="/Inquilinos/Create" method="post">
             <div class="mb-3">
-                <label asp-for="Dni" class="form-label">DNI</label>
-                <input asp-for="Dni" class="form-control" required />
+                <label class="form-label">DNI</label>
+                <input type="text" class="form-control" name="Dni" required>
             </div>
-
             <div class="mb-3">
-                <label asp-for="Nombre" class="form-label">Nombre</label>
-                <input asp-for="Nombre" class="form-control" required />
+                <label class="form-label">Nombre</label>
+                <input type="text" class="form-control" name="Nombre" required>
             </div>
-
             <div class="mb-3">
-                <label asp-for="Apellido" class="form-label">Apellido</label>
-                <input asp-for="Apellido" class="form-control" required />
+                <label class="form-label">Apellido</label>
+                <input type="text" class="form-control" name="Apellido" required>
             </div>
-
             <div class="mb-3">
-                <label asp-for="Telefono" class="form-label">Teléfono</label>
-                <input asp-for="Telefono" class="form-control" />
+                <label class="form-label">Email</label>
+                <input type="email" class="form-control" name="Email" required>
             </div>
-
             <div class="mb-3">
-                <label asp-for="Email" class="form-label">Email</label>
-                <input asp-for="Email" type="email" class="form-control" />
+                <label class="form-label">Teléfono</label>
+                <input type="text" class="form-control" name="Telefono" required>
             </div>
 
             <button type="submit" class="btn btn-primary">Guardar</button>

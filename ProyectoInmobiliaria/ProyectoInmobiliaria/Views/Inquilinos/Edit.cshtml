@@ -15,31 +15,31 @@
 
             <div class="mb-3">
                 <label asp-for="Dni" class="form-label">DNI</label>
-                <input asp-for="Dni" class="form-control" required value="@Model.Dni" />
+                <input asp-for="Dni" type="text" class="form-control" name="Dni" required value="@Model.Dni" />
             </div>
 
             <div class="mb-3">
                 <label asp-for="Nombre" class="form-label">Nombre</label>
-                <input asp-for="Nombre" class="form-control" required value="@Model.Nombre" />
+                <input asp-for="Nombre" type="text" class="form-control" name="Nombre" required value="@Model.Nombre" />
             </div>
 
             <div class="mb-3">
                 <label asp-for="Apellido" class="form-label">Apellido</label>
-                <input asp-for="Apellido" class="form-control" required value="@Model.Apellido" />
+                <input asp-for="Apellido" type="text" class="form-control" name="Apellido" required value="@Model.Apellido" />
             </div>
 
             <div class="mb-3">
                 <label asp-for="Telefono" class="form-label">Teléfono</label>
-                <input asp-for="Telefono" class="form-control" value="@Model.Telefono" />
+                <input asp-for="Telefono" type="text" class="form-control" name="Telefono" value="@Model.Telefono" />
             </div>
 
             <div class="mb-3">
                 <label asp-for="Email" class="form-label">Email</label>
-                <input asp-for="Email" type="email" class="form-control" value="@Model.Email" />
+                <input asp-for="Email" type="email" class="form-control" name="Email" value="@Model.Email" />
             </div>
 
-            <button type="submit" class="btn btn-warning">Guardar Cambios</button>
             <a href="/Inquilinos" class="btn btn-secondary">Cancelar</a>
+            <button type="submit" class="btn btn-warning">Guardar Cambios</button>
         </form>
     </div>
 </div>

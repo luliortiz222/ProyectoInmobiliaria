@@ -29,18 +29,12 @@ namespace ProyectoInmobiliaria.Controllers
         }
 
         // POST: /Inquilinos/Create
+        
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public IActionResult Create(Inquilino inquilino)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(inquilino);
-            }
-
             _inquilinoRepository.Guardar(inquilino);
-
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index"); // Para que vuelva a la lista tras guardar
         }
 
         // GET: /Inquilinos/Edit/5
@@ -59,17 +53,13 @@ namespace ProyectoInmobiliaria.Controllers
 
         // POST: /Inquilinos/Edit
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public IActionResult Edit(Inquilino inquilino)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(inquilino);
-            }
+            
 
             _inquilinoRepository.Modificar(inquilino);
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index");
         }
 
         // GET: /Inquilinos/Delete/5
@@ -88,8 +78,6 @@ namespace ProyectoInmobiliaria.Controllers
 
         // POST: /Inquilinos/Delete
         [HttpPost]
-        [ActionName("Delete")]
-        [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmado(int idInquilino)
         {
             Inquilino inquilino =
@@ -102,7 +90,7 @@ namespace ProyectoInmobiliaria.Controllers
 
             _inquilinoRepository.Eliminar(idInquilino);
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index");
         }
     }
 }

@@ -30,8 +30,9 @@
     </div>
 </div>
 
-<form action="/Inquilinos/Delete" method="post">
-    <input type="hidden" asp-for="IdInquilino" />
+<form action="/Inquilinos/DeleteConfirmado" method="post">
+    
+    <input type="hidden" name="IdInquilino" value="@Model.IdInquilino" />
     <button type="submit" class="btn btn-danger">Confirmar Eliminación</button>
     <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
 </form>
