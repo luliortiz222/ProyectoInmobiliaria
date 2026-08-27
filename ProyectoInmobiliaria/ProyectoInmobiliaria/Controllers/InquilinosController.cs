@@ -1,83 +1,108 @@
-﻿using System;
-using System.Collections.Generic;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using ProyectoInmobiliaria.models;
+using System.Collections.Generic;
 
 namespace ProyectoInmobiliaria.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")] // Ruta: api/inquilinos
-    public class InquilinosController : ControllerBase
+    public class InquilinosController : Controller
     {
         private readonly InquilinoRepository _inquilinoRepository;
 
-        public InquilinosController(IConfiguration config)
+        public InquilinosController(InquilinoRepository inquilinoRepository)
         {
-            string cadenaConexion = config.GetConnectionString("DefaultConnection")
-                ?? "Server=localhost;Database=inmobiliaria;Uid=root;Pwd=admin;";
-            _inquilinoRepository = new InquilinoRepository(cadenaConexion);
+            _inquilinoRepository = inquilinoRepository;
         }
 
-        // GET api/inquilinos
-        [HttpGet]
-        public IActionResult ObtenerTodos()
+        // GET: /Inquilinos
+        public IActionResult Index()
         {
             List<Inquilino> lista = _inquilinoRepository.ObtenerTodos();
-            return Ok(lista);
+
+            return View(lista);
         }
 
-        [HttpGet("{id}")]
-        public IActionResult ObtenerPorId(int id)
+        // GET: /Inquilinos/Create
+        [HttpGet]
+        public IActionResult Create()
         {
-            Inquilino inquilino = _inquilinoRepository.ObtenerPorId(id);
-            if (inquilino == null)
-            {
-                return NotFound("Inquilino no encontrado.");
-            }
-            return Ok(inquilino);
+            return View();
         }
 
-        // POST api/inquilinos
+        // POST: /Inquilinos/Create
         [HttpPost]
-        public IActionResult Crear([FromBody] Inquilino inquilino)
+        [ValidateAntiForgeryToken]
+        public IActionResult Create(Inquilino inquilino)
         {
-            if (inquilino == null)
+            if (!ModelState.IsValid)
             {
-                return BadRequest("Datos inválidos.");
+                return View(inquilino);
             }
 
             _inquilinoRepository.Guardar(inquilino);
-            return Ok("Inquilino creado exitosamente.");
+
+            return RedirectToAction(nameof(Index));
         }
 
-        [HttpPut("{id}")]
-        public IActionResult Actualizar(int id, [FromBody] Inquilino inquilino)
+        // GET: /Inquilinos/Edit/5
+        [HttpGet]
+        public IActionResult Edit(int id)
         {
+            Inquilino inquilino = _inquilinoRepository.ObtenerPorId(id);
+
             if (inquilino == null)
             {
-                return BadRequest("Datos inválidos.");
+                return NotFound();
             }
 
-            inquilino.IdInquilino = id;
-            _inquilinoRepository.Modificar(inquilino);
-            return Ok("Inquilino actualizado exitosamente.");
+            return View(inquilino);
         }
 
-        // DELETE api/inquilinos/5
-        [HttpDelete("{id}")]
-        public IActionResult Eliminar(int id)
+        // POST: /Inquilinos/Edit
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(Inquilino inquilino)
         {
-            Inquilino inquilinoExistente = _inquilinoRepository.ObtenerPorId(id);
-            if (inquilinoExistente == null)
+            if (!ModelState.IsValid)
             {
-                return NotFound("El inquilino a eliminar no existe.");
+                return View(inquilino);
             }
 
-            _inquilinoRepository.Eliminar(id);
-            return Ok("Inquilino eliminado correctamente.");
+            _inquilinoRepository.Modificar(inquilino);
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        // GET: /Inquilinos/Delete/5
+        [HttpGet]
+        public IActionResult Delete(int id)
+        {
+            Inquilino inquilino = _inquilinoRepository.ObtenerPorId(id);
+
+            if (inquilino == null)
+            {
+                return NotFound();
+            }
+
+            return View(inquilino);
+        }
+
+        // POST: /Inquilinos/Delete
+        [HttpPost]
+        [ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteConfirmado(int idInquilino)
+        {
+            Inquilino inquilino =
+                _inquilinoRepository.ObtenerPorId(idInquilino);
+
+            if (inquilino == null)
+            {
+                return NotFound();
+            }
+
+            _inquilinoRepository.Eliminar(idInquilino);
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }
