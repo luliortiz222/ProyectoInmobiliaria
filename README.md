@@ -48,12 +48,10 @@ ProyectoInmobiliaria/
 │   │   └── Delete.cshtml
 │   └── Shared/
 │       └── _Layout.cshtml
-├── Program.cs
-└── appsettings.json
+└── Program.cs
 
 
- Diagrama de Clases UML
-Fragmento de código
+Diagrama de Clases UML
 classDiagram
     class Propietario {
         +int IdPropietario
@@ -106,7 +104,7 @@ Instrucciones para Levantar la Base de Datos
 
 Para inicializar la base de datos en tu entorno local de MySQL, ejecutá el script script_inmobiliaria.sql incluido en este repositorio siguiendo estos pasos:
 
-Opción A: Desde MySQL Workbench / DBeaver
+Desde MySQL Workbench / DBeaver: 
 
 Abrí tu gestor de base de datos (MySQL Workbench, DBeaver, HeidiSQL, etc.).
 
@@ -117,7 +115,7 @@ Abrí el archivo script_inmobiliaria.sql (File -> Open Script).
 Ejecutá todo el script para crear la base de datos inmobiliaria y sus tablas correspondientes.
 
 
-Opción B: Desde la Terminal (CMD / PowerShell)
+Desde la Terminal (CMD / PowerShell): 
 
 Abrí la terminal en la carpeta donde tenés el archivo .sql.
 
@@ -127,20 +125,12 @@ Bash
 mysql -u root -p < script_inmobiliaria.sql
 Ingresá tu contraseña de MySQL cuando la consola lo solicite.
 
-
 Configuración y Ejecución (.NET Core)
 
-Abrí la solución ProyectoInmobiliaria.sln en Visual Studio.
-
-Verificá que el archivo appsettings.json tenga la cadena de conexión correspondiente a tu MySQL local:
-
-JSON
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Server=localhost;Database=inmobiliaria;Uid=root;Pwd=admin;"
-  }
-}
-Presioná F5 para ejecutar la aplicación en el servidor Kestrel local.
+1. Abrí la solución `ProyectoInmobiliaria.sln` en Visual Studio.
+2. Si las credenciales de tu servidor MySQL local son distintas, actualizá la variable `cadenaConexion` dentro del archivo `Program.cs`:
+```csharp
+string cadenaConexion = "Server=localhost;Database=inmobiliaria;Uid=root;Pwd=admin;";
 
 Endpoints (API REST)
 
