@@ -32,14 +32,14 @@ namespace ProyectoInmobiliaria.Controllers
 
         // GET: /Propietarios/Crear (Muestra el formulario vacío)
         [HttpGet]
-        public IActionResult Crear()
+        public IActionResult Create()
         {
             return View();
         }
 
         // POST: /Propietarios/Crear (Recibe los datos del formulario)
         [HttpPost]
-        public IActionResult Crear(Propietario propietario)
+        public IActionResult Create(Propietario propietario)
         {
             _propietarioRepository.guardar(propietario);
             return RedirectToAction("Index"); // Vuelve a la lista tras guardar
@@ -66,12 +66,7 @@ namespace ProyectoInmobiliaria.Controllers
             return Ok(propietario);
         }
 
-        //POST: api/propietario
-        //[HttpPost]
-        //public IActionResult Crear([FromBody] Propietario propietario) {
-        //    _propietarioRepository.guardar(propietario);
-        //    return Ok("Propietario creado exitosamente");
-        //}
+        
 
 
         //PUT: api/propietario/5

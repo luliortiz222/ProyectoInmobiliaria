@@ -1,42 +1,45 @@
-﻿
-    <nav class="navbar navbar-dark bg-primary mb-4">
-        <div class="container"><a class="navbar-brand" href="index.html">Sistema Inmobiliaria</a></div>
-    </nav>
+﻿@model ProyectoInmobiliaria.models.Propietario
+@{
+    ViewData["Title"] = "Nuevo Propietario";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
 
-    <div class="container" style="max-width: 600px;">
-        <div class="card shadow-sm">
-            <div class="card-header bg-success text-white">
-                <h4 class="mb-0">Agregar Nuevo Propietario</h4>
-            </div>
-            <div class="card-body">
-                <form id="formCrear">
-                    <div class="mb-3">
-                        <label>DNI</label>
-                        <input type="text" class="form-control" id="dni" required>
-                    </div>
-                    <div class="mb-3">
-                        <label>Nombre</label>
-                        <input type="text" class="form-control" id="nombre" required>
-                    </div>
-                    <div class="mb-3">
-                        <label>Apellido</label>
-                        <input type="text" class="form-control" id="apellido" required>
-                    </div>
-                    <div class="mb-3">
-                        <label>Email</label>
-                        <input type="email" class="form-control" id="email" required>
-                    </div>
-                    <div class="mb-3">
-                        <label>Teléfono</label>
-                        <input type="text" class="form-control" id="telefono" required>
-                    </div>
-                    <div class="d-flex justify-content-between mt-4">
-                        <a href="index.html" class="btn btn-secondary">Cancelar</a>
-                        <button type="submit" class="btn btn-success">Guardar Propietario</button>
-                    </div>
-                </form>
-            </div>
-        </div>
+<div class="card shadow-sm" style="max-width: 600px; margin: 0 auto;">
+    <div class="card-header bg-success text-white">
+        <h4 class="mb-0">Agregar Nuevo Propietario</h4>
     </div>
+    <div class="card-body">
+        
+        <form action="/Propietarios/Create" method="post">
+
+            <div class="mb-3">
+                <label class="form-label">DNI</label>
+                <input type="text" class="form-control" name="Dni" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Nombre</label>
+                <input type="text" class="form-control" name="Nombre" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Apellido</label>
+                <input type="text" class="form-control" name="Apellido" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-control" name="Email" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Teléfono</label>
+                <input type="text" class="form-control" name="Telefono" required>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+                <a href="/Propietarios" class="btn btn-secondary">Cancelar</a>
+                <button type="submit" class="btn btn-success">Guardar Propietario</button>
+            </div>
+
+        </form>
+    </div>
+</div>
 
     
