@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Mvc;
+using MySql.Data.MySqlClient;
+using ProyectoInmobiliaria.models;
+using System;
 using System;
 using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Text;
-using Microsoft.AspNetCore.Mvc;
-using ProyectoInmobiliaria.models;
 
 namespace ProyectoInmobiliaria.Controllers
 {
@@ -18,16 +19,14 @@ namespace ProyectoInmobiliaria.Controllers
         }
 
 
-        /*
-         * -http://localhost:5000/ 
-         */
+       
 
 
         // GET: /Propietarios (Muestra la lista)
         public IActionResult Index()
         {
             var lista = _propietarioRepository.obtenerTodos();
-            return View(lista); // Envía la lista a la vista Index.cshtml
+            return View(lista); 
         }
 
         // GET: /Propietarios/Crear (Muestra el formulario vacío)
@@ -66,23 +65,58 @@ namespace ProyectoInmobiliaria.Controllers
             return Ok(propietario);
         }
 
-        
 
-
-        //PUT: api/propietario/5
-        [HttpPut]
-        public IActionResult Actualizar([FromBody] Propietario propietario)
+        public Propietario ObtenerPorId(int id)
         {
-            _propietarioRepository.actualizar(propietario);
-            return Ok("Propietario actualizado exitosamente");
+            Propietario propietario = _propietarioRepository.obtenerPorId(id);
+
+
+            return propietario;
         }
 
-        // DELETE: api/propietario/5
-        [HttpDelete("{id}")]
-        public IActionResult Eliminar(int id)
+        // GET: /Propietarios/Edit/5
+        [HttpGet]
+        public IActionResult Edit(int id)
         {
-            _propietarioRepository.eliminar(id);
-            return Ok("Propietario eliminado correctamente.");
+            var propietario = _propietarioRepository.obtenerPorId(id);
+            if (propietario == null)
+            {
+                return NotFound(); 
+            }
+            return View(propietario); 
+        }
+
+        // POST: /Propietarios/Edit
+        [HttpPost]
+        public IActionResult Edit(Propietario propietario)
+        {
+            _propietarioRepository.actualizar(propietario);
+            return RedirectToAction("Index");
+        }
+
+
+
+
+        // GET: /Propietarios/Borrar/5
+        // Este método busca al propietario y muestra la pantalla de advertencia
+        [HttpGet]
+        public IActionResult Delete(int id)
+        {
+            var propietario = _propietarioRepository.obtenerPorId(id);
+            if (propietario == null)
+            {
+                return NotFound();
+            }
+            return View(propietario);
+        }
+
+        // POST: /Propietarios/BorrarConfirmado
+        // Este método es el que realmente elimina el registro de MySQL
+        [HttpPost]
+        public IActionResult BorrarConfirmado(int IdPropietario)
+        {
+            _propietarioRepository.eliminar(IdPropietario);
+            return RedirectToAction("Index"); 
         }
     }
 }
