@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Eliminar Inquilino";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <h2>Eliminar Inquilino</h2>
@@ -29,7 +30,7 @@
     </div>
 </div>
 
-<form asp-action="Delete">
+<form action="/Inquilinos/Delete" method="post">
     <input type="hidden" asp-for="IdInquilino" />
     <button type="submit" class="btn btn-danger">Confirmar Eliminación</button>
     <a asp-action="Index" class="btn btn-secondary">Cancelar</a>

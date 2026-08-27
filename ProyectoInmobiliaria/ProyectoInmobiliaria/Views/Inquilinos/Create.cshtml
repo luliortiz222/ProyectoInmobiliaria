@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Crear Inquilino";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <h2>Crear Inquilino</h2>
@@ -9,7 +10,7 @@
 
 <div class="row">
     <div class="col-md-6">
-        <form asp-action="Create">
+        <form action="/Inquilinos/Create" method="post">
             <div class="mb-3">
                 <label asp-for="Dni" class="form-label">DNI</label>
                 <input asp-for="Dni" class="form-control" required />
