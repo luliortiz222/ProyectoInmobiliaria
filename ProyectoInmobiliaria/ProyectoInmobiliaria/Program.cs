@@ -24,7 +24,7 @@ namespace ProyectoInmobiliaria
 
                     builder.Services.AddSingleton(new PropietarioRepository(cadenaConexion));
 
-                    builder.Services.AddControllers();
+                    builder.Services.AddControllersWithViews();
 
                     builder.Services.AddCors(options =>
                     {
@@ -38,7 +38,9 @@ namespace ProyectoInmobiliaria
 
                     var app = builder.Build();
                     app.UseCors("PermitirTodo");
-                    app.MapControllers();
+                    app.MapControllerRoute(
+                        name: "default",
+                        pattern: "{controller=Propietarios}/{action=Index}/{id?}");
                     app.Run();
                 }
                 catch (Exception ex)
