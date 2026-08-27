@@ -23,7 +23,7 @@ namespace ProyectoInmobiliaria
                     Console.WriteLine("¡Conexión a MySQL establecida con éxito!");
 
                     builder.Services.AddSingleton(new PropietarioRepository(cadenaConexion));
-
+                    builder.Services.AddSingleton(new InquilinoRepository(cadenaConexion));
                     builder.Services.AddControllersWithViews();
 
                     builder.Services.AddCors(options =>

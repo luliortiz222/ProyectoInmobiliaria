@@ -45,34 +45,9 @@ namespace ProyectoInmobiliaria.Controllers
         }
 
 
-        // GET api/propietario
-        [HttpGet]
-        public IActionResult ObtenerTodos()
-        {
-            List<Propietario> lista = _propietarioRepository.obtenerTodos();
-            return Ok(lista);   
-        }
+        
 
-        // GET api/propietario/dni/123213
-        [HttpGet("dni/{dni}")]
-        public IActionResult obtenerPorDni(string dni)
-        {
-            Propietario propietario = _propietarioRepository.obtenerPorDni(dni);
-            if (propietario == null)
-            {
-                return NotFound("Propietario no encontrado");
-            }
-            return Ok(propietario);
-        }
-
-
-        public Propietario ObtenerPorId(int id)
-        {
-            Propietario propietario = _propietarioRepository.obtenerPorId(id);
-
-
-            return propietario;
-        }
+      
 
         // GET: /Propietarios/Edit/5
         [HttpGet]
