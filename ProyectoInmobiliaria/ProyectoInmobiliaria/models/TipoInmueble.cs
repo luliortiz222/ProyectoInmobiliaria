@@ -1,18 +1,18 @@
 ﻿using System;
-namespace ProyectoInmoviliaria.Models
+namespace ProyectoInmoviliaria.models
 {
-	public class TipoInmueble
-	{
-		public int IdTipo { get; set; }
-		public string nombre { get; set; }
+    public class TipoInmueble
+    {
+        public int IdTipoInmueble { get; set; }
+        public string Nombre { get; set; }
 
-		public TipoInmueble(int idTipo, string nombre)
-		{
-			IdTipo = idTipo;
-			nombre = nombre;
-		}
-		public TipoInmueble() { 
-		
-		}
+        public TipoInmueble()
+        {
+        }
+        public TipoInmueble(int idTipoInmueble, string nombre)
+        {
+            IdTipoInmueble = idTipoInmueble;
+            Nombre = nombre;
+        }
     }
 }

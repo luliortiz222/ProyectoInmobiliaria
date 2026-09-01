@@ -1,34 +1,46 @@
 ﻿using System;
 
-namespace ProyectoInmoviliaria.Models
+namespace ProyectoInmoviliaria.models
 {
-	public class Inmueble	
-	{
-		public int IdInmueble { get; set; }
-		public string direccion { get; set; }
-		public int cantAmbientes { get; set; }
-		public double superficie { get; set; }
-		public double precipPorDia { get; set; }
-		public char imagenPortada { get; set; }
-		public int idPropietario { get; set; }
-		public int IdTipo { get; set; }
+    public class Inmueble
+    {
+        public int IdInmueble { get; set; }
+        public string Direccion { get; set; }
+        public int CantidadAmbientes { get; set; }
+        public decimal Superficie { get; set; }
+        public decimal PrecioPorDia { get; set; }
+        public string ImagenPortada { get; set; }
+        public int IdPropietario { get; set; }
+        public int IdTipoInmueble { get; set; }
 
-        public Inmueble(int IdInmueble, string direccion, int cantAmbientes, double superficie, double precipPorDia, char imagenPortada, int idPropietario, int idTipo)
-		{
-			this.IdInmueble = IdInmueble;
-			this.direccion = direccion;
-			this.cantAmbientes = cantAmbientes;
-			this.superficie = superficie;
-			this.precipPorDia = precipPorDia;
-			this.imagenPortada = imagenPortada;
-			this.idPropietario = idPropietario;
-			this.IdTipo= idTipo; 
-        }
-        public Inmueble() {
-        }
-
-		public override string ToString()
+        public Inmueble()
         {
-            return $"Inmueble [IdInmueble={IdInmueble}, direccion={direccion}, cantAmbientes={cantAmbientes}, superficie={superficie}, precipPorDia={precipPorDia}, imagenPortada={imagenPortada}, idPropietario={idPropietario}], IdTipo={IdTipo}]";
+        }
+
+        public Inmueble(
+            int idInmueble,
+            string direccion,
+            int cantidadAmbientes,
+            decimal superficie,
+            decimal precioPorDia,
+            string imagenPortada,
+            int idPropietario,
+            int idTipoInmueble)
+        {
+            IdInmueble = idInmueble;
+            Direccion = direccion;
+            CantidadAmbientes = cantidadAmbientes;
+            Superficie = superficie;
+            PrecioPorDia = precioPorDia;
+            ImagenPortada = imagenPortada;
+            IdPropietario = idPropietario;
+            IdTipoInmueble = idTipoInmueble;
+        }
+
+        public override string ToString()
+        {
+            return $"Inmueble [IdInmueble={IdInmueble}, Direccion={Direccion}, " + $"CantidadAmbientes={CantidadAmbientes}, Superficie={Superficie}, " + $"PrecioPorDia={PrecioPorDia}, ImagenPortada={ImagenPortada}, " + $"IdPropietario={IdPropietario}, IdTipoInmueble={IdTipoInmueble}]";
         }
     }
+
+}
