@@ -27,10 +27,11 @@ CREATE TABLE TipoInmueble (
 CREATE TABLE Inmueble (
     IdInmueble INT AUTO_INCREMENT PRIMARY KEY,
     Direccion VARCHAR(200) NOT NULL,
-    CantidadAmbientes INT NOT NULL,
-    Superficie DECIMAL(10,2) NOT NULL,
+    Cupo INT NOT NULL,
+    Coordenas VARCHAR(200) NOT NULL,
     PrecioPorDia DECIMAL(10,2) NOT NULL,
     ImagenPortada VARCHAR(300),
+    Estado BOOLEAN NOT NULL DEFAULT TRUE, 
     IdPropietario INT NOT NULL,
     IdTipoInmueble INT NOT NULL,
 
