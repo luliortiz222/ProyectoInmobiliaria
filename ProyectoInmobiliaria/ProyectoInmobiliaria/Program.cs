@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 // librería de MySQL
 using MySql.Data.MySqlClient;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
+using ProyectoInmobiliaria.Repository;
+using System;
 namespace ProyectoInmobiliaria
 
 {
@@ -24,6 +25,7 @@ namespace ProyectoInmobiliaria
 
                     builder.Services.AddSingleton(new PropietarioRepository(cadenaConexion));
                     builder.Services.AddSingleton(new InquilinoRepository(cadenaConexion));
+                    builder.Services.AddSingleton(new TipoInmuebleRepository(cadenaConexion));
                     builder.Services.AddControllersWithViews();
 
                     builder.Services.AddCors(options =>

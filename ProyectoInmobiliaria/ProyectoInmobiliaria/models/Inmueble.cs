@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ProyectoInmoviliaria.models
+namespace ProyectoInmobiliaria.models
 {
     public class Inmueble
     {
