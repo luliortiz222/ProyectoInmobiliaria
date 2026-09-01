@@ -28,6 +28,7 @@ namespace ProyectoInmobiliaria
                     builder.Services.AddSingleton(new InquilinoRepository(cadenaConexion));
                     builder.Services.AddSingleton(new TipoInmuebleRepository(cadenaConexion));
                     builder.Services.AddSingleton(new InmuebleRepository(cadenaConexion));
+                    builder.Services.AddSingleton(new ReservaRepository(cadenaConexion));
                     builder.Services.AddControllersWithViews();
 
                     builder.Services.AddCors(options =>
