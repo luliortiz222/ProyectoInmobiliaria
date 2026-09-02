@@ -1,0 +1,36 @@
+﻿@model ProyectoInmobiliaria.models.TipoInmueble
+
+@{
+    ViewData["Title"] = "Crear Tipo de Inmueble";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Crear Tipo de Inmueble</h2>
+
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form action="/TipoInmuebles/Create" method="post">
+            <div class="mb-3">
+                <label class="form-label">Nombre</label>
+
+                <input type="text"
+                       class="form-control"
+                       name="Nombre"
+                       required />
+            </div>
+
+            <button type="submit"
+                    class="btn btn-primary">
+                Guardar
+            </button>
+
+            <a asp-action="Index"
+               class="btn btn-secondary">
+                Cancelar
+            </a>
+
+        </form>
+
+    </div>
+</div>

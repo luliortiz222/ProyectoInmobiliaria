@@ -1,0 +1,36 @@
+﻿@model ProyectoInmobiliaria.models.TipoInmueble
+@{
+    ViewData["Title"] = "Detalles del Tipo de Inmueble";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h2>Detalles del Tipo de Inmueble</h2>
+<hr />
+<div class="card col-md-6 shadow-sm mb-3">
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-4">
+                ID
+            </dt>
+            <dd class="col-sm-8">
+                @Model.IdTipoInmueble
+            </dd>
+            <dt class="col-sm-4">
+                Nombre
+            </dt>
+            <dd class="col-sm-8">
+                @Model.Nombre
+            </dd>
+        </dl>
+    </div>
+</div>
+
+<a asp-action="Edit"
+   asp-route-id="@Model.IdTipoInmueble"
+   class="btn btn-warning">
+    Editar
+</a>
+
+<a asp-action="Index"
+   class="btn btn-secondary">
+    Volver
+</a>

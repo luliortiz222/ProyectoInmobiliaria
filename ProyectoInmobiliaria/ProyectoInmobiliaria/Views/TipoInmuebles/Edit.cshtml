@@ -1,0 +1,48 @@
+﻿@model ProyectoInmobiliaria.models.TipoInmueble
+
+@{
+    ViewData["Title"] = "Editar Tipo de Inmueble";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Editar Tipo de Inmueble</h2>
+
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+
+        <form action="/TipoInmuebles/Edit" method="post">
+
+            <input type="hidden"
+                   name="IdTipoInmueble"
+                   value="@Model.IdTipoInmueble" />
+
+            <div class="mb-3">
+
+                <label class="form-label">
+                    Nombre
+                </label>
+
+                <input type="text"
+                       class="form-control"
+                       name="Nombre"
+                       value="@Model.Nombre"
+                       required />
+
+            </div>
+
+            <a asp-action="Index"
+               class="btn btn-secondary">
+                Cancelar
+            </a>
+
+            <button type="submit"
+                    class="btn btn-warning">
+                Guardar Cambios
+            </button>
+
+        </form>
+
+    </div>
+</div>
