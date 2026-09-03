@@ -8,6 +8,7 @@ namespace ProyectoInmobiliaria.Repository
     public class InmuebleRepository
     {
         private string _cadenaDeConexion;
+        private PropietarioRepository _propietarioRepository;
         public InmuebleRepository(string cadenaDeConexion)
         {
             _cadenaDeConexion = cadenaDeConexion;
@@ -97,7 +98,19 @@ namespace ProyectoInmobiliaria.Repository
                                     ImagenPortada = reader.GetString("ImagenPortada"),
                                     Estado = reader.GetBoolean("Estado"),
                                     IdPropietario = reader.GetInt32("IdPropietario"),
-                                    IdTipoInmueble = reader.GetInt32("IdTipoInmueble")
+                                    IdTipoInmueble = reader.GetInt32("IdTipoInmueble"),
+
+                                    //Dueño = _propietarioRepository.ObtenerPorId(reader.GetInt32("IdPropietario")),
+                                    //Tipo = _tipoInmuebleRepository.ObtenerPorId(reader.GetInt32("IdTipoInmueble"))
+                                    Dueño = new Propietario
+                                    {
+                                        Nombre = reader.GetString("Nombre"),
+                                        Apellido = reader.GetString("Apellido")
+                                    },
+                                    Tipo = new TipoInmueble
+                                    {
+                                        Nombre = reader.GetString("Nombre")
+                                    }
                                 };
                                 inmuebles.Add(inmueble);
                             }

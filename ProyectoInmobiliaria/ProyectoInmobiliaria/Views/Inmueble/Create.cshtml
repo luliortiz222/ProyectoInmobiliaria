@@ -1,0 +1,96 @@
+﻿@model ProyectoInmobiliaria.models.Inmueble
+@{
+    ViewData["Title"] = "Nuevo Inmueble";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <h2>Registrar Nuevo Inmueble</h2>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form action="/Inmueble/Create" method="post">
+
+                        <!-- Dirección -->
+                        <div class="mb-3">
+                            <label class="form-label">Dirección</label>
+                            <input type="text" name="Direccion" class="form-control" required />
+                        </div>
+
+                        <!-- Fila con Cupo y Precio -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Cupo (Máx. Personas)</label>
+                                <input type="number" name="Cupo" class="form-control" required />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Precio por Día ($)</label>
+                                <input type="number" step="0.01" name="PrecioPorDia" class="form-control" required />
+                            </div>
+                        </div>
+
+                        <!-- Coordenadas -->
+                        <div class="mb-3">
+                            <label class="form-label">Coordenadas (Lat, Lng)</label>
+                            <input type="text" name="Coordenadas" class="form-control" placeholder="Ej: -32.89084, -68.82717" />
+                        </div>
+
+                        <!-- Imagen de Portada (Por ahora un texto con la URL/Ruta) -->
+                        <div class="mb-3">
+                            <label class="form-label">URL Imagen de Portada</label>
+                            <input type="text" name="ImagenPortada" class="form-control" />
+                        </div>
+
+                        <!-- Estado por defecto -->
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" name="Estado" value="true" checked>
+                            <label class="form-check-label">Disponible para alquiler</label>
+                        </div>
+
+                        <hr />
+                        <h5 class="text-primary mb-3">Relaciones</h5>
+
+                        <!-- EL MAGICO SELECT DE PROPIETARIOS -->
+                        <div class="mb-3">
+                            <label class="form-label">Propietario</label>
+                            <select name="IdPropietario" class="form-select" required>
+                                <option value="">-- Seleccione un Dueño --</option>
+
+                                @* Aquí abrimos la mochila del ViewBag y recorremos la lista *@
+                                @foreach (var dueño in ViewBag.Propietarios)
+                                {
+                                    <option value="@dueño.IdPropietario">@dueño.Nombre @dueño.Apellido (DNI: @dueño.Dni)</option>
+                                }
+
+                            </select>
+                        </div>
+
+                        <!-- EL MAGICO SELECT DE TIPOS DE INMUEBLE -->
+                        <div class="mb-4">
+                            <label class="form-label">Tipo de Inmueble</label>
+                            <select name="IdTipoInmueble" class="form-select" required>
+                                <option value="">-- Seleccione un Tipo --</option>
+
+                                @* Repetimos el proceso con los tipos *@
+                                @foreach (var tipo in ViewBag.TiposInmueble)
+                                {
+                                    <option value="@tipo.IdTipo">@tipo.Nombre</option>
+                                }
+
+                            </select>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="/Inmuebles" class="btn btn-secondary">Cancelar</a>
+                            <button type="submit" class="btn btn-success">Guardar Inmueble</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

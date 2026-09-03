@@ -14,6 +14,9 @@ namespace ProyectoInmobiliaria.models
         public int IdPropietario { get; set; }
         public int IdTipoInmueble { get; set; }
 
+        public Propietario Dueño { get; set; }
+        public TipoInmueble Tipo { get; set; }
+
         public Inmueble()
         {
         }
