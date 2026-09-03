@@ -1,0 +1,112 @@
+﻿@model ProyectoInmobiliaria.models.Inmueble
+@{
+    ViewData["Title"] = "Editar Inmueble";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <h2>Editar Inmueble</h2>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow-sm border-warning">
+                <div class="card-body">
+                    <form action="/Inmueble/Edit" method="post">
+                        
+                        <!-- EL IDENTIFICADOR OCULTO (¡Vital para que el UPDATE funcione!) -->
+                        <input type="hidden" name="IdInmueble" value="@Model.IdInmueble" />
+
+                        <!-- Dirección -->
+                        <div class="mb-3">
+                            <label class="form-label">Dirección</label>
+                            <input type="text" name="Direccion" class="form-control" value="@Model.Direccion" required />
+                        </div>
+
+                        <!-- Fila con Cupo y Precio -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Cupo (Máx. Personas)</label>
+                                <input type="number" name="Cupo" class="form-control" value="@Model.Cupo" required />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Precio por Día ($)</label>
+                                <input type="number" step="0.01" name="PrecioPorDia" class="form-control" value="@Model.PrecioPorDia.ToString().Replace(",", ".")" required />
+                            </div>
+                        </div>
+
+                        <!-- Coordenadas -->
+                        <div class="mb-3">
+                            <label class="form-label">Coordenadas (Lat, Lng)</label>
+                            <input type="text" name="Coordenadas" class="form-control" value="@Model.Coordenadas" />
+                        </div>
+
+                        <!-- Imagen de Portada -->
+                        <div class="mb-3">
+                            <label class="form-label">URL Imagen de Portada</label>
+                            <input type="text" name="ImagenPortada" class="form-control" value="@Model.ImagenPortada" />
+                        </div>
+
+                        <!-- Estado (Lógica para que aparezca tildado o no) -->
+                        <div class="mb-3 form-check">
+                            @if (Model.Estado)
+                            {
+                                <input type="checkbox" class="form-check-input" name="Estado" value="true" checked>
+                            }
+                            else
+                            {
+                                <input type="checkbox" class="form-check-input" name="Estado" value="true">
+                            }
+                            <label class="form-check-label">Disponible para alquiler</label>
+                        </div>
+
+                        <hr />
+                        <h5 class="text-primary mb-3">Relaciones</h5>
+
+                        <!-- SELECT DE PROPIETARIOS CON LÓGICA DE SELECCIÓN -->
+                        <div class="mb-3">
+                            <label class="form-label">Propietario</label>
+                            <select name="IdPropietario" class="form-select" required>
+                                @foreach (var dueño in ViewBag.Propietarios)
+                                {
+                                    if (dueño.IdPropietario == Model.IdPropietario)
+                                    {
+                                        <option value="@dueño.IdPropietario" selected>@dueño.Nombre @dueño.Apellido (DNI: @dueño.Dni)</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@dueño.IdPropietario">@dueño.Nombre @dueño.Apellido (DNI: @dueño.Dni)</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                        <!-- SELECT DE TIPOS CON LÓGICA DE SELECCIÓN -->
+                        <div class="mb-4">
+                            <label class="form-label">Tipo de Inmueble</label>
+                            <select name="IdTipoInmueble" class="form-select" required>
+                                @foreach (var tipo in ViewBag.TiposInmueble)
+                                {
+                                    if (tipo.IdTipoInmueble == Model.IdTipoInmueble)
+                                    {
+                                        <option value="@tipo.IdTipoInmueble" selected>@tipo.Nombre</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@tipo.IdTipo">@tipo.Nombre</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="/Inmuebles" class="btn btn-secondary">Cancelar</a>
+                            <button type="submit" class="btn btn-warning">Guardar Cambios</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
