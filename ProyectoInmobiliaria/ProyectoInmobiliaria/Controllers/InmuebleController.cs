@@ -33,7 +33,7 @@ namespace ProyectoInmobiliaria.Controllers
         public IActionResult Create()
         {
             ViewBag.Propietarios = _propietarioRepo.obtenerTodos();
-            ViewBag.TiposInmueble = _tipoRepo.ObtenerTodos();
+            ViewBag.TipoInmueble = _tipoRepo.ObtenerTodos();
 
             return View();
         }
