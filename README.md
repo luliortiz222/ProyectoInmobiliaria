@@ -1,7 +1,7 @@
 # ProyectoInmobiliaria
 # Sistema de Gestión Inmobiliaria
 
-> Aplicación web desarrollada en ASP.NET Core MVC para la administración integral de propiedades, propietarios e inquilinos con persistencia en MySQL.
+> Aplicación web desarrollada en ASP.NET Core MVC para la administración integral de propiedades, propietarios, inquilinos, inmuebles y reservas con persistencia en MySQL.
 
 ---
 
@@ -50,7 +50,7 @@ Ingresá tu contraseña de MySQL cuando la consola lo solicite.
 
 ## Configuración y Ejecución (.NET Core)
 
-1. Abrí la solución `ProyectoInmobiliaria.sln` en Visual Studio.
+1. Abrí la solución `ProyectoInmobiliaria.sln` en Visual Studio o Visual Studio Code
 2. Si las credenciales de tu servidor MySQL local son distintas, actualizá la variable `cadenaConexion` dentro del archivo `Program.cs`:
 ```csharp
 string cadenaConexion = "Server=localhost;Database=inmobiliaria;Uid=root;Pwd=admin;";
@@ -58,100 +58,34 @@ string cadenaConexion = "Server=localhost;Database=inmobiliaria;Uid=root;Pwd=adm
 ---
 
 ## Estructura del Proyecto
-
+```text
 ProyectoInmobiliaria
-│
 ├── Controllers/
 │   ├── InquilinosController.cs
 │   ├── PropietariosController.cs
 │   ├── InmuebleController.cs
-│   ├── TipoInmueblesController.cs
+│   ├── TipoInmuebleController.cs
 │   └── ReservasController.cs
-│
 ├── models/
 │   ├── Inquilino.cs
 │   ├── Propietario.cs
 │   ├── Inmueble.cs
 │   ├── TipoInmueble.cs
 │   └── Reserva.cs
-│
 ├── Repository/
 │   ├── InquilinoRepository.cs
 │   ├── PropietarioRepository.cs
 │   ├── InmuebleRepository.cs
 │   ├── TipoInmuebleRepository.cs
 │   └── ReservaRepository.cs
-│
 ├── Views/
 │   ├── Home/
-│   ├── Inquilinos/           # Index, Create, Edit, Delete
-│   ├── Propietarios/         # Index, Create, Edit, Delete
-│   ├── Inmueble/             # Index, Create, Edit, Details, Delete
-│   ├── TipoInmuebles/        # Index, Create, Edit, Details, Delete
-│   ├── Reservas/             # Index, Create, Edit, Details, Delete
-│   └── Shared/               # _Layout.cshtml, _ValidationScriptsPartial.cshtml
-│
+│   ├── Inquilinos/
+│   ├── Propietarios/
+│   ├── Inmueble/
+│   ├── TipoInmueble/
+│   ├── Reservas/
+│   └── Shared/
+│       └── _Layout.cshtml
 └── Program.cs
-
-## Diagrama de Clases
-
-```mermaid
-classDiagram
-    class Propietario {
-        +int IdPropietario
-        +String Dni
-        +String Nombre
-        +String Apellido
-        +String Telefono
-        +String Email
-        +Propietario()
-        +Propietario(int id, string dni, string nombre, string apellido, string telefono, string email)
-    }
-
-    class Inquilino {
-        +int IdInquilino
-        +String Dni
-        +String Nombre
-        +String Apellido
-        +String Telefono
-        +String Email
-        +Inquilino()
-        +Inquilino(int id, string dni, string nombre, string apellido, string telefono, string email)
-    }
-
-    class Inmueble {
-        +int IdInmueble
-        +string Direccion
-        +int Cupo
-        +string Coordenadas
-        +decimal PrecioPorDia
-        +string ImagenPortada
-        +bool Estado
-        +int IdPropietario
-        +int IdTipoInmueble
-        +Inmueble()
-        +Inmueble(int idInmueble, string direccion, int cupo, string coordenadas, decimal precioPorDia, string imagenPortada, bool estado, int idPropietario, int idTipoInmueble)
-        +ToString() string
-    }
-
-    class Reserva {
-        +int IdReserva
-        +int IdInquilino
-        +int IdInmueble
-        +decimal MontoPorDia
-        +DateTime FechaDesde
-        +DateTime FechaHasta
-    }
-
-    class TipoInmueble {
-        +int IdTipoInmueble
-        +string Descripcion
-        +TipoInmueble()
-        +TipoInmueble(int idTipoInmueble, string descripcion)
-    }
-
-    Propietario "1" -- "0..*" Inmueble
-    TipoInmueble "1" -- "0..*" Inmueble
-    Inmueble "1" -- "0..*" Reserva
-    Inquilino "1" -- "0..*" Reserva
 ```
