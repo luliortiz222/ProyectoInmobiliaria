@@ -76,7 +76,32 @@ namespace ProyectoInmobiliaria.Repository
         public List<Inmueble> ObtenerTodos()
         {
             List<Inmueble> inmuebles = new List<Inmueble>();
-            string query = "SELECT * FROM Inmueble";
+
+            string query = @"
+        SELECT 
+            i.IdInmueble,
+            i.Direccion,
+            i.Cupo,
+            i.Coordenadas,
+            i.PrecioPorDia,
+            i.ImagenPortada,
+            i.Estado,
+            i.IdPropietario,
+            i.IdTipoInmueble,
+
+            p.IdPropietario,
+            p.Nombre AS NombrePropietario,
+            p.Apellido AS ApellidoPropietario,
+
+            t.IdTipoInmueble,
+            t.Nombre AS NombreTipo
+
+        FROM Inmueble i
+        INNER JOIN Propietario p 
+            ON i.IdPropietario = p.IdPropietario
+        INNER JOIN TipoInmueble t 
+            ON i.IdTipoInmueble = t.IdTipoInmueble";
+
             using (MySqlConnection conexion = new MySqlConnection(_cadenaDeConexion))
             {
                 using (MySqlCommand comando = new MySqlCommand(query, conexion))
@@ -84,6 +109,7 @@ namespace ProyectoInmobiliaria.Repository
                     try
                     {
                         conexion.Open();
+
                         using (MySqlDataReader reader = comando.ExecuteReader())
                         {
                             while (reader.Read())
@@ -95,23 +121,31 @@ namespace ProyectoInmobiliaria.Repository
                                     Cupo = reader.GetInt32("Cupo"),
                                     Coordenadas = reader.GetString("Coordenadas"),
                                     PrecioPorDia = reader.GetDecimal("PrecioPorDia"),
-                                    ImagenPortada = reader.GetString("ImagenPortada"),
+
+                                    ImagenPortada = reader.IsDBNull(
+                                        reader.GetOrdinal("ImagenPortada"))
+                                        ? ""
+                                        : reader.GetString("ImagenPortada"),
+
                                     Estado = reader.GetBoolean("Estado"),
+
                                     IdPropietario = reader.GetInt32("IdPropietario"),
                                     IdTipoInmueble = reader.GetInt32("IdTipoInmueble"),
 
-                                    //Dueño = _propietarioRepository.ObtenerPorId(reader.GetInt32("IdPropietario")),
-                                    //Tipo = _tipoInmuebleRepository.ObtenerPorId(reader.GetInt32("IdTipoInmueble"))
                                     Dueño = new Propietario
                                     {
-                                        Nombre = reader.GetString("Nombre"),
-                                        Apellido = reader.GetString("Apellido")
+                                        IdPropietario = reader.GetInt32("IdPropietario"),
+                                        Nombre = reader.GetString("NombrePropietario"),
+                                        Apellido = reader.GetString("ApellidoPropietario")
                                     },
+
                                     Tipo = new TipoInmueble
                                     {
-                                        Nombre = reader.GetString("Nombre")
+                                        IdTipoInmueble = reader.GetInt32("IdTipoInmueble"),
+                                        Nombre = reader.GetString("NombreTipo")
                                     }
                                 };
+
                                 inmuebles.Add(inmueble);
                             }
                         }
@@ -122,6 +156,7 @@ namespace ProyectoInmobiliaria.Repository
                     }
                 }
             }
+
             return inmuebles;
         }
 
