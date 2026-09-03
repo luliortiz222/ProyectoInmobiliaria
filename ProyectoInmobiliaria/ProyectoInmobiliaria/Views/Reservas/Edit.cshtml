@@ -1,0 +1,123 @@
+﻿@model ProyectoInmobiliaria.models.Reserva
+
+@{
+    ViewData["Title"] = "Editar Reserva";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <h2>Editar Reserva</h2>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+
+            <div class="card shadow-sm">
+                <div class="card-body">
+
+                    <form action="/Reservas/Edit" method="post">
+
+                        <input type="hidden" name="IdReserva" value="@Model.IdReserva" />
+
+                        <!-- Inquilino -->
+                        <div class="mb-3">
+                            <label class="form-label">Inquilino</label>
+
+                            <select name="IdInquilino" class="form-select" required>
+                                <option value="">-- Seleccione un Inquilino --</option>
+
+                                @foreach (var inquilino in ViewBag.Inquilinos)
+                                {
+                                    if (inquilino.IdInquilino == Model.IdInquilino)
+                                    {
+                                        <option value="@inquilino.IdInquilino" selected>
+                                            @inquilino.Apellido, @inquilino.Nombre - DNI: @inquilino.Dni
+                                        </option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@inquilino.IdInquilino">
+                                            @inquilino.Apellido, @inquilino.Nombre - DNI: @inquilino.Dni
+                                        </option>
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                        <!-- Inmueble -->
+                        <div class="mb-3">
+                            <label class="form-label">Inmueble</label>
+
+                            <select name="IdInmueble" class="form-select" required>
+                                <option value="">-- Seleccione un Inmueble --</option>
+
+                                @foreach (var inmueble in ViewBag.Inmuebles)
+                                {
+                                    if (inmueble.IdInmueble == Model.IdInmueble)
+                                    {
+                                        <option value="@inmueble.IdInmueble" selected>
+                                            @inmueble.Direccion
+                                        </option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@inmueble.IdInmueble">
+                                            @inmueble.Direccion
+                                        </option>
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                        <!-- Monto -->
+                        <div class="mb-3">
+                            <label class="form-label">Monto por Día</label>
+
+                            <input type="number"
+                                   step="0.01"
+                                   name="MontoPorDia"
+                                   class="form-control"
+                                   value="@Model.MontoPorDia"
+                                   required />
+                        </div>
+
+                        <!-- Fecha Desde -->
+                        <div class="mb-3">
+                            <label class="form-label">Fecha Desde</label>
+
+                            <input type="date"
+                                   name="FechaDesde"
+                                   class="form-control"
+                                   value="@Model.FechaDesde.ToString("yyyy-MM-dd")"
+                                   required />
+                        </div>
+
+                        <!-- Fecha Hasta -->
+                        <div class="mb-3">
+                            <label class="form-label">Fecha Hasta</label>
+
+                            <input type="date"
+                                   name="FechaHasta"
+                                   class="form-control"
+                                   value="@Model.FechaHasta.ToString("yyyy-MM-dd")"
+                                   required />
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="/Reservas/Index" class="btn btn-secondary">
+                                Cancelar
+                            </a>
+
+                            <button type="submit" class="btn btn-warning">
+                                Guardar Cambios
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

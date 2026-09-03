@@ -1,0 +1,85 @@
+﻿@model ProyectoInmobiliaria.models.Reserva
+
+@{
+    ViewData["Title"] = "Detalles de Reserva";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+
+    <h2>Detalles de la Reserva</h2>
+    <hr />
+
+    <div class="card shadow-sm col-md-7">
+
+        <div class="card-body">
+
+            <dl class="row">
+
+                <dt class="col-sm-4">
+                    ID Reserva
+                </dt>
+                <dd class="col-sm-8">
+                    @Model.IdReserva
+                </dd>
+
+                <dt class="col-sm-4">
+                    ID Inquilino
+                </dt>
+                <dd class="col-sm-8">
+                    @Model.IdInquilino
+                </dd>
+
+                <dt class="col-sm-4">
+                    ID Inmueble
+                </dt>
+                <dd class="col-sm-8">
+                    @Model.IdInmueble
+                </dd>
+
+                <dt class="col-sm-4">
+                    Monto por Día
+                </dt>
+                <dd class="col-sm-8">
+                    $ @Model.MontoPorDia
+                </dd>
+
+                <dt class="col-sm-4">
+                    Fecha Desde
+                </dt>
+                <dd class="col-sm-8">
+                    @Model.FechaDesde.ToString("dd/MM/yyyy")
+                </dd>
+
+                <dt class="col-sm-4">
+                    Fecha Hasta
+                </dt>
+                <dd class="col-sm-8">
+                    @Model.FechaHasta.ToString("dd/MM/yyyy")
+                </dd>
+
+            </dl>
+
+            <hr />
+
+            <div>
+                <a href="/Reservas/Edit/@Model.IdReserva"
+                   class="btn btn-warning">
+                    Editar
+                </a>
+
+                <a href="/Reservas/Delete/@Model.IdReserva"
+                   class="btn btn-danger">
+                    Eliminar
+                </a>
+
+                <a href="/Reservas/Index"
+                   class="btn btn-secondary">
+                    Volver
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+</div>

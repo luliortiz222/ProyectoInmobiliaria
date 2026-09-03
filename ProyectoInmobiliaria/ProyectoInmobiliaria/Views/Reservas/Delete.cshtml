@@ -1,0 +1,92 @@
+﻿@model ProyectoInmobiliaria.models.Reserva
+
+@{
+    ViewData["Title"] = "Eliminar Reserva";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+
+    <h2>Eliminar Reserva</h2>
+
+    <p class="text-danger fw-bold">
+        ¿Estás seguro de que querés eliminar esta reserva?
+    </p>
+
+    <hr />
+
+    <div class="card shadow-sm col-md-7">
+
+        <div class="card-body">
+
+            <dl class="row">
+
+                <dt class="col-sm-4">
+                    ID Reserva
+                </dt>
+                <dd class="col-sm-8">
+                    @Model.IdReserva
+                </dd>
+
+                <dt class="col-sm-4">
+                    ID Inquilino
+                </dt>
+                <dd class="col-sm-8">
+                    @Model.IdInquilino
+                </dd>
+
+                <dt class="col-sm-4">
+                    ID Inmueble
+                </dt>
+                <dd class="col-sm-8">
+                    @Model.IdInmueble
+                </dd>
+
+                <dt class="col-sm-4">
+                    Monto por Día
+                </dt>
+                <dd class="col-sm-8">
+                    $ @Model.MontoPorDia
+                </dd>
+
+                <dt class="col-sm-4">
+                    Fecha Desde
+                </dt>
+                <dd class="col-sm-8">
+                    @Model.FechaDesde.ToString("dd/MM/yyyy")
+                </dd>
+
+                <dt class="col-sm-4">
+                    Fecha Hasta
+                </dt>
+                <dd class="col-sm-8">
+                    @Model.FechaHasta.ToString("dd/MM/yyyy")
+                </dd>
+
+            </dl>
+
+            <hr />
+
+            <form action="/Reservas/Delete" method="post">
+
+                <input type="hidden"
+                       name="id"
+                       value="@Model.IdReserva" />
+
+                <button type="submit"
+                        class="btn btn-danger">
+                    Confirmar Eliminación
+                </button>
+
+                <a href="/Reservas/Index"
+                   class="btn btn-secondary">
+                    Cancelar
+                </a>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
