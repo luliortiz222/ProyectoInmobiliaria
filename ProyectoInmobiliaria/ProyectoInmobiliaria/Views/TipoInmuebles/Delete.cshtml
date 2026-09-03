@@ -30,21 +30,15 @@
     </div>
 </div>
 
-<form action="/TipoInmuebles/Delete"
-      method="post">
+<form action="/TipoInmuebles/Delete" method="post">
+    <input type="hidden" name="id" value="@Model.IdTipoInmueble" />
 
-    <input type="hidden"
-           name="id"
-           value="@Model.IdTipoInmueble" />
-
-    <button type="submit"
-            class="btn btn-danger">
+    <button type="submit" class="btn btn-danger">
         Confirmar Eliminación
     </button>
 
-    <a asp-action="Index"
-       class="btn btn-secondary">
+    <!-- Cambiado asp-action por href directo -->
+    <a href="/TipoInmuebles" class="btn btn-secondary">
         Cancelar
     </a>
-
 </form>

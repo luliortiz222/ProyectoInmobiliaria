@@ -24,13 +24,12 @@
     </div>
 </div>
 
-<a asp-action="Edit"
-   asp-route-id="@Model.IdTipoInmueble"
-   class="btn btn-warning">
+<!-- Botón Editar con ruta directa -->
+<a href="/TipoInmuebles/Edit/@Model.IdTipoInmueble" class="btn btn-warning">
     Editar
 </a>
 
-<a asp-action="Index"
-   class="btn btn-secondary">
+<!-- Botón Volver con ruta directa -->
+<a href="/TipoInmuebles" class="btn btn-secondary">
     Volver
 </a>
