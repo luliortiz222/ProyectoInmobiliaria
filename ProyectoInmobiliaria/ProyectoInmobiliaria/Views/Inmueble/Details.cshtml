@@ -1,0 +1,63 @@
+﻿@model ProyectoInmobiliaria.models.Inmueble
+@{
+    ViewData["Title"] = "Detalles del Inmueble";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <h2>Detalles del Inmueble</h2>
+    <hr />
+
+    <div class="card shadow-sm">
+        <div class="row g-0">
+            <!-- Columna para la Imagen -->
+            <div class="col-md-4 text-center bg-light d-flex align-items-center justify-content-center p-3">
+                @if (!string.IsNullOrEmpty(Model.ImagenPortada))
+                {
+                    <img src="@Model.ImagenPortada" class="img-fluid rounded" alt="Portada del inmueble" style="max-height: 300px; object-fit: cover;">
+                }
+                else
+                {
+                    <div class="text-muted p-5">
+                        <i class="fs-1 bi bi-house text-secondary"></i>
+                        <p class="mt-2">Sin imagen de portada</p>
+                    </div>
+                }
+            </div>
+
+            <!-- Columna para los Datos -->
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h4 class="card-title text-primary">@Model.Direccion</h4>
+
+                    <div class="mb-3">
+                        @if (Model.Estado)
+                        {
+                            <span class="badge bg-success fs-6">Disponible</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger fs-6">Suspendido</span>
+                        }
+                        <span class="badge bg-info text-dark fs-6 ms-2">@Model.Tipo.Nombre</span>
+                    </div>
+
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><strong>Precio por Día:</strong> <span class="text-success fw-bold">$@Model.PrecioPorDia</span></li>
+                        <li class="list-group-item"><strong>Capacidad:</strong> Hasta @Model.Cupo personas</li>
+                        <li class="list-group-item"><strong>Coordenadas:</strong> @(string.IsNullOrEmpty(Model.Coordenadas) ? "No especificadas" : Model.Coordenadas)</li>
+                        <li class="list-group-item">
+                            <strong>Propietario:</strong> @Model.Dueño.Nombre @Model.Dueño.Apellido <br />
+                            <small class="text-muted">DNI: @Model.Dueño.Dni</small>
+                        </li>
+                    </ul>
+
+                    <div class="mt-4">
+                        <a href="/Inmuebles/Edit/@Model.IdInmueble" class="btn btn-warning">Editar Inmueble</a>
+                        <a href="/Inmuebles" class="btn btn-secondary">Volver al Listado</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

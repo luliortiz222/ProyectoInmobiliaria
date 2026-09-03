@@ -1,0 +1,40 @@
+﻿@model ProyectoInmobiliaria.models.Inmueble
+@{
+    ViewData["Title"] = "Eliminar Inmueble";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <h2 class="text-danger"><i class="bi bi-exclamation-triangle-fill"></i> Eliminar Inmueble</h2>
+    <hr />
+
+    <div class="alert alert-warning shadow-sm">
+        <h4 class="alert-heading">¡Atención!</h4>
+        <p>¿Estás seguro que deseas eliminar el inmueble ubicado en <strong>@Model.Direccion</strong>?</p>
+        <hr>
+        <p class="mb-0 text-danger"><strong>Esta acción no se puede deshacer y borrará la propiedad de la base de datos de forma permanente.</strong></p>
+    </div>
+
+    <!-- Tarjeta resumen para que el usuario verifique lo que está borrando -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+            <h5 class="card-title text-secondary">Datos de la Propiedad</h5>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><strong>Tipo:</strong> @Model.Tipo.Nombre</li>
+                <li class="list-group-item"><strong>Dueño:</strong> @Model.Dueño.Nombre @Model.Dueño.Apellido (DNI: @Model.Dueño.Dni)</li>
+                <li class="list-group-item"><strong>Precio por Día:</strong> $@Model.PrecioPorDia</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- El formulario que dispara la acción de borrar -->
+    <form action="/Inmueble/BorrarConfirmado" method="post">
+        
+        <input type="hidden" name="IdInmueble" value="@Model.IdInmueble" />
+
+        <div class="d-grid gap-2 d-md-flex mt-3">
+            <a href="/Inmuebles" class="btn btn-secondary">Cancelar y Volver</a>
+            <button type="submit" class="btn btn-danger">Sí, Eliminar Definitivamente</button>
+        </div>
+    </form>
+</div>

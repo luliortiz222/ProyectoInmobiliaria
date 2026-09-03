@@ -89,7 +89,7 @@ namespace ProyectoInmobiliaria.Controllers
 
         // GET: /Inmueble/Borrar/5
         [HttpGet]
-        public IActionResult Borrar(int id)
+        public IActionResult Delete(int id)
         {
             var inmueble = _inmuebleRepository.ObtenerPorId(id);
 

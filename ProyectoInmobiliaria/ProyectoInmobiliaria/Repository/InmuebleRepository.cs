@@ -209,38 +209,51 @@ namespace ProyectoInmobiliaria.Repository
         public Inmueble ObtenerPorId(int idInmueble)
         {
             Inmueble inmueble = null;
-            string query = "SELECT * FROM Inmueble WHERE IdInmueble = @Id";
+            string query = @"
+        SELECT i.IdInmueble, i.Direccion, i.Cupo, i.Coordenadas, i.PrecioPorDia, 
+               i.ImagenPortada, i.Estado, i.IdPropietario, i.IdTipoInmueble,
+               p.Nombre AS NombrePropietario, p.Apellido AS ApellidoPropietario, p.Dni,
+               t.Nombre AS NombreTipo
+        FROM Inmueble i
+        INNER JOIN Propietario p ON i.IdPropietario = p.IdPropietario
+        INNER JOIN TipoInmueble t ON i.IdTipoInmueble = t.IdTipoInmueble
+        WHERE i.IdInmueble = @Id";
 
             using (MySqlConnection conexion = new MySqlConnection(_cadenaDeConexion))
             {
                 using (MySqlCommand comando = new MySqlCommand(query, conexion))
                 {
                     comando.Parameters.AddWithValue("@Id", idInmueble);
-                    try
+                    conexion.Open();
+                    using (MySqlDataReader reader = comando.ExecuteReader())
                     {
-                        conexion.Open();
-                        using (MySqlDataReader reader = comando.ExecuteReader())
+                        if (reader.Read())
                         {
-                            if (reader.Read())
+                            inmueble = new Inmueble
                             {
-                                inmueble = new Inmueble
+                                IdInmueble = reader.GetInt32("IdInmueble"),
+                                Direccion = reader.GetString("Direccion"),
+                                Cupo = reader.GetInt32("Cupo"),
+                                Coordenadas = reader.IsDBNull(reader.GetOrdinal("Coordenadas")) ? "" : reader.GetString("Coordenadas"),
+                                PrecioPorDia = reader.GetDecimal("PrecioPorDia"),
+                                ImagenPortada = reader.IsDBNull(reader.GetOrdinal("ImagenPortada")) ? "" : reader.GetString("ImagenPortada"),
+                                Estado = reader.GetBoolean("Estado"),
+                                IdPropietario = reader.GetInt32("IdPropietario"),
+                                IdTipoInmueble = reader.GetInt32("IdTipoInmueble"),
+
+                                Dueño = new Propietario
                                 {
-                                    IdInmueble = reader.GetInt32("IdInmueble"),
-                                    Direccion = reader.GetString("Direccion"),
-                                    Cupo = reader.GetInt32("Cupo"),
-                                    Coordenadas = reader.GetString("Coordenadas"),
-                                    PrecioPorDia = reader.GetDecimal("PrecioPorDia"),
-                                    ImagenPortada = reader.IsDBNull(reader.GetOrdinal("ImagenPortada")) ? "" : reader.GetString("ImagenPortada"),
-                                    Estado = reader.GetBoolean("Estado"),
-                                    IdPropietario = reader.GetInt32("IdPropietario"),
-                                    IdTipoInmueble = reader.GetInt32("IdTipoInmueble")
-                                };
-                            }
+                                    Nombre = reader.GetString("NombrePropietario"),
+                                    Apellido = reader.GetString("ApellidoPropietario"),
+                                    Dni = reader.GetString("Dni"),
+                                    
+                                },
+                                Tipo = new TipoInmueble
+                                {
+                                    Nombre = reader.GetString("NombreTipo")
+                                }
+                            };
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("Error al obtener inmueble por ID: " + ex.Message);
                     }
                 }
             }
