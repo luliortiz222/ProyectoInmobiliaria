@@ -8,8 +8,7 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2>Listado de Tipos de Inmueble</h2>
 
-    <a asp-action="Create"
-       href="/TipoInmuebles/Create"
+    <a href="/TipoInmuebles/Create"
        class="btn btn-primary">
         + Nuevo Tipo
     </a>
@@ -36,7 +35,9 @@
                         foreach (var item in Model)
                         {
                             <tr>
-                                <td>@item.IdTipoInmueble</td>
+                                <td>
+                                    @item.IdTipoInmueble
+                                </td>
 
                                 <td class="fw-bold">
                                     @item.Nombre
@@ -45,20 +46,17 @@
                                 <td class="text-center">
                                     <div class="btn-group btn-group-sm">
 
-                                        <a asp-action="Details"
-                                           asp-route-id="@item.IdTipoInmueble"
+                                        <a href="/TipoInmuebles/Details/@item.IdTipoInmueble"
                                            class="btn btn-info">
                                             Detalles
                                         </a>
 
-                                        <a asp-action="Edit"
-                                           asp-route-id="@item.IdTipoInmueble"
+                                        <a href="/TipoInmuebles/Edit/@item.IdTipoInmueble"
                                            class="btn btn-warning">
                                             Editar
                                         </a>
 
-                                        <a asp-action="Delete"
-                                           asp-route-id="@item.IdTipoInmueble"
+                                        <a href="/TipoInmuebles/Delete/@item.IdTipoInmueble"
                                            class="btn btn-danger">
                                             Eliminar
                                         </a>
