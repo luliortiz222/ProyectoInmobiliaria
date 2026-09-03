@@ -1,0 +1,167 @@
+﻿@model ProyectoInmobiliaria.models.Reserva
+
+@{
+    ViewData["Title"] = "Nueva Reserva";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+
+    <h2>Registrar Nueva Reserva</h2>
+
+    <hr />
+
+    <div class="row">
+
+        <div class="col-md-8 offset-md-2">
+
+            <div class="card shadow-sm">
+
+                <div class="card-body">
+
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            @Html.ValidationSummary(false)
+                        </div>
+                    }
+
+                    <form action="/Reservas/Create" method="post">
+
+                        <!-- INQUILINO -->
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                Inquilino
+                            </label>
+
+                            <select name="IdInquilino"
+                                    class="form-select"
+                                    required>
+
+                                <option value="">
+                                    -- Seleccione un Inquilino --
+                                </option>
+
+                                @foreach (var inquilino in ViewBag.Inquilinos)
+                                {
+                                    <option value="@inquilino.IdInquilino">
+                                        @inquilino.Nombre @inquilino.Apellido
+                                        (DNI: @inquilino.Dni)
+                                    </option>
+                                }
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- INMUEBLE -->
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                Inmueble
+                            </label>
+
+                            <select name="IdInmueble"
+                                    class="form-select"
+                                    required>
+
+                                <option value="">
+                                    -- Seleccione un Inmueble --
+                                </option>
+
+                                @foreach (var inmueble in ViewBag.Inmuebles)
+                                {
+                                    <option value="@inmueble.IdInmueble">
+                                        @inmueble.Direccion
+                                        - $@inmueble.PrecioPorDia por día
+                                    </option>
+                                }
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- MONTO -->
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                Monto por Día
+                            </label>
+
+                            <input type="number"
+                                   name="MontoPorDia"
+                                   class="form-control"
+                                   step="0.01"
+                                   min="0"
+                                   required />
+
+                        </div>
+
+
+                        <!-- FECHAS -->
+
+                        <div class="row">
+
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+                                    Fecha Desde
+                                </label>
+
+                                <input type="date"
+                                       name="FechaDesde"
+                                       class="form-control"
+                                       value="@DateTime.Today.ToString("yyyy-MM-dd")"
+                                       required />
+
+                            </div>
+
+
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+                                    Fecha Hasta
+                                </label>
+
+                                <input type="date"
+                                       name="FechaHasta"
+                                       class="form-control"
+                                       value="@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")"
+                                       required />
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="d-flex justify-content-end gap-2">
+
+                            <a href="/Reservas/Index"
+                               class="btn btn-secondary">
+                                Cancelar
+                            </a>
+
+                            <button type="submit"
+                                    class="btn btn-success">
+                                Guardar Reserva
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
