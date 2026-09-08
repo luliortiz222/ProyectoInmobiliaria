@@ -99,5 +99,65 @@ namespace ProyectoInmobiliaria.Repository
             }
             return lista;
         }
+
+        public List<Pago> ObtenerTodos()
+        {
+            var pagos = new List<Pago>();
+            string query = "SELECT * FROM Pago ORDER BY FechaPago DESC"; // Los ordenamos del más reciente al más antiguo
+
+            using (MySqlConnection conexion = new MySqlConnection(cadenaDeConexion))
+            {
+                using (MySqlCommand comando = new MySqlCommand(query, conexion))
+                {
+                    conexion.Open();
+                    using (MySqlDataReader reader = comando.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            pagos.Add(new Pago
+                            {
+                                idPago = reader.GetInt32("IdPago"),
+                                idReserva = reader.GetInt32("IdReserva"),
+                                concepto = reader.GetString("Concepto"),
+                                fechaPago = reader.GetDateTime("FechaPago"),
+                                importe = reader.GetDecimal("Importe"),
+                                estado = reader.GetBoolean("Estado")
+                            });
+                        }
+                    }
+                }
+            }
+            return pagos;
+        }
+
+        public Pago ObtenerPorId(int idPago)
+        {
+            Pago pago = null;
+            string query = "SELECT * FROM Pago WHERE IdPago = @IdPago";
+            using (MySqlConnection conexion = new MySqlConnection(cadenaDeConexion))
+            {
+                using (MySqlCommand comando = new MySqlCommand(query, conexion))
+                {
+                    comando.Parameters.AddWithValue("@IdPago", idPago);
+                    conexion.Open();
+                    using (MySqlDataReader reader = comando.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            pago = new Pago
+                            {
+                                idPago = reader.GetInt32("IdPago"),
+                                idReserva = reader.GetInt32("IdReserva"),
+                                concepto = reader.GetString("Concepto"),
+                                fechaPago = reader.GetDateTime("FechaPago"),
+                                importe = reader.GetDecimal("Importe"),
+                                estado = reader.GetBoolean("Estado")
+                            };
+                        }
+                    }
+                }
+            }
+            return pago;
+        }
     }
 }

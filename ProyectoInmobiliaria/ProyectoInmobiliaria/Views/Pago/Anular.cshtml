@@ -1,0 +1,36 @@
+﻿@model ProyectoInmobiliaria.models.Pago
+@{
+    ViewData["Title"] = "Anular Pago";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <h2 class="text-danger"><i class="bi bi-exclamation-octagon"></i> Anular Pago #@Model.idPago</h2>
+    <hr />
+
+    <div class="alert alert-danger shadow-sm">
+        <h4 class="alert-heading">¡Atención!</h4>
+        <p>¿Estás seguro que deseas <strong>ANULAR</strong> este pago?</p>
+        <p class="mb-0">El pago no se borrará de la base de datos para mantener el historial, pero dejará de ser contabilizado como un pago activo.</p>
+    </div>
+
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><strong>Concepto:</strong> @Model.concepto</li>
+                <li class="list-group-item"><strong>Fecha:</strong> @Model.fechaPago.ToString("dd/MM/yyyy")</li>
+                <li class="list-group-item"><strong>Importe:</strong> <span class="text-success fw-bold">$@Model.importe</span></li>
+            </ul>
+        </div>
+    </div>
+
+    <form action="/Pago/AnularConfirmado" method="post">
+        <input type="hidden" name="IdPago" value="@Model.idPago" />
+        <input type="hidden" name="IdReserva" value="@Model.idReserva" />
+        
+        <div class="d-grid gap-2 d-md-flex mt-3">
+            <a href="/Pagos/PorReserva/@Model.idReserva" class="btn btn-secondary">Cancelar y Volver</a>
+            <button type="submit" class="btn btn-danger">Sí, Anular Pago</button>
+        </div>
+    </form>
+</div>

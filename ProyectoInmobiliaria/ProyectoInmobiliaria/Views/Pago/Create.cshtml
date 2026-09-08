@@ -1,0 +1,49 @@
+﻿@model ProyectoInmobiliaria.models.Pago
+@{
+    ViewData["Title"] = "Registrar Pago";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <h2>Registrar Pago para Reserva #@Model.idReserva</h2>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="card shadow-sm border-success">
+                <div class="card-body">
+                    <form action="/Pagos/Create" method="post">
+
+                        <!-- ID Oculto de la Reserva -->
+                        <input type="hidden" name="IdReserva" value="@Model.idReserva" />
+
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Fecha del Pago</label>
+                            <!-- readonly: Se envía al servidor pero el usuario no puede escribir en él -->
+                            <input type="date" name="FechaPago" class="form-control bg-light" value="@Model.fechaPago.ToString("yyyy-MM-dd")" readonly />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Concepto</label>
+                            <input type="text" name="Concepto" class="form-control" placeholder="Ej: Seña, Mes adelantado, Multa por cancelación..." required />
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Importe a cobrar ($)</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-success text-white">$</span>
+                                <!-- Usamos step="0.01" para permitir decimales en el monto -->
+                                <input type="number" step="0.01" name="Importe" class="form-control form-control-lg" required />
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="/Pagos/PorReserva/@Model.idReserva" class="btn btn-secondary">Cancelar</a>
+                            <button type="submit" class="btn btn-success">Guardar Pago</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
