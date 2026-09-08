@@ -33,6 +33,8 @@ namespace ProyectoInmobiliaria
                     builder.Services.AddSingleton(new PagoRepository(cadenaConexion));
                     builder.Services.AddControllersWithViews();
 
+                    builder.Services.AddSession();
+
                     builder.Services.AddCors(options =>
                     {
                         options.AddPolicy("PermitirTodo", policy =>
@@ -44,6 +46,7 @@ namespace ProyectoInmobiliaria
                     });
 
                     var app = builder.Build();
+                    app.UseSession();
                     app.UseCors("PermitirTodo");
                     app.MapControllerRoute(
                         name: "default",
