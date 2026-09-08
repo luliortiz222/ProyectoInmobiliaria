@@ -1,6 +1,8 @@
 ﻿using MySql.Data.MySqlClient;
 using ProyectoInmobiliaria.models;
 using System;
+using System.Collections.Generic;
+using ProyectoInmobiliaria.models;
 
 namespace ProyectoInmobiliaria.Repository
 {
@@ -20,11 +22,12 @@ namespace ProyectoInmobiliaria.Repository
             {
                 using (MySqlCommand comando = new MySqlCommand(query, conexion))
                 {
-                    comando.Parameters.AddWithValue("@IdReserva", pago.IdReserva);
-                    comando.Parameters.AddWithValue("@Concepto", pago.Concepto);
-                    comando.Parameters.AddWithValue("@FechaPago", pago.FechaPago);
-                    comando.Parameters.AddWithValue("@Importe", pago.Importe);
-                    comando.Parameters.AddWithValue("@IdUsuarioCreador", pago.IdUsuarioCreador);
+                    comando.Parameters.AddWithValue("@IdReserva", pago.idReserva);
+                    comando.Parameters.AddWithValue("@Concepto", pago.concepto);
+                    comando.Parameters.AddWithValue("@FechaPago", pago.fechaPago);
+                    comando.Parameters.AddWithValue("@Importe", pago.importe);
+                    comando.Parameters.AddWithValue("@Estado", pago.estado);
+                    comando.Parameters.AddWithValue("@IdUsuarioCreador", pago.idUsuarioCreador);
 
                     conexion.Open();
                     comando.ExecuteNonQuery();
@@ -39,11 +42,11 @@ namespace ProyectoInmobiliaria.Repository
             {
                 using (MySqlCommand command = new MySqlCommand(query, conexion))
                 {
-                    comando.Parameters.AddWithValue("@Concepto", nuevoConcepto);
-                    comando.Parameters.AddWithValue("@IdPago", idPago);
+                    command.Parameters.AddWithValue("@Concepto", concepto);
+                    command.Parameters.AddWithValue("@IdPago", idPago);
 
                     conexion.Open();
-                    comando.ExecuteNonQuery();
+                    command.ExecuteNonQuery();
                 }
             }
         }
@@ -55,11 +58,11 @@ namespace ProyectoInmobiliaria.Repository
             { 
                 using(MySqlCommand command = new MySqlCommand(query,conexion))
                 {
-                    comando.Parameters.AddWithValue("@IdUsuarioAnulador", idUsuarioAnulador);
-                    comando.Parameters.AddWithValue("@IdPago", idPago);
+                    command.Parameters.AddWithValue("@IdUsuarioAnulador", idUsuarioAnulador);
+                    command.Parameters.AddWithValue("@IdPago", idPago);
 
                     conexion.Open();
-                    comando.ExecuteNonQuery();
+                    command.ExecuteNonQuery();
                 }
             }
         }
@@ -81,14 +84,14 @@ namespace ProyectoInmobiliaria.Repository
                         {
                             lista.Add(new Pago
                             {
-                                IdPago = reader.GetInt32("IdPago"),
-                                IdReserva = reader.GetInt32("IdReserva"),
-                                Concepto = reader.GetString("Concepto"),
-                                FechaPago = reader.GetDateTime("FechaPago"),
-                                Importe = reader.GetDecimal("Importe"),
-                                Estado = reader.GetBoolean("Estado"),
-                                IdUsuarioCreador = reader.GetInt32("IdUsuarioCreador"),
-                                IdUsuarioAnulador = reader.IsDBNull(reader.GetOrdinal("IdUsuarioAnulador")) ? (int?)null : reader.GetInt32("IdUsuarioAnulador")
+                                idPago = reader.GetInt32("IdPago"),
+                                idReserva = reader.GetInt32("IdReserva"),
+                                concepto = reader.GetString("Concepto"),
+                                fechaPago = reader.GetDateTime("FechaPago"),
+                                importe = reader.GetDecimal("Importe"),
+                                estado = reader.GetBoolean("Estado"),
+                                idUsuarioCreador = reader.GetInt32("IdUsuarioCreador"),
+                                idUsuarioAnulador = reader.IsDBNull(reader.GetOrdinal("IdUsuarioAnulador")) ? (int?)null : reader.GetInt32("IdUsuarioAnulador")
                             });
                         }
                     }
