@@ -43,6 +43,7 @@ namespace ProyectoInmobiliaria.Repository
                     catch (Exception ex)
                     {
                         Console.WriteLine("Error al guardar usuario: " + ex.Message);
+                        throw;
                     }
                 }
             }

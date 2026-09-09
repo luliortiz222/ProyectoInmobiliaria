@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProyectoInmobiliaria.models;
 using ProyectoInmobiliaria.Repository;
+using System.Linq;
 
 namespace ProyectoInmobiliaria.Controllers
 {
@@ -41,7 +42,6 @@ namespace ProyectoInmobiliaria.Controllers
 
             return RedirectToAction("Index");
         }
-
         // GET: Usuario/Edit/5
         [HttpGet]
         public IActionResult Edit(int id)

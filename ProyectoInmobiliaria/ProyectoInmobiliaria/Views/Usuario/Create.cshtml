@@ -1,0 +1,90 @@
+﻿@model ProyectoInmobiliaria.models.Usuario
+
+@{
+    ViewData["Title"] = "Nuevo Usuario";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2 class="mb-4">
+    <i class="bi bi-person-plus-fill"></i> Nuevo Usuario
+</h2>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+
+        <form action="/Usuario/Create" method="post">
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Nombre</label>
+                    <input type="text"
+                           name="Nombre"
+                           class="form-control"
+                           placeholder="Ingrese el nombre"
+                           required />
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Apellido</label>
+                    <input type="text"
+                           name="Apellido"
+                           class="form-control"
+                           placeholder="Ingrese el apellido"
+                           required />
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email"
+                           name="Email"
+                           class="form-control"
+                           placeholder="ejemplo@gmail.com"
+                           required />
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Contraseña</label>
+                    <input type="password"
+                           name="Password"
+                           class="form-control"
+                           placeholder="Ingrese la contraseña"
+                           required />
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Rol</label>
+                    <select name="Rol" class="form-select" required>
+                        <option value="">Seleccione un rol</option>
+                        <option value="Administrador">Administrador</option>
+                        <option value="Empleado">Empleado</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Avatar</label>
+                    <input type="text"
+                           name="Avatar"
+                           class="form-control"
+                           placeholder="URL de la imagen" />
+                </div>
+
+            </div>
+
+            <div class="mt-3">
+
+                <button type="submit" class="btn btn-primary">
+                    Guardar
+                </button>
+
+                <a href="/Usuario/Index"
+                   class="btn btn-secondary">
+                    Volver
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+</div>

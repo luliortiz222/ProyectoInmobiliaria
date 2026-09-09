@@ -1,0 +1,72 @@
+﻿@model ProyectoInmobiliaria.models.Usuario
+
+@{
+    ViewData["Title"] = "Eliminar Usuario";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2 class="mb-4">
+    <i class="bi bi-trash-fill"></i> Eliminar Usuario
+</h2>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+
+        <div class="alert alert-danger">
+            <strong>¿Está seguro de que desea eliminar este usuario?</strong>
+            <br />
+            Esta acción no se puede deshacer.
+        </div>
+
+        <dl class="row">
+
+            <dt class="col-sm-3">
+                ID
+            </dt>
+            <dd class="col-sm-9">
+                @Model.IdUsuario
+            </dd>
+
+            <dt class="col-sm-3">
+                Nombre Completo
+            </dt>
+            <dd class="col-sm-9">
+                @Model.Apellido, @Model.Nombre
+            </dd>
+
+            <dt class="col-sm-3">
+                Email
+            </dt>
+            <dd class="col-sm-9">
+                @Model.Email
+            </dd>
+
+            <dt class="col-sm-3">
+                Rol
+            </dt>
+            <dd class="col-sm-9">
+                @Model.Rol
+            </dd>
+
+        </dl>
+
+        <form asp-action="Delete" method="post">
+
+            <input type="hidden"
+                   name="id"
+                   value="@Model.IdUsuario" />
+
+            <button type="submit" class="btn btn-danger">
+                Sí, eliminar
+            </button>
+
+            <a asp-action="Index"
+               href="/Usuario/Index"
+               class="btn btn-secondary">
+                Cancelar
+            </a>
+
+        </form>
+
+    </div>
+</div>
