@@ -20,6 +20,8 @@ namespace ProyectoInmobiliaria.Controllers
             var pagos = _pagoRepository.ObtenerTodos();
             return View(pagos);
         }
+
+
         [HttpGet]
         public IActionResult PorReserva(int id)
         {
@@ -31,7 +33,7 @@ namespace ProyectoInmobiliaria.Controllers
 
         //crear pago
         [HttpGet]
-        public IActionResult Crear(int id)
+        public IActionResult Create(int id)
         {
             var pago = new Pago()
             { idReserva = id,
