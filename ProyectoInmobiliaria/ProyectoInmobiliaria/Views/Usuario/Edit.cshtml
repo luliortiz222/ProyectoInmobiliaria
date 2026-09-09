@@ -5,90 +5,72 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2 class="mb-4">
-    <i class="bi bi-pencil-square"></i> Editar Usuario
-</h2>
+<h2 class="mb-4">Editar Usuario</h2>
 
 <div class="card shadow-sm">
     <div class="card-body">
 
-        <form asp-action="Edit" method="post">
+        <form action="/Usuario/Edit" method="post">
 
-            <input type="hidden" asp-for="IdUsuario" />
-
-            <div asp-validation-summary="ModelOnly"
-                 class="text-danger mb-3"></div>
+            <input type="hidden" name="IdUsuario" value="@Model.IdUsuario" />
 
             <div class="row">
 
                 <div class="col-md-6 mb-3">
-                    <label asp-for="Nombre" class="form-label">
-                        Nombre
-                    </label>
-
-                    <input asp-for="Nombre" class="form-control" />
-
-                    <span asp-validation-for="Nombre"
-                          class="text-danger"></span>
+                    <label class="form-label">Nombre</label>
+                    <input type="text"
+                           name="Nombre"
+                           class="form-control"
+                           value="@Model.Nombre" />
                 </div>
 
                 <div class="col-md-6 mb-3">
-                    <label asp-for="Apellido" class="form-label">
-                        Apellido
-                    </label>
-
-                    <input asp-for="Apellido" class="form-control" />
-
-                    <span asp-validation-for="Apellido"
-                          class="text-danger"></span>
+                    <label class="form-label">Apellido</label>
+                    <input type="text"
+                           name="Apellido"
+                           class="form-control"
+                           value="@Model.Apellido" />
                 </div>
 
                 <div class="col-md-6 mb-3">
-                    <label asp-for="Email" class="form-label">
-                        Email
-                    </label>
-
-                    <input asp-for="Email"
-                           type="email"
-                           class="form-control" />
-
-                    <span asp-validation-for="Email"
-                          class="text-danger"></span>
+                    <label class="form-label">Email</label>
+                    <input type="email"
+                           name="Email"
+                           class="form-control"
+                           value="@Model.Email" />
                 </div>
 
                 <div class="col-md-6 mb-3">
-                    <label asp-for="Password" class="form-label">
-                        Contraseña
-                    </label>
-
-                    <input asp-for="Password"
-                           type="password"
-                           class="form-control" />
-
-                    <span asp-validation-for="Password"
-                          class="text-danger"></span>
+                    <label class="form-label">Contraseña</label>
+                    <input type="text"
+                           name="Password"
+                           class="form-control"
+                           value="@Model.Password" />
                 </div>
 
                 <div class="col-md-6 mb-3">
-                    <label asp-for="Rol" class="form-label">
-                        Rol
-                    </label>
+                    <label class="form-label">Rol</label>
 
-                    <select asp-for="Rol" class="form-select">
-                        <option value="Administrador">Administrador</option>
-                        <option value="Empleado">Empleado</option>
+                    <select name="Rol" class="form-select">
+                        @if (Model.Rol == "Administrador")
+                        {
+                            <option value="Administrador" selected>Administrador</option>
+                            <option value="Empleado">Empleado</option>
+                        }
+                        else
+                        {
+                            <option value="Administrador">Administrador</option>
+                            <option value="Empleado" selected>Empleado</option>
+                        }
                     </select>
-
-                    <span asp-validation-for="Rol"
-                          class="text-danger"></span>
                 </div>
 
                 <div class="col-md-6 mb-3">
-                    <label asp-for="Avatar" class="form-label">
-                        Avatar
-                    </label>
-
-                    <input asp-for="Avatar" class="form-control" />
+                    <label class="form-label">Avatar</label>
+                    <input type="text"
+                           name="Avatar"
+                           class="form-control"
+                           value="@Model.Avatar" />
                 </div>
 
             </div>
@@ -99,9 +81,7 @@
                     Guardar Cambios
                 </button>
 
-                <a asp-action="Index"
-                   href="/Usuario/Index"
-                   class="btn btn-secondary">
+                <a href="/Usuario/Index" class="btn btn-secondary">
                     Volver
                 </a>
 
