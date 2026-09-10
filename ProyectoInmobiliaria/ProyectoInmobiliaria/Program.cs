@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Authentication.Cookies; 
 // librería de MySQL
 using MySql.Data.MySqlClient;
 using ProyectoInmobiliaria.Controllers;
@@ -23,6 +24,14 @@ namespace ProyectoInmobiliaria
                 { 
                     conexion.Open();
                     Console.WriteLine("¡Conexión a MySQL establecida con éxito!");
+
+                    // Configuración de la Autenticación
+                    builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                        .AddCookie(options =>
+                        {
+                            options.LoginPath = "/Usuario/Login"; // A donde te manda si no estás logueado
+                            options.AccessDeniedPath = "/Home/Index"; // A donde te manda si no tienes permiso
+                        });
 
                     builder.Services.AddSingleton(new PropietarioRepository(cadenaConexion));
                     builder.Services.AddSingleton(new InquilinoRepository(cadenaConexion));
@@ -49,9 +58,11 @@ namespace ProyectoInmobiliaria
                     app.UseStaticFiles();
                     app.UseSession();
                     app.UseCors("PermitirTodo");
+                    app.UseAuthentication(); // ESTA LÍNEA ES NUEVA (Debe ir antes que Authorization)
+                    app.UseAuthorization();
                     app.MapControllerRoute(
                         name: "default",
-                        pattern: "{controller=Propietarios}/{action=Index}/{id?}");
+                        pattern: "{controller=Usuario}/{action=Login}/{id?}");
                     app.Run();
                 }
                 catch (Exception ex)

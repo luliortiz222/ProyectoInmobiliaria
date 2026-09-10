@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Nuevo Usuario";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.OcultarNav = true;
 }
 
 <h2 class="mb-4">Nuevo Usuario</h2>
@@ -105,9 +106,9 @@
                     Guardar
                 </button>
 
-                <a href="/Usuario/Index"
+                <a href="/Usuario/Login"
                    class="btn btn-secondary">
-                    Volver
+                    Iniciar Sesión
                 </a>
 
             </div>

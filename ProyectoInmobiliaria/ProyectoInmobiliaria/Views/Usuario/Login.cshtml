@@ -1,0 +1,46 @@
+﻿@{
+    ViewData["Title"] = "Iniciar Sesión";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.OcultarNav = true;
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white text-center py-3">
+                    <h4 class="mb-0"><i class="bi bi-building"></i> Inmobiliaria</h4>
+                </div>
+                <div class="card-body p-4">
+
+                    @if (ViewBag.Error != null)
+                    {
+                        <div class="alert alert-danger text-center">
+                            @ViewBag.Error
+                        </div>
+                    }
+
+                    <form action="/Usuario/Login" method="post">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Correo Electrónico</label>
+                            <input type="email" name="email" class="form-control" placeholder="ejemplo@inmobiliaria.com" required />
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Contraseña</label>
+                            <input type="password" name="password" class="form-control" placeholder="******" required />
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">Ingresar</button>
+                            <a href="/Usuario/Create" class="btn btn-outline-secondary">Registrarse</a>
+                        </div>
+
+                        
+                    </form>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

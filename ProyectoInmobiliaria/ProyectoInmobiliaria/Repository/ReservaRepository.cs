@@ -140,7 +140,7 @@ namespace ProyectoInmobiliaria.Repository
                 string sql = @"INSERT INTO Reserva
                                (IdInquilino, IdInmueble, MontoPorDia, FechaDesde, FechaHasta, IdUsuarioCreador)
                                VALUES
-                               (@idInquilino, @idInmueble, @montoPorDia, @fechaDesde, @fechaHasta,1)";
+                               (@idInquilino, @idInmueble, @montoPorDia, @fechaDesde, @fechaHasta, @idUsuarioCreador)";
 
                 try
                 {
@@ -151,6 +151,7 @@ namespace ProyectoInmobiliaria.Repository
                         comando.Parameters.AddWithValue("@montoPorDia", reserva.MontoPorDia);
                         comando.Parameters.AddWithValue("@fechaDesde", reserva.FechaDesde);
                         comando.Parameters.AddWithValue("@fechaHasta", reserva.FechaHasta);
+                        comando.Parameters.AddWithValue("@idUsuarioCreador", reserva.IdUsuarioCreador);
                         
                         comando.ExecuteNonQuery();
                     }

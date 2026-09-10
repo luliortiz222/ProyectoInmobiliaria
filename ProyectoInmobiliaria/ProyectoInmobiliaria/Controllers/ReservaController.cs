@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProyectoInmobiliaria.models;
 using ProyectoInmobiliaria.Repository;
+using System.Security.Claims;
 
 namespace ProyectoInmobiliaria.Controllers
 {
@@ -39,6 +40,10 @@ namespace ProyectoInmobiliaria.Controllers
         [HttpPost]
         public IActionResult Create(Reserva reserva)
         {
+            string idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // Lo convertimos a número y se lo asignamos a la reserva
+            reserva.IdUsuarioCreador = int.Parse(idString);
             bool guardado = _reservaRepository.Guardar(reserva);
 
             if (!guardado)

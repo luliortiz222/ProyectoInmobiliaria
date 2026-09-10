@@ -5,6 +5,12 @@ using System.Linq;
 using System.IO;
 using System.Collections.Generic;
 
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Security.Claims;
+
+
+
 namespace ProyectoInmobiliaria.Controllers
 {
     public class UsuarioController : Controller
@@ -23,6 +29,70 @@ namespace ProyectoInmobiliaria.Controllers
 
             return View(usuarios);
         }
+
+
+
+        // GET: /Usuarios/Login
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        // POST: /Usuarios/Login
+        [HttpPost]
+        public async Task<IActionResult> Login(string email, string password)
+        {
+            // 1. Buscamos al usuario por su email usando el repositorio que armamos antes
+            var usuario = _usuarioRepository.ObtenerPorEmail(email);
+
+            // 2. Verificamos si existe y si la clave coincide
+            if (usuario == null || usuario.Password != password)
+            {
+                ViewBag.Error = "Email o contraseña incorrectos.";
+                return View();
+            }
+
+            // 3. Creamos la "Credencial" (Claims)
+            var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.NameIdentifier, usuario.IdUsuario.ToString()),
+                    new Claim(ClaimTypes.Name, $"{usuario.Nombre} {usuario.Apellido}"),
+                    new Claim(ClaimTypes.Email, usuario.Email),
+                    new Claim(ClaimTypes.Role, usuario.Rol), // "Administrador" o "Empleado"
+                    new Claim("Avatar", usuario.Avatar ?? "")
+                };
+
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+            // 4. Iniciamos sesión oficialmente (crea la cookie)
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(claimsIdentity));
+
+
+            await HttpContext.SignInAsync(
+            CookieAuthenticationDefaults.AuthenticationScheme,
+            new ClaimsPrincipal(claimsIdentity));
+
+            // AGREGA ESTA LÍNEA:
+            TempData["MensajeBienvenida"] = $"¡Hola {usuario.Nombre}! Has iniciado sesión correctamente.";
+
+            // 5. Lo mandamos a la página principal
+            return RedirectToAction("Index", "Inmueble");
+        }
+
+        // GET: /Usuarios/Logout
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Login", "Usuario");
+        }
+
+
+
+
+
 
         // GET: Usuario/Create
         [HttpGet]
@@ -62,7 +132,7 @@ namespace ProyectoInmobiliaria.Controllers
 
             _usuarioRepository.Guardar(usuario);
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Login");
         }
         // GET: Usuario/Edit/5
         [HttpGet]

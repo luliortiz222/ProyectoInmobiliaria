@@ -9,5 +9,6 @@ namespace ProyectoInmobiliaria.models
         public decimal MontoPorDia { get; set; }
         public DateTime FechaDesde { get; set; }
         public DateTime FechaHasta { get; set; }
+        public int IdUsuarioCreador { get; set; }
     }
 }
