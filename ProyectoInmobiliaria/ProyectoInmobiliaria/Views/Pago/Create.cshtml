@@ -12,7 +12,7 @@
         <div class="col-md-6 offset-md-3">
             <div class="card shadow-sm border-success">
                 <div class="card-body">
-                    <form action="/Pagos/Create" method="post">
+                    <form action="/Pago/Create" method="post">
 
                         <!-- ID Oculto de la Reserva -->
                         <input type="hidden" name="IdReserva" value="@Model.idReserva" />
@@ -38,7 +38,7 @@
                         </div>
 
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <a href="/Pagos/PorReserva/@Model.idReserva" class="btn btn-secondary">Cancelar</a>
+                            <a href="/Pago/PorReserva/@Model.idReserva" class="btn btn-secondary">Cancelar</a>
                             <button type="submit" class="btn btn-success">Guardar Pago</button>
                         </div>
                     </form>
