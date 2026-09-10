@@ -46,6 +46,7 @@ namespace ProyectoInmobiliaria
                     });
 
                     var app = builder.Build();
+                    app.UseStaticFiles();
                     app.UseSession();
                     app.UseCors("PermitirTodo");
                     app.MapControllerRoute(

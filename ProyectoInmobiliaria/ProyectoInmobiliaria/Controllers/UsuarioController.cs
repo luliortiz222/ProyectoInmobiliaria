@@ -2,6 +2,8 @@
 using ProyectoInmobiliaria.models;
 using ProyectoInmobiliaria.Repository;
 using System.Linq;
+using System.IO;
+using System.Collections.Generic;
 
 namespace ProyectoInmobiliaria.Controllers
 {
@@ -26,6 +28,26 @@ namespace ProyectoInmobiliaria.Controllers
         [HttpGet]
         public IActionResult Create()
         {
+            string carpetaAvatares = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "wwwroot",
+                "avatars"
+            );
+
+            var avatares = new List<string>();
+
+            if (Directory.Exists(carpetaAvatares))
+            {
+                string[] archivos = Directory.GetFiles(carpetaAvatares);
+
+                foreach (string archivo in archivos)
+                {
+                    avatares.Add(Path.GetFileName(archivo));
+                }
+            }
+
+            ViewBag.Avatares = avatares;
+
             return View();
         }
 
@@ -52,6 +74,26 @@ namespace ProyectoInmobiliaria.Controllers
             {
                 return NotFound();
             }
+
+            string carpetaAvatares = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "wwwroot",
+                "avatars"
+            );
+
+            var avatares = new List<string>();
+
+            if (Directory.Exists(carpetaAvatares))
+            {
+                string[] archivos = Directory.GetFiles(carpetaAvatares);
+
+                foreach (string archivo in archivos)
+                {
+                    avatares.Add(Path.GetFileName(archivo));
+                }
+            }
+
+            ViewBag.Avatares = avatares;
 
             return View(usuario);
         }

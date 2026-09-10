@@ -5,9 +5,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2 class="mb-4">
-    <i class="bi bi-person-plus-fill"></i> Nuevo Usuario
-</h2>
+<h2 class="mb-4">Nuevo Usuario</h2>
 
 <div class="card shadow-sm">
     <div class="card-body">
@@ -45,7 +43,7 @@
 
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Contraseña</label>
-                    <input type="password"
+                    <input type="text"
                            name="Password"
                            class="form-control"
                            placeholder="Ingrese la contraseña"
@@ -54,6 +52,7 @@
 
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Rol</label>
+
                     <select name="Rol" class="form-select" required>
                         <option value="">Seleccione un rol</option>
                         <option value="Administrador">Administrador</option>
@@ -61,12 +60,41 @@
                     </select>
                 </div>
 
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">Avatar</label>
-                    <input type="text"
-                           name="Avatar"
-                           class="form-control"
-                           placeholder="URL de la imagen" />
+            </div>
+
+            <div class="mb-4 mt-3">
+
+                <label class="form-label fw-bold">
+                    Seleccione un avatar
+                </label>
+
+                <div class="row g-3">
+
+                    @foreach (string avatar in ViewBag.Avatares)
+                    {
+                        string rutaAvatar = "/avatars/" + avatar;
+
+                        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+
+                            <label class="avatar-option w-100">
+
+                                <input type="radio"
+                                       name="Avatar"
+                                       value="@rutaAvatar"/>
+
+                                <div class="avatar-card">
+
+                                    <img src="@rutaAvatar"
+                                         alt="@avatar"
+                                         class="img-fluid rounded-circle" />
+
+                                </div>
+
+                            </label>
+
+                        </div>
+                    }
+
                 </div>
 
             </div>
@@ -88,3 +116,39 @@
 
     </div>
 </div>
+
+<style>
+
+    .avatar-option {
+        cursor: pointer;
+    }
+
+        .avatar-option input {
+            display: none;
+        }
+
+    .avatar-card {
+        padding: 10px;
+        border: 3px solid transparent;
+        border-radius: 50%;
+        transition: 0.2s;
+        text-align: center;
+    }
+
+        .avatar-card img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+        }
+
+    .avatar-option:hover .avatar-card {
+        transform: scale(1.05);
+    }
+
+    .avatar-option input:checked + .avatar-card {
+        border-color: #0d6efd;
+        background-color: #e7f1ff;
+        box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+    }
+
+</style>
