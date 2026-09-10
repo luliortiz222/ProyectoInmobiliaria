@@ -17,7 +17,7 @@ namespace ProyectoInmobiliaria.Repository
 
         public void GuardarPago(Pago pago)
         {
-            string query = "INSERT INTO Pago (IdReserva, Concepto, FechaPago, Importe, Estado, IdUsuarioCreador) VALUES (@idReserva, @concepto, @fechaPago, @importe, @estado, @idUsuarioCreador)";
+            string query = "INSERT INTO Pago (IdReserva, Concepto, FechaPago, Importe, Estado, IdUsuarioCreador) VALUES (@idReserva, @concepto, @fechaPago, @importe, 1, @idUsuarioCreador)";
             using (MySqlConnection conexion = new MySqlConnection(cadenaDeConexion))
             {
                 using (MySqlCommand comando = new MySqlCommand(query, conexion))
@@ -26,7 +26,7 @@ namespace ProyectoInmobiliaria.Repository
                     comando.Parameters.AddWithValue("@Concepto", pago.concepto);
                     comando.Parameters.AddWithValue("@FechaPago", pago.fechaPago);
                     comando.Parameters.AddWithValue("@Importe", pago.importe);
-                    comando.Parameters.AddWithValue("@Estado", pago.estado);
+                    //comando.Parameters.AddWithValue("@Estado", pago.estado);
                     comando.Parameters.AddWithValue("@IdUsuarioCreador", pago.idUsuarioCreador);
 
                     conexion.Open();

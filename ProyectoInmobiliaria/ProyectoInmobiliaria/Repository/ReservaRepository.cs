@@ -138,19 +138,25 @@ namespace ProyectoInmobiliaria.Repository
                 conexion.Open();
 
                 string sql = @"INSERT INTO Reserva
-                               (IdInquilino, IdInmueble, MontoPorDia, FechaDesde, FechaHasta)
+                               (IdInquilino, IdInmueble, MontoPorDia, FechaDesde, FechaHasta, IdUsuarioCreador)
                                VALUES
-                               (@idInquilino, @idInmueble, @montoPorDia, @fechaDesde, @fechaHasta)";
+                               (@idInquilino, @idInmueble, @montoPorDia, @fechaDesde, @fechaHasta,1)";
 
-                using (MySqlCommand comando = new MySqlCommand(sql, conexion))
+                try
                 {
-                    comando.Parameters.AddWithValue("@idInquilino", reserva.IdInquilino);
-                    comando.Parameters.AddWithValue("@idInmueble", reserva.IdInmueble);
-                    comando.Parameters.AddWithValue("@montoPorDia", reserva.MontoPorDia);
-                    comando.Parameters.AddWithValue("@fechaDesde", reserva.FechaDesde);
-                    comando.Parameters.AddWithValue("@fechaHasta", reserva.FechaHasta);
-
-                    comando.ExecuteNonQuery();
+                    using (MySqlCommand comando = new MySqlCommand(sql, conexion))
+                    {
+                        comando.Parameters.AddWithValue("@idInquilino", reserva.IdInquilino);
+                        comando.Parameters.AddWithValue("@idInmueble", reserva.IdInmueble);
+                        comando.Parameters.AddWithValue("@montoPorDia", reserva.MontoPorDia);
+                        comando.Parameters.AddWithValue("@fechaDesde", reserva.FechaDesde);
+                        comando.Parameters.AddWithValue("@fechaHasta", reserva.FechaHasta);
+                        
+                        comando.ExecuteNonQuery();
+                    }
+                }catch(Exception ex)
+                {
+                    Console.WriteLine("Error: " + ex.Message);
                 }
             }
 
