@@ -57,6 +57,13 @@
                                 }
                             </td>
                             <td class="align-middle text-center">
+                                @if (User.IsInRole("Administrador"))
+                                {
+                                    <a href="/Pago/Details/@item.idPago" class="btn btn-sm btn-outline-primary"
+                                       title="Ver detalles">
+                                        Detalles
+                                    </a>
+                                }
                                 @if (item.estado)
                                 {
                                     <a href="/Pago/Edit/@item.idPago" class="btn btn-sm btn-outline-warning" title="Editar Concepto">
@@ -74,6 +81,7 @@
                                 {
                                     <span class="text-muted small"><i class="bi bi-lock-fill"></i> Bloqueado</span>
                                 }
+
                             </td>
                         </tr>
                     }

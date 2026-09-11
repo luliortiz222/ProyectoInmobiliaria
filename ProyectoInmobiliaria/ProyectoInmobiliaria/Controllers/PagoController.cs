@@ -34,6 +34,17 @@ namespace ProyectoInmobiliaria.Controllers
             return View(lista);
         }
 
+        [HttpGet]
+        public IActionResult Details(int id)
+        {
+            var pago = _pagoRepository.ObtenerPorId(id);
+
+            if (pago == null)
+                return NotFound();
+
+            return View(pago);
+        }
+
 
         //crear pago
         [HttpGet]
@@ -99,10 +110,11 @@ namespace ProyectoInmobiliaria.Controllers
         [Authorize(Roles = "Administrador")]
         public IActionResult AnularConfirmado(int IdPago, int IdReserva)
         {
-            // SIMULACIÓN: El usuario ID 1 es quien anula el pago
-            int idUsuarioAnulador = 1;
+            string idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            int idUsuarioAnulador = int.Parse(idString);
 
             _pagoRepository.AnularPago(IdPago, idUsuarioAnulador);
+
             return RedirectToAction("PorReserva", new { id = IdReserva });
         }
 

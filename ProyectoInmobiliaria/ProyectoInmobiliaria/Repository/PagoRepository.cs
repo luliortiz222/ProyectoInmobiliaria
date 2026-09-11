@@ -133,13 +133,17 @@ namespace ProyectoInmobiliaria.Repository
         public Pago ObtenerPorId(int idPago)
         {
             Pago pago = null;
+
             string query = "SELECT * FROM Pago WHERE IdPago = @IdPago";
+
             using (MySqlConnection conexion = new MySqlConnection(cadenaDeConexion))
             {
                 using (MySqlCommand comando = new MySqlCommand(query, conexion))
                 {
                     comando.Parameters.AddWithValue("@IdPago", idPago);
+
                     conexion.Open();
+
                     using (MySqlDataReader reader = comando.ExecuteReader())
                     {
                         if (reader.Read())
@@ -151,12 +155,20 @@ namespace ProyectoInmobiliaria.Repository
                                 concepto = reader.GetString("Concepto"),
                                 fechaPago = reader.GetDateTime("FechaPago"),
                                 importe = reader.GetDecimal("Importe"),
-                                estado = reader.GetBoolean("Estado")
+                                estado = reader.GetBoolean("Estado"),
+
+                                idUsuarioCreador = reader.GetInt32("IdUsuarioCreador"),
+
+                                idUsuarioAnulador = reader.IsDBNull(
+                                    reader.GetOrdinal("IdUsuarioAnulador"))
+                                    ? (int?)null
+                                    : reader.GetInt32("IdUsuarioAnulador")
                             };
                         }
                     }
                 }
             }
+
             return pago;
         }
     }
