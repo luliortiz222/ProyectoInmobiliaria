@@ -28,6 +28,97 @@ namespace ProyectoInmobiliaria.Controllers
             return View(inmuebles);
         }
 
+        [HttpGet]
+        public IActionResult PorEstado(bool? estado)
+        {
+            List<Inmueble> inmuebles;
+
+            if (estado == null)
+            {
+                inmuebles = _inmuebleRepository.ObtenerTodos();
+            }
+            else
+            {
+                inmuebles = _inmuebleRepository.ObtenerPorEstado(estado.Value);
+            }
+
+            ViewBag.Estado = estado;
+
+            return View(inmuebles);
+        }
+
+        [HttpGet]
+        public IActionResult PorPropietario(int? idPropietario)
+        {
+            ViewBag.Propietarios = _propietarioRepo.obtenerTodos();
+
+            if (idPropietario == null)
+            {
+                return View(new List<Inmueble>());
+            }
+
+            var inmuebles = _inmuebleRepository.ObtenerPorPropietario(idPropietario.Value);
+
+            ViewBag.IdPropietario = idPropietario.Value;
+
+            return View(inmuebles);
+        }
+
+        [HttpGet]
+        public IActionResult MasReservados()
+        {
+            var inmuebles = _inmuebleRepository.ObtenerMasReservados();
+
+            return View(inmuebles);
+        }
+
+        [HttpGet]
+        public IActionResult SinReservas(int dias)
+        {
+            if (dias <= 0)
+            {
+                dias = 30;
+            }
+
+            var inmuebles = _inmuebleRepository.ObtenerSinReservas(dias);
+
+            ViewBag.Dias = dias;
+
+            return View(inmuebles);
+        }
+
+        [HttpGet]
+        public IActionResult DisponiblesEntreFechas(
+    DateTime? fechaDesde,
+    DateTime? fechaHasta)
+        {
+            if (!fechaDesde.HasValue || !fechaHasta.HasValue)
+            {
+                ViewBag.FechaDesde = "";
+                ViewBag.FechaHasta = "";
+
+                return View(new List<Inmueble>());
+            }
+
+            if (fechaDesde.Value >= fechaHasta.Value)
+            {
+                ViewBag.Mensaje = "La fecha desde debe ser anterior a la fecha hasta.";
+                ViewBag.FechaDesde = fechaDesde.Value.ToString("yyyy-MM-dd");
+                ViewBag.FechaHasta = fechaHasta.Value.ToString("yyyy-MM-dd");
+
+                return View(new List<Inmueble>());
+            }
+
+            var inmuebles = _inmuebleRepository.ObtenerDisponiblesEntreFechas(
+                fechaDesde.Value,
+                fechaHasta.Value);
+
+            ViewBag.FechaDesde = fechaDesde.Value.ToString("yyyy-MM-dd");
+            ViewBag.FechaHasta = fechaHasta.Value.ToString("yyyy-MM-dd");
+
+            return View(inmuebles);
+        }
+
         // GET: /Inmueble/Create
         [HttpGet]
         public IActionResult Create()

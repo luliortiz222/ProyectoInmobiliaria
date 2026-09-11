@@ -13,6 +13,7 @@ namespace ProyectoInmobiliaria.models
         public bool Estado { get; set; }
         public int IdPropietario { get; set; }
         public int IdTipoInmueble { get; set; }
+        public int CantidadReservas { get; set; }
 
         public Propietario Dueño { get; set; }
         public TipoInmueble Tipo { get; set; }

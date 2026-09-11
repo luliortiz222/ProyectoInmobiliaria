@@ -1,0 +1,196 @@
+﻿@model List<ProyectoInmobiliaria.models.Reserva>
+
+@{
+    ViewData["Title"] = "Reservas que terminan";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+
+    <!-- Encabezado -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="fw-bold mb-1">
+                <i class="bi bi-calendar-event-fill text-warning"></i>
+                Reservas que terminan
+            </h2>
+
+            <p class="text-muted mb-0">
+                Consultá las reservas que finalizan dentro del plazo seleccionado.
+            </p>
+        </div>
+
+        <a href="/Reservas/Index"
+           class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i>
+            Volver
+        </a>
+
+    </div>
+
+
+    <!-- Filtro -->
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                <i class="bi bi-funnel-fill"></i>
+                Seleccionar plazo
+            </h5>
+        </div>
+
+        <div class="card-body">
+
+            <form asp-action="TerminanEn" method="get">
+
+                <div class="row g-3 align-items-end">
+
+                    <div class="col-md-8">
+
+                        <label class="form-label fw-semibold">
+                            ¿Dentro de cuántos días terminan?
+                        </label>
+
+                        <input type="number"
+                               name="dias"
+                               class="form-control"
+                               min="0"
+                               value="@ViewBag.Dias"
+                               required />
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <button type="submit"
+                                class="btn btn-primary w-100">
+                            <i class="bi bi-search"></i>
+                            Buscar
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+
+    <!-- Resultados -->
+    <div class="card shadow-sm border-0">
+
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+
+            <h5 class="mb-0 fw-semibold">
+                Resultados
+            </h5>
+
+            <span class="badge bg-primary rounded-pill">
+                @Model.Count reserva(s)
+            </span>
+
+        </div>
+
+        <div class="card-body p-0">
+
+            @if (Model != null && Model.Count > 0)
+            {
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle mb-0">
+
+                        <thead class="table-dark">
+
+                            <tr>
+                                <th>ID</th>
+                                <th>Inquilino</th>
+                                <th>Inmueble</th>
+                                <th>Monto / Día</th>
+                                <th>Fecha Desde</th>
+                                <th>Fecha Hasta</th>
+                                <th class="text-center">Estado</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var reserva in Model)
+                            {
+                                <tr>
+
+                                    <td>
+                                        <strong>
+                                            #@reserva.IdReserva
+                                        </strong>
+                                    </td>
+
+                                    <td>
+                                        <i class="bi bi-person-fill text-secondary"></i>
+                                        Inquilino #@reserva.IdInquilino
+                                    </td>
+
+                                    <td>
+                                        <i class="bi bi-house-fill text-secondary"></i>
+                                        Inmueble #@reserva.IdInmueble
+                                    </td>
+
+                                    <td>
+                                        <span class="fw-semibold text-success">
+                                            $ @reserva.MontoPorDia.ToString("N2")
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        @reserva.FechaDesde.ToString("dd/MM/yyyy")
+                                    </td>
+
+                                    <td>
+                                        <span class="fw-semibold text-warning">
+                                            @reserva.FechaHasta.ToString("dd/MM/yyyy")
+                                        </span>
+                                    </td>
+
+                                    <td class="text-center">
+
+                                        <span class="badge bg-warning text-dark px-3 py-2">
+                                            <i class="bi bi-clock-fill"></i>
+                                            Termina en @ViewBag.Dias día(s)
+                                        </span>
+
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            }
+            else
+            {
+                <div class="p-5 text-center">
+
+                    <i class="bi bi-calendar-x display-4 text-muted"></i>
+
+                    <h5 class="mt-3">
+                        No se encontraron reservas
+                    </h5>
+
+                    <p class="text-muted mb-0">
+                        No hay reservas que terminen dentro de los próximos
+                        @ViewBag.Dias día(s).
+                    </p>
+
+                </div>
+            }
+
+        </div>
+    </div>
+
+</div>

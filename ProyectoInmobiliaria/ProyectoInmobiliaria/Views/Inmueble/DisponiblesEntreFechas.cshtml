@@ -1,0 +1,214 @@
+﻿@model List<ProyectoInmobiliaria.models.Inmueble>
+
+@{
+    ViewData["Title"] = "Inmuebles disponibles entre fechas";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+
+    <!-- Encabezado -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="fw-bold mb-1">
+                <i class="bi bi-calendar2-check-fill text-success"></i>
+                Inmuebles disponibles entre fechas
+            </h2>
+
+            <p class="text-muted mb-0">
+                Consultá qué inmuebles están disponibles para un período determinado.
+            </p>
+        </div>
+
+        <a href="/Inmueble/Index"
+           class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i>
+            Volver
+        </a>
+
+    </div>
+
+
+    <!-- Filtro por fechas -->
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                <i class="bi bi-calendar-range"></i>
+                Seleccionar fechas
+            </h5>
+        </div>
+
+        <div class="card-body">
+
+            <form asp-action="DisponiblesEntreFechas" method="get">
+
+                <div class="row g-3 align-items-end">
+
+                    <div class="col-md-4">
+
+                        <label class="form-label fw-semibold">
+                            Fecha desde
+                        </label>
+
+                        <input type="date"
+                               name="fechaDesde"
+                               class="form-control"
+                               value="@ViewBag.FechaDesde"
+                               required />
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <label class="form-label fw-semibold">
+                            Fecha hasta
+                        </label>
+
+                        <input type="date"
+                               name="fechaHasta"
+                               class="form-control"
+                               value="@ViewBag.FechaHasta"
+                               required />
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <button type="submit"
+                                class="btn btn-primary w-100">
+                            <i class="bi bi-search"></i>
+                            Buscar inmuebles
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+
+    @if (ViewBag.Mensaje != null)
+    {
+        <div class="alert alert-warning shadow-sm">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            @ViewBag.Mensaje
+        </div>
+    }
+
+
+    <!-- Resultados -->
+    <div class="card shadow-sm border-0">
+
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+
+            <h5 class="mb-0 fw-semibold">
+                Resultados
+            </h5>
+
+            <span class="badge bg-success rounded-pill">
+                @Model.Count inmueble(s)
+            </span>
+
+        </div>
+
+        <div class="card-body p-0">
+
+            @if (Model != null && Model.Count > 0)
+            {
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle mb-0">
+
+                        <thead class="table-dark">
+
+                            <tr>
+                                <th>Dirección</th>
+                                <th>Cupo</th>
+                                <th>Precio / Día</th>
+                                <th>Tipo</th>
+                                <th>Dueño</th>
+                                <th class="text-center">Estado</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var inmueble in Model)
+                            {
+                                <tr>
+
+                                    <td>
+                                        <strong>
+                                            <i class="bi bi-geo-alt-fill text-danger"></i>
+                                            @inmueble.Direccion
+                                        </strong>
+                                    </td>
+
+                                    <td>
+                                        <i class="bi bi-people-fill text-secondary"></i>
+                                        @inmueble.Cupo
+                                    </td>
+
+                                    <td>
+                                        <span class="fw-semibold text-success">
+                                            $ @inmueble.PrecioPorDia.ToString("N2")
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <span class="badge bg-secondary">
+                                            @(inmueble.Tipo?.Nombre ?? "Sin tipo")
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <i class="bi bi-person-fill text-secondary"></i>
+                                        @(inmueble.Dueño?.Nombre ?? "")
+                                        @(inmueble.Dueño?.Apellido ?? "")
+                                    </td>
+
+                                    <td class="text-center">
+
+                                        <span class="badge bg-success px-3 py-2">
+                                            <i class="bi bi-check-circle-fill"></i>
+                                            Disponible
+                                        </span>
+
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            }
+            else
+            {
+                <div class="p-5 text-center">
+
+                    <i class="bi bi-house-x display-4 text-muted"></i>
+
+                    <h5 class="mt-3">
+                        No se encontraron inmuebles disponibles
+                    </h5>
+
+                    <p class="text-muted mb-0">
+                        No hay inmuebles disponibles para las fechas seleccionadas.
+                    </p>
+
+                </div>
+            }
+
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,139 @@
+﻿@model List<ProyectoInmobiliaria.models.Reserva>
+
+@{
+    ViewData["Title"] = "Reservas vigentes";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+
+    <!-- Encabezado -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="fw-bold mb-1">
+                <i class="bi bi-calendar-check-fill text-success"></i>
+                Reservas vigentes
+            </h2>
+
+            <p class="text-muted mb-0">
+                Reservas de alquiler que se encuentran actualmente vigentes.
+            </p>
+        </div>
+
+        <a href="/Reservas/Index"
+           class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i>
+            Volver
+        </a>
+
+    </div>
+
+
+    <!-- Resultados -->
+    <div class="card shadow-sm border-0">
+
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+
+            <h5 class="mb-0">
+                <i class="bi bi-list-check"></i>
+                Reservas activas
+            </h5>
+
+            <span class="badge bg-light text-primary rounded-pill">
+                @Model.Count reserva(s)
+            </span>
+
+        </div>
+
+        <div class="card-body p-0">
+
+            @if (Model != null && Model.Count > 0)
+            {
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle mb-0">
+
+                        <thead class="table-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Inquilino</th>
+                                <th>Inmueble</th>
+                                <th>Monto / Día</th>
+                                <th>Fecha Desde</th>
+                                <th>Fecha Hasta</th>
+                                <th class="text-center">Estado</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var reserva in Model)
+                            {
+                                <tr>
+
+                                    <td>
+                                        <strong>#@reserva.IdReserva</strong>
+                                    </td>
+
+                                    <td>
+                                        <i class="bi bi-person-fill text-secondary"></i>
+                                        ID @reserva.IdInquilino
+                                    </td>
+
+                                    <td>
+                                        <i class="bi bi-house-fill text-secondary"></i>
+                                        ID @reserva.IdInmueble
+                                    </td>
+
+                                    <td>
+                                        <span class="fw-semibold text-success">
+                                            $ @reserva.MontoPorDia
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        @reserva.FechaDesde.ToString("dd/MM/yyyy")
+                                    </td>
+
+                                    <td>
+                                        @reserva.FechaHasta.ToString("dd/MM/yyyy")
+                                    </td>
+
+                                    <td class="text-center">
+                                        <span class="badge bg-success px-3 py-2">
+                                            <i class="bi bi-check-circle-fill"></i>
+                                            Vigente
+                                        </span>
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            }
+            else
+            {
+                <div class="p-5 text-center">
+
+                    <i class="bi bi-calendar-x display-4 text-muted"></i>
+
+                    <h5 class="mt-3">
+                        No hay reservas vigentes
+                    </h5>
+
+                    <p class="text-muted mb-0">
+                        Actualmente no existen reservas dentro de su período de vigencia.
+                    </p>
+
+                </div>
+            }
+
+        </div>
+    </div>
+
+</div>

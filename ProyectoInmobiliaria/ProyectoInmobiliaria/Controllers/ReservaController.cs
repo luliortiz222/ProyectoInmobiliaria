@@ -29,6 +29,29 @@ namespace ProyectoInmobiliaria.Controllers
         }
 
         [HttpGet]
+        public IActionResult Vigentes()
+        {
+            var reservas = _reservaRepository.ObtenerVigentes();
+
+            return View(reservas);
+        }
+
+        [HttpGet]
+        public IActionResult TerminanEn(int dias)
+        {
+            if (dias < 0)
+            {
+                dias = 7;
+            }
+
+            var reservas = _reservaRepository.ObtenerQueTerminanEnDias(dias);
+
+            ViewBag.Dias = dias;
+
+            return View(reservas);
+        }
+
+        [HttpGet]
         public IActionResult Create()
         {
             ViewBag.Inquilinos = _inquilinoRepository.ObtenerTodos();

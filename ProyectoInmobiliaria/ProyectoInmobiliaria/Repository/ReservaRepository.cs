@@ -115,6 +115,107 @@ namespace ProyectoInmobiliaria.Repository
             }
         }
 
+        public List<Reserva> ObtenerVigentes()
+        {
+            List<Reserva> reservas = new List<Reserva>();
+
+            string query = @"
+        SELECT
+            IdReserva,
+            IdInquilino,
+            IdInmueble,
+            MontoPorDia,
+            FechaDesde,
+            FechaHasta,
+            IdUsuarioCreador
+        FROM Reserva
+        WHERE FechaDesde <= CURDATE()
+          AND FechaHasta >= CURDATE()
+        ORDER BY FechaDesde ASC";
+
+            using (MySqlConnection conexion = new MySqlConnection(connectionString))
+            {
+                conexion.Open();
+
+                using (MySqlCommand comando = new MySqlCommand(query, conexion))
+                {
+                    using (MySqlDataReader reader = comando.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            Reserva reserva = new Reserva
+                            {
+                                IdReserva = reader.GetInt32("IdReserva"),
+                                IdInquilino = reader.GetInt32("IdInquilino"),
+                                IdInmueble = reader.GetInt32("IdInmueble"),
+                                MontoPorDia = reader.GetDecimal("MontoPorDia"),
+                                FechaDesde = reader.GetDateTime("FechaDesde"),
+                                FechaHasta = reader.GetDateTime("FechaHasta"),
+                                IdUsuarioCreador = reader.IsDBNull(reader.GetOrdinal("IdUsuarioCreador"))
+                                ? 0
+                                : reader.GetInt32("IdUsuarioCreador")
+                            };
+
+                            reservas.Add(reserva);
+                        }
+                    }
+                }
+            }
+
+            return reservas;
+        }
+
+        public List<Reserva> ObtenerQueTerminanEnDias(int dias)
+        {
+            List<Reserva> reservas = new List<Reserva>();
+
+            DateTime fechaObjetivo = DateTime.Today.AddDays(dias);
+
+            string query = @"
+        SELECT
+            IdReserva,
+            IdInquilino,
+            IdInmueble,
+            MontoPorDia,
+            FechaDesde,
+            FechaHasta,
+            IdUsuarioCreador
+        FROM Reserva
+        WHERE FechaHasta = @FechaObjetivo
+        ORDER BY FechaHasta ASC";
+
+            using (MySqlConnection conexion = new MySqlConnection(connectionString))
+            {
+                conexion.Open();
+
+                using (MySqlCommand comando = new MySqlCommand(query, conexion))
+                {
+                    comando.Parameters.AddWithValue("@FechaObjetivo", fechaObjetivo);
+
+                    using (MySqlDataReader reader = comando.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            Reserva reserva = new Reserva
+                            {
+                                IdReserva = reader.GetInt32("IdReserva"),
+                                IdInquilino = reader.GetInt32("IdInquilino"),
+                                IdInmueble = reader.GetInt32("IdInmueble"),
+                                MontoPorDia = reader.GetDecimal("MontoPorDia"),
+                                FechaDesde = reader.GetDateTime("FechaDesde"),
+                                FechaHasta = reader.GetDateTime("FechaHasta"),
+                                IdUsuarioCreador = reader.GetInt32("IdUsuarioCreador")
+                            };
+
+                            reservas.Add(reserva);
+                        }
+                    }
+                }
+            }
+
+            return reservas;
+        }
+
         // Guardar una nueva reserva
         public bool Guardar(Reserva reserva)
         {
