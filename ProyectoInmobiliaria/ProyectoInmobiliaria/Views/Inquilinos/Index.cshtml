@@ -38,7 +38,11 @@
                                 <td class="text-center">
                                     <div class="btn-group btn-group-sm" role="group">
                                         <a asp-action="Edit" href="/Inquilinos/Edit/@item.IdInquilino" class="btn btn-warning">Editar</a>
-                                        <a asp-action="Delete" href="/Inquilinos/Delete/@item.IdInquilino" class="btn btn-danger">Eliminar</a>
+                                        @if (User.IsInRole("Administrador"))
+                                        {
+                                            <a asp-action="Delete" href="/Inquilinos/Delete/@item.IdInquilino" class="btn btn-danger">Eliminar</a>
+                                        }
+                                        
                                     </div>
                                 </td>
                             </tr>

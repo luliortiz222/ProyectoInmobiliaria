@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
 using ProyectoInmobiliaria.models;
 using System;
@@ -9,7 +10,8 @@ using System.Text;
 
 namespace ProyectoInmobiliaria.Controllers
 {
-    
+
+    [Authorize]
     public class PropietariosController : Controller
     {
         private readonly PropietarioRepository _propietarioRepository;
@@ -75,6 +77,7 @@ namespace ProyectoInmobiliaria.Controllers
         // GET: /Propietarios/Borrar/5
         // Este método busca al propietario y muestra la pantalla de advertencia
         [HttpGet]
+        [Authorize(Roles = "Administrador")]
         public IActionResult Delete(int id)
         {
             var propietario = _propietarioRepository.obtenerPorId(id);
@@ -88,6 +91,7 @@ namespace ProyectoInmobiliaria.Controllers
         // POST: /Propietarios/BorrarConfirmado
         // Este método es el que realmente elimina el registro de MySQL
         [HttpPost]
+        [Authorize(Roles = "Administrador")]
         public IActionResult BorrarConfirmado(int IdPropietario)
         {
             _propietarioRepository.eliminar(IdPropietario);

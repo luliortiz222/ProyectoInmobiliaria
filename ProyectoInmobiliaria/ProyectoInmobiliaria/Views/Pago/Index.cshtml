@@ -62,9 +62,13 @@
                                     <a href="/Pago/Edit/@item.idPago" class="btn btn-sm btn-outline-warning" title="Editar Concepto">
                                         Editar
                                     </a>
-                                    <a href="/Pago/Anular/@item.idPago" class="btn btn-sm btn-outline-danger" title="Anular Pago">
-                                        Anular
-                                    </a>
+                                    @if (User.IsInRole("Administrador"))
+                                    {
+                                        <a href="/Pago/Anular/@item.idPago" class="btn btn-sm btn-outline-danger" title="Anular Pago">
+                                            Anular
+                                        </a>
+                                    }
+                                    
                                 }
                                 else
                                 {

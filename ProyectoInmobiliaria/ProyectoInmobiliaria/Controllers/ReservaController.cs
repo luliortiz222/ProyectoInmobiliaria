@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ProyectoInmobiliaria.models;
 using ProyectoInmobiliaria.Repository;
 using System.Security.Claims;
 
 namespace ProyectoInmobiliaria.Controllers
 {
+    [Authorize]
     public class ReservasController : Controller
     {
         private readonly ReservaRepository _reservaRepository;
@@ -136,6 +138,7 @@ namespace ProyectoInmobiliaria.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Administrador")]
         public IActionResult Delete(int id)
         {
             var reserva = _reservaRepository.ObtenerPorId(id);
@@ -149,6 +152,7 @@ namespace ProyectoInmobiliaria.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [Authorize(Roles = "Administrador")]
         public IActionResult DeleteConfirmed(int id)
         {
             _reservaRepository.Eliminar(id);

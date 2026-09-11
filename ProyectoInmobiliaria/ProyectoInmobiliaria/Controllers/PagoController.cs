@@ -1,11 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ProyectoInmobiliaria.models;
 using ProyectoInmobiliaria.Repository;
 using System;
 using System.Security.Claims;
 
+
 namespace ProyectoInmobiliaria.Controllers
 {
+    [Authorize]
     public class PagoController : Controller
     {
         private readonly PagoRepository _pagoRepository;
@@ -84,6 +87,7 @@ namespace ProyectoInmobiliaria.Controllers
 
         
         [HttpGet]
+        [Authorize(Roles = "Administrador")]
         public IActionResult Anular(int id)
         {
             var pago = _pagoRepository.ObtenerPorId(id);
@@ -92,6 +96,7 @@ namespace ProyectoInmobiliaria.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrador")]
         public IActionResult AnularConfirmado(int IdPago, int IdReserva)
         {
             // SIMULACIÓN: El usuario ID 1 es quien anula el pago
