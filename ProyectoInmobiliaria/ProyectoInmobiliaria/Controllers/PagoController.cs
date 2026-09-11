@@ -1,7 +1,8 @@
-﻿using ProyectoInmobiliaria.models;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using ProyectoInmobiliaria.models;
 using ProyectoInmobiliaria.Repository;
 using System;
+using System.Security.Claims;
 
 namespace ProyectoInmobiliaria.Controllers
 {
@@ -46,7 +47,10 @@ namespace ProyectoInmobiliaria.Controllers
         {
             try
             {
-                pago.idUsuarioCreador = 1;
+                string idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+
+                pago.idUsuarioCreador = int.Parse(idString); 
                 _pagoRepository.GuardarPago(pago);
 
                 return RedirectToAction("PorReserva", new { id = pago.idReserva });
