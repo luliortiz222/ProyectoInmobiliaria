@@ -75,7 +75,6 @@ namespace ProyectoInmobiliaria.Controllers
             CookieAuthenticationDefaults.AuthenticationScheme,
             new ClaimsPrincipal(claimsIdentity));
 
-            // AGREGA ESTA LÍNEA:
             TempData["MensajeBienvenida"] = $"¡Hola {usuario.Nombre}! Has iniciado sesión correctamente.";
 
             // 5. Lo mandamos a la página principal

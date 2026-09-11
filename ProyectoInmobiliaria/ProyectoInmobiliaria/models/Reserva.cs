@@ -10,5 +10,8 @@ namespace ProyectoInmobiliaria.models
         public DateTime FechaDesde { get; set; }
         public DateTime FechaHasta { get; set; }
         public int IdUsuarioCreador { get; set; }
+
+        public int? IdUsuarioFinalizador { get; set; }
+        public DateTime? FechaFinalizacion { get; set; }
     }
 }

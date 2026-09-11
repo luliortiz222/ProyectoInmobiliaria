@@ -22,6 +22,20 @@
             Próximas a terminar
         </a>
     </div>
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            @TempData["Error"]
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Cerrar">
+            </button>
+        </div>
+    }
+
 
     <div class="table-responsive shadow-sm rounded">
 
@@ -82,12 +96,18 @@
                             </a>
 
                             @if (User.IsInRole("Administrador"))
-                            {
-                                <a href="/Reservas/Delete/@item.IdReserva"
-                                   class="btn btn-sm btn-outline-danger">
-                                    Borrar
-                                </a>
-                            }
+{
+    <a href="/Reservas/Finalizar/@item.IdReserva"
+       class="btn btn-sm btn-outline-success">
+        <i class="bi bi-check-circle"></i>
+        Finalizar
+    </a>
+
+    <a href="/Reservas/Delete/@item.IdReserva"
+       class="btn btn-sm btn-outline-danger">
+        Borrar
+    </a>
+}
                             
                             
                             <a href="/Pago/PorReserva/@item.IdReserva" class="btn btn-sm btn-outline-info" title="Ver Pagos">

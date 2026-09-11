@@ -60,6 +60,79 @@
 
             </dl>
 
+            @if (User.IsInRole("Administrador"))
+            {
+                <hr />
+
+                <div class="card border-primary mb-4">
+
+                    <div class="card-header bg-primary text-white">
+                        <i class="bi bi-shield-lock-fill"></i>
+                        Información de auditoría
+                    </div>
+
+                    <div class="card-body">
+
+                        <dl class="row mb-0">
+
+                            <dt class="col-sm-5">
+                                Usuario creador
+                            </dt>
+
+                            <dd class="col-sm-7">
+                                @if (Model.IdUsuarioCreador == 0)
+                                {
+                                    <span class="text-muted">
+                                        No registrado
+                                    </span>
+                                }
+                                else
+                                {
+                                    @Model.IdUsuarioCreador
+                                }
+                            </dd>
+
+                            <dt class="col-sm-5">
+                                Usuario finalizador
+                            </dt>
+
+                            <dd class="col-sm-7">
+                                @if (Model.IdUsuarioFinalizador.HasValue)
+                                {
+                                    @Model.IdUsuarioFinalizador
+                                }
+                                else
+                                {
+                                    <span class="text-muted">
+                                        Reserva aún no finalizada
+                                    </span>
+                                }
+                            </dd>
+
+                            <dt class="col-sm-5">
+                                Fecha de finalización
+                            </dt>
+
+                            <dd class="col-sm-7">
+                                @if (Model.FechaFinalizacion.HasValue)
+                                {
+                                    @Model.FechaFinalizacion.Value.ToString("dd/MM/yyyy")
+                                }
+                                else
+                                {
+                                    <span class="text-muted">
+                                        Sin finalizar
+                                    </span>
+                                }
+                            </dd>
+
+                        </dl>
+
+                    </div>
+
+                </div>
+            }
+
             <hr />
 
             <div>
