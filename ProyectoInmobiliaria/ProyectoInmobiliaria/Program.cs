@@ -30,7 +30,7 @@ namespace ProyectoInmobiliaria
                         .AddCookie(options =>
                         {
                             options.LoginPath = "/Usuario/Login"; // A donde te manda si no estás logueado
-                            options.AccessDeniedPath = "/Home/Index"; // A donde te manda si no tienes permiso
+                            options.AccessDeniedPath = "/Usuario/Index"; // A donde te manda si no tienes permiso
                         });
 
                     builder.Services.AddSingleton(new PropietarioRepository(cadenaConexion));

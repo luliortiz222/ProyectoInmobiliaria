@@ -51,15 +51,18 @@
                            required />
                 </div>
 
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">Rol</label>
+                @if (User.IsInRole("Administrador"))
+                {
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Rol</label>
 
-                    <select name="Rol" class="form-select" required>
-                        <option value="">Seleccione un rol</option>
-                        <option value="Administrador">Administrador</option>
-                        <option value="Empleado">Empleado</option>
-                    </select>
-                </div>
+                        <select name="Rol" class="form-select" required>
+                            <option value="">Seleccione un rol</option>
+                            <option value="Administrador">Administrador</option>
+                            <option value="Empleado">Empleado</option>
+                        </select>
+                    </div>
+                }
 
             </div>
 
@@ -106,9 +109,9 @@
                     Guardar
                 </button>
 
-                <a href="/Usuario/Login"
+                <a href="/Usuario/Index"
                    class="btn btn-secondary">
-                    Iniciar Sesión
+                    Volver al listado
                 </a>
 
             </div>
