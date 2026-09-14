@@ -132,6 +132,93 @@ public class PropietarioRepository
 
         return lista;
     }
+
+    public List<Propietario> ObtenerPaginados(string busqueda, int pagina, int cantidadPorPagina)
+    {
+        List<Propietario> lista = new List<Propietario>();
+
+        int desplazamiento = (pagina - 1) * cantidadPorPagina;
+
+        string query = @"
+        SELECT *
+        FROM Propietario
+        WHERE Nombre LIKE @Busqueda
+           OR Apellido LIKE @Busqueda
+           OR Dni LIKE @Busqueda
+        ORDER BY IdPropietario
+        LIMIT @CantidadPorPagina OFFSET @Desplazamiento";
+
+        using (MySqlConnection conexion = new MySqlConnection(_cadenaConexion))
+        {
+            using (MySqlCommand comando = new MySqlCommand(query, conexion))
+            {
+                comando.Parameters.AddWithValue("@Busqueda", "%" + (busqueda ?? "") + "%");
+                comando.Parameters.AddWithValue("@CantidadPorPagina", cantidadPorPagina);
+                comando.Parameters.AddWithValue("@Desplazamiento", desplazamiento);
+
+                try
+                {
+                    conexion.Open();
+
+                    using (MySqlDataReader reader = comando.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            Propietario p = new Propietario
+                            {
+                                IdPropietario = Convert.ToInt32(reader["IdPropietario"]),
+                                Dni = reader["Dni"].ToString(),
+                                Nombre = reader["Nombre"].ToString(),
+                                Apellido = reader["Apellido"].ToString(),
+                                Email = reader["Email"].ToString(),
+                                Telefono = reader["Telefono"].ToString()
+                            };
+
+                            lista.Add(p);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error al obtener propietarios paginados: " + ex.Message);
+                }
+            }
+        }
+
+        return lista;
+    }
+
+    public int ContarPropietarios(string busqueda)
+    {
+        int cantidad = 0;
+
+        string query = @"
+        SELECT COUNT(*)
+        FROM Propietario
+        WHERE Nombre LIKE @Busqueda
+           OR Apellido LIKE @Busqueda
+           OR Dni LIKE @Busqueda";
+
+        using (MySqlConnection conexion = new MySqlConnection(_cadenaConexion))
+        {
+            using (MySqlCommand comando = new MySqlCommand(query, conexion))
+            {
+                comando.Parameters.AddWithValue("@Busqueda", "%" + (busqueda ?? "") + "%");
+
+                try
+                {
+                    conexion.Open();
+                    cantidad = Convert.ToInt32(comando.ExecuteScalar());
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error al contar propietarios: " + ex.Message);
+                }
+            }
+        }
+
+        return cantidad;
+    }
     public Propietario obtenerPorId(int id)
     {
         Propietario propietario = null;
