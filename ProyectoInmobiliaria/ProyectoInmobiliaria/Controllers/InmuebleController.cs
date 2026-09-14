@@ -50,9 +50,17 @@ namespace ProyectoInmobiliaria.Controllers
         }
 
         [HttpGet]
-        public IActionResult PorPropietario(int? idPropietario)
+        public IActionResult PorPropietario(int? idPropietario, string busqueda)
         {
-            ViewBag.Propietarios = _propietarioRepo.obtenerTodos();
+            ViewBag.Busqueda = busqueda;
+
+            if (!string.IsNullOrWhiteSpace(busqueda) && idPropietario == null)
+            {
+                ViewBag.Propietarios = _propietarioRepo.ObtenerPorBusqueda(busqueda);
+                return View(new List<Inmueble>());
+            }
+
+            ViewBag.Propietarios = _propietarioRepo.ObtenerPorBusqueda(busqueda ?? "");
 
             if (idPropietario == null)
             {

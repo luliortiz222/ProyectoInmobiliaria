@@ -83,6 +83,55 @@ public class PropietarioRepository
         }
         return lista;
     }
+
+    public List<Propietario> ObtenerPorBusqueda(string busqueda)
+    {
+        List<Propietario> lista = new List<Propietario>();
+
+        string query = @"
+        SELECT *
+        FROM Propietario
+        WHERE Nombre LIKE @Busqueda
+           OR Apellido LIKE @Busqueda
+        LIMIT 10";
+
+        using (MySqlConnection conexion = new MySqlConnection(_cadenaConexion))
+        {
+            using (MySqlCommand comando = new MySqlCommand(query, conexion))
+            {
+                comando.Parameters.AddWithValue("@Busqueda", "%" + busqueda + "%");
+
+                try
+                {
+                    conexion.Open();
+
+                    using (MySqlDataReader reader = comando.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            Propietario p = new Propietario
+                            {
+                                IdPropietario = Convert.ToInt32(reader["IdPropietario"]),
+                                Dni = reader["Dni"].ToString(),
+                                Nombre = reader["Nombre"].ToString(),
+                                Apellido = reader["Apellido"].ToString(),
+                                Email = reader["Email"].ToString(),
+                                Telefono = reader["Telefono"].ToString()
+                            };
+
+                            lista.Add(p);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error al buscar propietarios: " + ex.Message);
+                }
+            }
+        }
+
+        return lista;
+    }
     public Propietario obtenerPorId(int id)
     {
         Propietario propietario = null;
