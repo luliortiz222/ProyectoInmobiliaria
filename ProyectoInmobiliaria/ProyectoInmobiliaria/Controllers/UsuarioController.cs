@@ -78,7 +78,7 @@ namespace ProyectoInmobiliaria.Controllers
             TempData["MensajeBienvenida"] = $"¡Hola {usuario.Nombre}! Has iniciado sesión correctamente.";
 
             // 5. Lo mandamos a la página principal
-            return RedirectToAction("Index", "Inmueble");
+            return RedirectToAction("Index", "Home");
         }
 
         // GET: /Usuarios/Logout
