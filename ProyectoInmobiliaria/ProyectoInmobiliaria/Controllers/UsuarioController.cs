@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
+using System;
 
 
 
@@ -23,9 +24,33 @@ namespace ProyectoInmobiliaria.Controllers
         }
 
         // GET: Usuario
-        public IActionResult Index()
+        public IActionResult Index(string busqueda, int pagina = 1)
         {
-            var usuarios = _usuarioRepository.ObtenerTodos();
+            int cantidadPorPagina = 10;
+
+            int totalUsuarios = _usuarioRepository.ContarUsuarios(busqueda);
+
+            int totalPaginas = (int)Math.Ceiling(
+                (double)totalUsuarios / cantidadPorPagina);
+
+            if (totalPaginas > 0 && pagina > totalPaginas)
+            {
+                pagina = totalPaginas;
+            }
+
+            if (pagina < 1)
+            {
+                pagina = 1;
+            }
+
+            var usuarios = _usuarioRepository.ObtenerPaginados(
+                busqueda,
+                pagina,
+                cantidadPorPagina);
+
+            ViewBag.Busqueda = busqueda;
+            ViewBag.PaginaActual = pagina;
+            ViewBag.TotalPaginas = totalPaginas;
 
             return View(usuarios);
         }

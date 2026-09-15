@@ -106,6 +106,105 @@ namespace ProyectoInmobiliaria.Repository
             return usuarios;
         }
 
+        public List<Usuario> ObtenerPaginados(string busqueda, int pagina, int cantidadPorPagina)
+        {
+            List<Usuario> usuarios = new List<Usuario>();
+
+            int desplazamiento = (pagina - 1) * cantidadPorPagina;
+
+            string query = @"
+        SELECT
+            IdUsuario,
+            Email,
+            Password,
+            Nombre,
+            Apellido,
+            Avatar,
+            Rol
+        FROM Usuario
+        WHERE Nombre LIKE @Busqueda
+           OR Apellido LIKE @Busqueda
+           OR Email LIKE @Busqueda
+           OR Rol LIKE @Busqueda
+        ORDER BY IdUsuario
+        LIMIT @CantidadPorPagina OFFSET @Desplazamiento";
+
+            using (MySqlConnection conexion = new MySqlConnection(_cadenaDeConexion))
+            {
+                using (MySqlCommand comando = new MySqlCommand(query, conexion))
+                {
+                    comando.Parameters.AddWithValue(
+                        "@Busqueda",
+                        "%" + (busqueda ?? "") + "%");
+
+                    comando.Parameters.AddWithValue(
+                        "@CantidadPorPagina",
+                        cantidadPorPagina);
+
+                    comando.Parameters.AddWithValue(
+                        "@Desplazamiento",
+                        desplazamiento);
+
+                    conexion.Open();
+
+                    using (MySqlDataReader reader = comando.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            Usuario usuario = new Usuario
+                            {
+                                IdUsuario = reader.GetInt32("IdUsuario"),
+                                Email = reader.GetString("Email"),
+                                Password = reader.GetString("Password"),
+                                Nombre = reader.GetString("Nombre"),
+                                Apellido = reader.GetString("Apellido"),
+
+                                Avatar = reader.IsDBNull(
+                                    reader.GetOrdinal("Avatar"))
+                                    ? ""
+                                    : reader.GetString("Avatar"),
+
+                                Rol = reader.GetString("Rol")
+                            };
+
+                            usuarios.Add(usuario);
+                        }
+                    }
+                }
+            }
+
+            return usuarios;
+        }
+
+        public int ContarUsuarios(string busqueda)
+        {
+            int cantidad = 0;
+
+            string query = @"
+        SELECT COUNT(*)
+        FROM Usuario
+        WHERE Nombre LIKE @Busqueda
+           OR Apellido LIKE @Busqueda
+           OR Email LIKE @Busqueda
+           OR Rol LIKE @Busqueda";
+
+            using (MySqlConnection conexion = new MySqlConnection(_cadenaDeConexion))
+            {
+                using (MySqlCommand comando = new MySqlCommand(query, conexion))
+                {
+                    comando.Parameters.AddWithValue(
+                        "@Busqueda",
+                        "%" + (busqueda ?? "") + "%");
+
+                    conexion.Open();
+
+                    cantidad = Convert.ToInt32(comando.ExecuteScalar());
+                }
+            }
+
+            return cantidad;
+        }
+
         // Obtener usuarios por id 
         public Usuario ObtenerPorId(int idUsuario)
         {
