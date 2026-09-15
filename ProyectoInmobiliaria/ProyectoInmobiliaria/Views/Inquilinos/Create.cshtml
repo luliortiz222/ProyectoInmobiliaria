@@ -13,7 +13,7 @@
         <form action="/Inquilinos/Create" method="post">
             <div class="mb-3">
                 <label class="form-label">DNI</label>
-                <input type="text" class="form-control" name="Dni" required>
+                <input type="number" class="form-control" name="Dni" required maxlength="8" minlength="8" title="El DNI debe tener 8 caracteres">
             </div>
             <div class="mb-3">
                 <label class="form-label">Nombre</label>
@@ -29,7 +29,7 @@
             </div>
             <div class="mb-3">
                 <label class="form-label">Teléfono</label>
-                <input type="text" class="form-control" name="Telefono" required>
+                <input type="number" class="form-control" name="Telefono" required maxlength="10" minlength="10" title="El teléfono debe tener 10 caracteres">
             </div>
 
             <button type="submit" class="btn btn-primary">Guardar</button>
