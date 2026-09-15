@@ -19,9 +19,36 @@ namespace ProyectoInmobiliaria.Controllers
 
         // GET: /Pagos
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult Index(string busqueda, bool? estado, int pagina = 1)
         {
-            var pagos = _pagoRepository.ObtenerTodos();
+            int cantidadPorPagina = 10;
+
+            int totalPagos = _pagoRepository.ContarPagos(busqueda, estado);
+
+            int totalPaginas = (int)Math.Ceiling(
+                (double)totalPagos / cantidadPorPagina);
+
+            if (totalPaginas > 0 && pagina > totalPaginas)
+            {
+                pagina = totalPaginas;
+            }
+
+            if (pagina < 1)
+            {
+                pagina = 1;
+            }
+
+            var pagos = _pagoRepository.ObtenerPaginados(
+                busqueda,
+                estado,
+                pagina,
+                cantidadPorPagina);
+
+            ViewBag.Busqueda = busqueda;
+            ViewBag.Estado = estado;
+            ViewBag.PaginaActual = pagina;
+            ViewBag.TotalPaginas = totalPaginas;
+
             return View(pagos);
         }
 

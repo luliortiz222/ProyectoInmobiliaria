@@ -130,6 +130,99 @@ namespace ProyectoInmobiliaria.Repository
             return pagos;
         }
 
+        public List<Pago> ObtenerPaginados(string busqueda, bool? estado, int pagina, int cantidadPorPagina)
+        {
+            var pagos = new List<Pago>();
+
+            int desplazamiento = (pagina - 1) * cantidadPorPagina;
+
+            string query = @"
+        SELECT *
+        FROM Pago
+        WHERE Concepto LIKE @Busqueda
+          AND (@Estado IS NULL OR Estado = @Estado)
+        ORDER BY FechaPago DESC
+        LIMIT @CantidadPorPagina OFFSET @Desplazamiento";
+
+            using (MySqlConnection conexion = new MySqlConnection(cadenaDeConexion))
+            {
+                using (MySqlCommand comando = new MySqlCommand(query, conexion))
+                {
+                    comando.Parameters.AddWithValue(
+                        "@Busqueda",
+                        "%" + (busqueda ?? "") + "%");
+
+                    comando.Parameters.AddWithValue(
+                        "@Estado",
+                        estado.HasValue ? estado.Value : (object)DBNull.Value);
+
+                    comando.Parameters.AddWithValue(
+                        "@CantidadPorPagina",
+                        cantidadPorPagina);
+
+                    comando.Parameters.AddWithValue(
+                        "@Desplazamiento",
+                        desplazamiento);
+
+                    conexion.Open();
+
+                    using (MySqlDataReader reader = comando.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            pagos.Add(new Pago
+                            {
+                                idPago = reader.GetInt32("IdPago"),
+                                idReserva = reader.GetInt32("IdReserva"),
+                                concepto = reader.GetString("Concepto"),
+                                fechaPago = reader.GetDateTime("FechaPago"),
+                                importe = reader.GetDecimal("Importe"),
+                                estado = reader.GetBoolean("Estado"),
+                                idUsuarioCreador = reader.GetInt32("IdUsuarioCreador"),
+                                idUsuarioAnulador = reader.IsDBNull(
+                                    reader.GetOrdinal("IdUsuarioAnulador"))
+                                    ? (int?)null
+                                    : reader.GetInt32("IdUsuarioAnulador")
+                            });
+                        }
+                    }
+                }
+            }
+
+            return pagos;
+        }
+
+        public int ContarPagos(string busqueda, bool? estado)
+        {
+            int cantidad = 0;
+
+            string query = @"
+        SELECT COUNT(*)
+        FROM Pago
+        WHERE Concepto LIKE @Busqueda
+          AND (@Estado IS NULL OR Estado = @Estado)";
+
+            using (MySqlConnection conexion = new MySqlConnection(cadenaDeConexion))
+            {
+                using (MySqlCommand comando = new MySqlCommand(query, conexion))
+                {
+                    comando.Parameters.AddWithValue(
+                        "@Busqueda",
+                        "%" + (busqueda ?? "") + "%");
+
+                    comando.Parameters.AddWithValue(
+                        "@Estado",
+                        estado.HasValue ? estado.Value : (object)DBNull.Value);
+
+                    conexion.Open();
+
+                    cantidad = Convert.ToInt32(comando.ExecuteScalar());
+                }
+            }
+
+            return cantidad;
+        }
+
         public Pago ObtenerPorId(int idPago)
         {
             Pago pago = null;
