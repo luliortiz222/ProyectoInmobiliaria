@@ -50,6 +50,109 @@ namespace ProyectoInmobiliaria.Repository
             return lista;
         }
 
+        public List<Reserva> ObtenerPaginados(string busqueda, int pagina, int cantidadPorPagina)
+        {
+            List<Reserva> lista = new List<Reserva>();
+
+            int desplazamiento = (pagina - 1) * cantidadPorPagina;
+
+            string sql = @"
+        SELECT IdReserva, IdInquilino, IdInmueble,
+               MontoPorDia, FechaDesde, FechaHasta,
+               IdUsuarioCreador, IdUsuarioFinalizador, FechaFinalizacion
+        FROM Reserva
+        WHERE CAST(IdReserva AS CHAR) LIKE @Busqueda
+           OR CAST(IdInquilino AS CHAR) LIKE @Busqueda
+           OR CAST(IdInmueble AS CHAR) LIKE @Busqueda
+           OR CAST(MontoPorDia AS CHAR) LIKE @Busqueda
+        ORDER BY FechaDesde DESC
+        LIMIT @CantidadPorPagina OFFSET @Desplazamiento";
+
+            using (MySqlConnection conexion = new MySqlConnection(connectionString))
+            {
+                conexion.Open();
+
+                using (MySqlCommand comando = new MySqlCommand(sql, conexion))
+                {
+                    comando.Parameters.AddWithValue(
+                        "@Busqueda",
+                        "%" + (busqueda ?? "") + "%");
+
+                    comando.Parameters.AddWithValue(
+                        "@CantidadPorPagina",
+                        cantidadPorPagina);
+
+                    comando.Parameters.AddWithValue(
+                        "@Desplazamiento",
+                        desplazamiento);
+
+                    using (MySqlDataReader reader = comando.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            Reserva reserva = new Reserva
+                            {
+                                IdReserva = reader.GetInt32("IdReserva"),
+                                IdInquilino = reader.GetInt32("IdInquilino"),
+                                IdInmueble = reader.GetInt32("IdInmueble"),
+                                MontoPorDia = reader.GetDecimal("MontoPorDia"),
+                                FechaDesde = reader.GetDateTime("FechaDesde"),
+                                FechaHasta = reader.GetDateTime("FechaHasta"),
+
+                                IdUsuarioCreador = reader.IsDBNull(
+                                    reader.GetOrdinal("IdUsuarioCreador"))
+                                    ? 0
+                                    : reader.GetInt32("IdUsuarioCreador"),
+
+                                IdUsuarioFinalizador = reader.IsDBNull(
+                                    reader.GetOrdinal("IdUsuarioFinalizador"))
+                                    ? (int?)null
+                                    : reader.GetInt32("IdUsuarioFinalizador"),
+
+                                FechaFinalizacion = reader.IsDBNull(
+                                    reader.GetOrdinal("FechaFinalizacion"))
+                                    ? (DateTime?)null
+                                    : reader.GetDateTime("FechaFinalizacion")
+                            };
+
+                            lista.Add(reserva);
+                        }
+                    }
+                }
+            }
+
+            return lista;
+        }
+
+        public int ContarReservas(string busqueda)
+        {
+            int cantidad = 0;
+
+            string sql = @"
+        SELECT COUNT(*)
+        FROM Reserva
+        WHERE CAST(IdReserva AS CHAR) LIKE @Busqueda
+           OR CAST(IdInquilino AS CHAR) LIKE @Busqueda
+           OR CAST(IdInmueble AS CHAR) LIKE @Busqueda
+           OR CAST(MontoPorDia AS CHAR) LIKE @Busqueda";
+
+            using (MySqlConnection conexion = new MySqlConnection(connectionString))
+            {
+                conexion.Open();
+
+                using (MySqlCommand comando = new MySqlCommand(sql, conexion))
+                {
+                    comando.Parameters.AddWithValue(
+                        "@Busqueda",
+                        "%" + (busqueda ?? "") + "%");
+
+                    cantidad = Convert.ToInt32(comando.ExecuteScalar());
+                }
+            }
+
+            return cantidad;
+        }
+
         // Buscar una reserva por ID
         public Reserva ObtenerPorId(int id)
         {

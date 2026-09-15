@@ -23,9 +23,33 @@ namespace ProyectoInmobiliaria.Controllers
             _inmuebleRepository = inmuebleRepository;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string busqueda, int pagina = 1)
         {
-            var lista = _reservaRepository.ObtenerTodos();
+            int cantidadPorPagina = 10;
+
+            int totalReservas = _reservaRepository.ContarReservas(busqueda);
+
+            int totalPaginas = (int)Math.Ceiling(
+                (double)totalReservas / cantidadPorPagina);
+
+            if (totalPaginas > 0 && pagina > totalPaginas)
+            {
+                pagina = totalPaginas;
+            }
+
+            if (pagina < 1)
+            {
+                pagina = 1;
+            }
+
+            var lista = _reservaRepository.ObtenerPaginados(
+                busqueda,
+                pagina,
+                cantidadPorPagina);
+
+            ViewBag.Busqueda = busqueda;
+            ViewBag.PaginaActual = pagina;
+            ViewBag.TotalPaginas = totalPaginas;
 
             return View(lista);
         }
