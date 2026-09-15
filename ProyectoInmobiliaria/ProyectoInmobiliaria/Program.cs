@@ -58,7 +58,7 @@ namespace ProyectoInmobiliaria
                     app.UseStaticFiles();
                     app.UseSession();
                     app.UseCors("PermitirTodo");
-                    app.UseAuthentication(); // ESTA LÍNEA ES NUEVA (Debe ir antes que Authorization)
+                    app.UseAuthentication();
                     app.UseAuthorization();
                     app.MapControllerRoute(
                         name: "default",
