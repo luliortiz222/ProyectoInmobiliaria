@@ -43,6 +43,72 @@ namespace ProyectoInmobiliaria.Repository
             return lista;
         }
 
+        public List<TipoInmueble> ObtenerPaginados(string busqueda, int pagina, int cantidadPorPagina)
+        {
+            List<TipoInmueble> lista = new List<TipoInmueble>();
+
+            int desplazamiento = (pagina - 1) * cantidadPorPagina;
+
+            string sql = @"
+        SELECT IdTipoInmueble, Nombre
+        FROM TipoInmueble
+        WHERE Nombre LIKE @Busqueda
+        ORDER BY IdTipoInmueble
+        LIMIT @CantidadPorPagina OFFSET @Desplazamiento";
+
+            using (MySqlConnection conexion = new MySqlConnection(connectionString))
+            {
+                conexion.Open();
+
+                using (MySqlCommand comando = new MySqlCommand(sql, conexion))
+                {
+                    comando.Parameters.AddWithValue("@Busqueda", "%" + (busqueda ?? "") + "%");
+                    comando.Parameters.AddWithValue("@CantidadPorPagina", cantidadPorPagina);
+                    comando.Parameters.AddWithValue("@Desplazamiento", desplazamiento);
+
+                    using (MySqlDataReader reader = comando.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            TipoInmueble tipo = new TipoInmueble
+                            {
+                                IdTipoInmueble = reader.GetInt32("IdTipoInmueble"),
+                                Nombre = reader.GetString("Nombre")
+                            };
+
+                            lista.Add(tipo);
+                        }
+                    }
+                }
+            }
+
+            return lista;
+        }
+
+        public int ContarTiposInmueble(string busqueda)
+        {
+            int cantidad = 0;
+
+            string sql = @"
+        SELECT COUNT(*)
+        FROM TipoInmueble
+        WHERE Nombre LIKE @Busqueda";
+
+            using (MySqlConnection conexion = new MySqlConnection(connectionString))
+            {
+                conexion.Open();
+
+                using (MySqlCommand comando = new MySqlCommand(sql, conexion))
+                {
+                    comando.Parameters.AddWithValue("@Busqueda", "%" + (busqueda ?? "") + "%");
+
+                    cantidad = Convert.ToInt32(comando.ExecuteScalar());
+                }
+            }
+
+            return cantidad;
+        }
+
         // Buscar un tipo de inmueble por ID
         public TipoInmueble ObtenerPorId(int id)
         {

@@ -15,7 +15,7 @@ namespace ProyectoInmobiliaria
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            string cadenaConexion = "Server=localhost;Database=inmobiliaria;Uid=root;Pwd=admin;";
+            string cadenaConexion = "Server=localhost;Database=inmobiliaria;Uid=root;Pwd=LULIORTIZ2211;";
 
             
             using (MySqlConnection conexion = new MySqlConnection(cadenaConexion))
