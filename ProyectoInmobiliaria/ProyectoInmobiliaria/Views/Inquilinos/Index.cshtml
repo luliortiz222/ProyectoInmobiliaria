@@ -3,18 +3,100 @@
 @{
     ViewData["Title"] = "Gestión de Inquilinos";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    int paginaActual = ViewBag.PaginaActual;
+    int totalPaginas = ViewBag.TotalPaginas;
+    string busqueda = ViewBag.Busqueda;
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2><i class="bi bi-people-fill"></i> Listado de Inquilinos</h2>
-    <a asp-action="Create" href="/Inquilinos/Create" class="btn btn-primary">+ Nuevo Inquilino</a>
+
+    <a asp-action="Create"
+       href="/Inquilinos/Create"
+       class="btn btn-primary">
+        + Nuevo Inquilino
+    </a>
 </div>
 
+
+<!-- Mensajes -->
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        @TempData["Error"]
+
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Cerrar">
+        </button>
+    </div>
+}
+
+@if (TempData["Mensaje"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle-fill"></i>
+        @TempData["Mensaje"]
+
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Cerrar">
+        </button>
+    </div>
+}
+
+
+<!-- Buscador -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+
+        <form asp-action="Index" method="get">
+
+            <div class="row g-3 align-items-end">
+
+                <div class="col-md-9">
+                    <label class="form-label fw-semibold">
+                        Buscar inquilino
+                    </label>
+
+                    <input type="text"
+                           name="busqueda"
+                           value="@busqueda"
+                           class="form-control"
+                           placeholder="Buscar por nombre, apellido o DNI" />
+                </div>
+
+                <div class="col-md-3">
+                    <button type="submit"
+                            class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i>
+                        Buscar
+                    </button>
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+
+<!-- Tabla -->
 <div class="card shadow-sm">
+
     <div class="card-body p-0">
+
         <div class="table-responsive">
+
             <table class="table table-hover align-middle mb-0">
+
                 <thead class="table-dark">
+
                     <tr>
                         <th>ID</th>
                         <th>DNI</th>
@@ -23,41 +105,125 @@
                         <th>Email</th>
                         <th class="text-center">Acciones</th>
                     </tr>
+
                 </thead>
+
                 <tbody>
+
                     @if (Model != null && Model.Any())
                     {
                         foreach (var item in Model)
                         {
                             <tr>
+
                                 <td>@item.IdInquilino</td>
-                                <td><span class="badge bg-secondary">@item.Dni</span></td>
-                                <td class="fw-bold">@item.Apellido, @item.Nombre</td>
+
+                                <td>
+                                    <span class="badge bg-secondary">
+                                        @item.Dni
+                                    </span>
+                                </td>
+
+                                <td class="fw-bold">
+                                    @item.Apellido, @item.Nombre
+                                </td>
+
                                 <td>@item.Telefono</td>
+
                                 <td>@item.Email</td>
+
                                 <td class="text-center">
+
                                     <div class="btn-group btn-group-sm" role="group">
-                                        <a asp-action="Edit" href="/Inquilinos/Edit/@item.IdInquilino" class="btn btn-warning">Editar</a>
+
+                                        <a asp-action="Edit"
+                                           href="/Inquilinos/Edit/@item.IdInquilino"
+                                           class="btn btn-warning">
+                                            Editar
+                                        </a>
+
                                         @if (User.IsInRole("Administrador"))
                                         {
-                                            <a asp-action="Delete" href="/Inquilinos/Delete/@item.IdInquilino" class="btn btn-danger">Eliminar</a>
+                                            <a asp-action="Delete"
+                                               href="/Inquilinos/Delete/@item.IdInquilino"
+                                               class="btn btn-danger">
+                                                Eliminar
+                                            </a>
                                         }
-                                        
+
                                     </div>
+
                                 </td>
+
                             </tr>
                         }
                     }
                     else
                     {
                         <tr>
-                            <td colspan="6" class="text-center text-muted py-4">
-                                No hay inquilinos registrados en el sistema.
+                            <td colspan="6"
+                                class="text-center text-muted py-4">
+                                No se encontraron inquilinos.
                             </td>
                         </tr>
                     }
+
                 </tbody>
+
             </table>
+
         </div>
+
+
+        <!-- Paginación -->
+        @if (totalPaginas > 1)
+        {
+            <div class="p-3">
+
+                <nav>
+                    <ul class="pagination justify-content-center mb-0">
+
+                        <!-- Anterior -->
+                        <li class="page-item @(paginaActual <= 1 ? "disabled" : "")">
+
+                            <a class="page-link"
+                               href="@Url.Action("Index", new { busqueda = busqueda, pagina = paginaActual - 1 })">
+                                Anterior
+                            </a>
+
+                        </li>
+
+
+                        <!-- Números -->
+                        @for (int i = 1; i <= totalPaginas; i++)
+                        {
+                            <li class="page-item @(i == paginaActual ? "active" : "")">
+
+                                <a class="page-link"
+                                   href="@Url.Action("Index", new { busqueda = busqueda, pagina = i })">
+                                    @i
+                                </a>
+
+                            </li>
+                        }
+
+
+                        <!-- Siguiente -->
+                        <li class="page-item @(paginaActual >= totalPaginas ? "disabled" : "")">
+
+                            <a class="page-link"
+                               href="@Url.Action("Index", new { busqueda = busqueda, pagina = paginaActual + 1 })">
+                                Siguiente
+                            </a>
+
+                        </li>
+
+                    </ul>
+                </nav>
+
+            </div>
+        }
+
     </div>
+
 </div>
