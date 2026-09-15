@@ -140,11 +140,14 @@
                    class="btn btn-warning">
                     Editar
                 </a>
-
-                <a href="/Reservas/Delete/@Model.IdReserva"
-                   class="btn btn-danger">
+                @if (User.IsInRole("Administrador"))
+                {
+                    <a href="/Reservas/Delete/@Model.IdReserva"
+                    class="btn btn-danger">
                     Eliminar
                 </a>
+                }
+                
 
                 <a href="/Reservas/Index"
                    class="btn btn-secondary">
