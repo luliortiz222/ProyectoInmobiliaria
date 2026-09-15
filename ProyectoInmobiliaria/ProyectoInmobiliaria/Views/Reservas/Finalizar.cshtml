@@ -1,0 +1,164 @@
+﻿@model ProyectoInmobiliaria.models.Reserva
+
+@{
+    ViewData["Title"] = "Finalizar Reserva";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-md-7">
+
+            <div class="card shadow-sm border-0">
+
+                @if (Model.IdUsuarioFinalizador != null)
+                {
+                    <div class="card-header bg-success text-white">
+                        <h4 class="mb-0">
+                            <i class="bi bi-check-circle-fill"></i>
+                            Reserva ya finalizada
+                        </h4>
+                    </div>
+
+                    <div class="card-body p-4">
+
+                        <div class="alert alert-success">
+                            <i class="bi bi-check-circle-fill"></i>
+                            Esta reserva ya fue finalizada y no puede finalizarse nuevamente.
+                        </div>
+
+                        <div class="mb-4">
+
+                            <p class="mb-2">
+                                <strong>Reserva:</strong>
+                                #@Model.IdReserva
+                            </p>
+
+                            <p class="mb-2">
+                                <strong>Inquilino:</strong>
+                                #@Model.IdInquilino
+                            </p>
+
+                            <p class="mb-2">
+                                <strong>Inmueble:</strong>
+                                #@Model.IdInmueble
+                            </p>
+
+                            <p class="mb-2">
+                                <strong>Fecha desde:</strong>
+                                @Model.FechaDesde.ToString("dd/MM/yyyy")
+                            </p>
+
+                            <p class="mb-2">
+                                <strong>Fecha hasta:</strong>
+                                @Model.FechaHasta.ToString("dd/MM/yyyy")
+                            </p>
+
+                            <p class="mb-2">
+                                <strong>Usuario finalizador:</strong>
+                                @Model.IdUsuarioFinalizador
+                            </p>
+
+                            <p class="mb-0">
+                                <strong>Fecha de finalización:</strong>
+                                @if (Model.FechaFinalizacion.HasValue)
+                                {
+                                    @Model.FechaFinalizacion.Value.ToString("dd/MM/yyyy")
+                                }
+                            </p>
+
+                        </div>
+
+                        <div class="d-flex justify-content-end">
+
+                            <a href="/Reservas/Details/@Model.IdReserva"
+                               class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left"></i>
+                                Volver a detalles
+                            </a>
+
+                        </div>
+
+                    </div>
+                }
+                else
+                {
+                    <div class="card-header bg-warning text-dark">
+                        <h4 class="mb-0">
+                            <i class="bi bi-calendar-check-fill"></i>
+                            Finalizar reserva
+                        </h4>
+                    </div>
+
+                    <div class="card-body p-4">
+
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                            ¿Está seguro de que desea finalizar esta reserva?
+                        </div>
+
+                        <div class="mb-4">
+
+                            <p class="mb-2">
+                                <strong>Reserva:</strong>
+                                #@Model.IdReserva
+                            </p>
+
+                            <p class="mb-2">
+                                <strong>Inquilino:</strong>
+                                #@Model.IdInquilino
+                            </p>
+
+                            <p class="mb-2">
+                                <strong>Inmueble:</strong>
+                                #@Model.IdInmueble
+                            </p>
+
+                            <p class="mb-2">
+                                <strong>Fecha desde:</strong>
+                                @Model.FechaDesde.ToString("dd/MM/yyyy")
+                            </p>
+
+                            <p class="mb-0">
+                                <strong>Fecha hasta:</strong>
+                                @Model.FechaHasta.ToString("dd/MM/yyyy")
+                            </p>
+
+                        </div>
+
+                        <form action="/Reservas/FinalizarConfirmado" method="post">
+
+                            <input type="hidden"
+                                   name="idReserva"
+                                   value="@Model.IdReserva" />
+
+                            <div class="d-flex justify-content-end gap-2">
+
+                                <a href="/Reservas/Details/@Model.IdReserva"
+                                   class="btn btn-outline-secondary">
+                                    <i class="bi bi-arrow-left"></i>
+                                    Cancelar
+                                </a>
+
+                                <button type="submit"
+                                        class="btn btn-warning">
+                                    <i class="bi bi-check-circle-fill"></i>
+                                    Sí, finalizar reserva
+                                </button>
+
+                            </div>
+
+                        </form>
+
+                    </div>
+                }
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

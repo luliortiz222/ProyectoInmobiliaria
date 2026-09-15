@@ -21,14 +21,41 @@ namespace ProyectoInmobiliaria.Controllers
         }
 
 
-       
+
 
 
         // GET: /Propietarios (Muestra la lista)
-        public IActionResult Index()
+        public IActionResult Index(string busqueda, int pagina = 1)
         {
-            var lista = _propietarioRepository.obtenerTodos();
-            return View(lista); 
+            int cantidadPorPagina = 10;
+
+            int totalPropietarios = _propietarioRepository.ContarPropietarios(busqueda);
+
+            int totalPaginas = (int)Math.Ceiling(
+                (double)totalPropietarios / cantidadPorPagina
+            );
+
+            if (totalPaginas > 0 && pagina > totalPaginas)
+            {
+                pagina = totalPaginas;
+            }
+
+            if (pagina < 1)
+            {
+                pagina = 1;
+            }
+
+            var lista = _propietarioRepository.ObtenerPaginados(
+                busqueda,
+                pagina,
+                cantidadPorPagina
+            );
+
+            ViewBag.Busqueda = busqueda;
+            ViewBag.PaginaActual = pagina;
+            ViewBag.TotalPaginas = totalPaginas;
+
+            return View(lista);
         }
 
         // GET: /Propietarios/Crear (Muestra el formulario vacío)

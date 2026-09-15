@@ -1,0 +1,127 @@
+﻿@model ProyectoInmobiliaria.models.Pago
+
+@{
+    ViewData["Title"] = "Detalle del Pago";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-md-7">
+
+            <div class="card shadow-sm border-0">
+
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-cash-coin"></i>
+                        Detalle del pago
+                    </h4>
+                </div>
+
+                <div class="card-body p-4">
+
+                    <div class="mb-4">
+
+                        <p class="mb-2">
+                            <strong>Pago:</strong>
+                            #@Model.idPago
+                        </p>
+
+                        <p class="mb-2">
+                            <strong>Reserva:</strong>
+                            #@Model.idReserva
+                        </p>
+
+                        <p class="mb-2">
+                            <strong>Concepto:</strong>
+                            @Model.concepto
+                        </p>
+
+                        <p class="mb-2">
+                            <strong>Fecha:</strong>
+                            @Model.fechaPago.ToString("dd/MM/yyyy")
+                        </p>
+
+                        <p class="mb-2">
+                            <strong>Importe:</strong>
+                            $@Model.importe.ToString("N2")
+                        </p>
+
+                        <p class="mb-0">
+                            <strong>Estado:</strong>
+
+                            @if (Model.estado)
+                            {
+                                <span class="badge bg-success">
+                                    Activo
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">
+                                    Anulado
+                                </span>
+                            }
+                        </p>
+
+                    </div>
+
+                    @if (User.IsInRole("Administrador"))
+                    {
+                        <hr />
+
+                        <div class="card border-primary mb-4">
+
+                            <div class="card-header bg-primary text-white">
+                                <i class="bi bi-shield-lock-fill"></i>
+                                Información de auditoría
+                            </div>
+
+                            <div class="card-body">
+
+                                <p class="mb-2">
+                                    <strong>Usuario creador:</strong>
+                                    @Model.idUsuarioCreador
+                                </p>
+
+                                <p class="mb-0">
+                                    <strong>Usuario anulador:</strong>
+
+                                    @if (Model.idUsuarioAnulador.HasValue)
+                                    {
+                                        @Model.idUsuarioAnulador
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">
+                                            Pago aún no anulado
+                                        </span>
+                                    }
+                                </p>
+
+                            </div>
+
+                        </div>
+                    }
+
+                    <div class="d-flex justify-content-end gap-2">
+
+                        <a href="/Pago/PorReserva/@Model.idReserva"
+                           class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i>
+                            Volver
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

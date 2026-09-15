@@ -42,14 +42,49 @@
 
         <div class="card-body">
 
+            <!-- Buscar propietario -->
+            <form asp-action="PorPropietario" method="get" class="mb-4">
+
+                <div class="row g-3 align-items-end">
+
+                    <div class="col-md-8">
+                        <label class="form-label fw-semibold">
+                            Buscar propietario
+                        </label>
+
+                        <input type="text"
+                               name="busqueda"
+                               value="@ViewBag.Busqueda"
+                               class="form-control"
+                               placeholder="Ingrese nombre o apellido" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <button type="submit"
+                                class="btn btn-outline-primary w-100">
+                            <i class="bi bi-search"></i>
+                            Buscar propietario
+                        </button>
+                    </div>
+
+                </div>
+
+            </form>
+
+
+            <!-- Seleccionar propietario -->
             <form asp-action="PorPropietario" method="get">
+
+                <input type="hidden"
+                       name="busqueda"
+                       value="@ViewBag.Busqueda" />
 
                 <div class="row g-3 align-items-end">
 
                     <div class="col-md-8">
 
                         <label class="form-label fw-semibold">
-                            Propietario
+                            Seleccionar propietario
                         </label>
 
                         <select name="idPropietario" class="form-select">
@@ -62,7 +97,7 @@
                             {
                                 <option value="@propietario.IdPropietario"
                                         selected="@(ViewBag.IdPropietario != null &&
-                                                                                       ViewBag.IdPropietario == propietario.IdPropietario)">
+                                                                                           ViewBag.IdPropietario == propietario.IdPropietario)">
                                     @propietario.Nombre @propietario.Apellido
                                 </option>
                             }
@@ -75,7 +110,7 @@
 
                         <button type="submit"
                                 class="btn btn-primary w-100">
-                            <i class="bi bi-search"></i>
+                            <i class="bi bi-house-fill"></i>
                             Buscar inmuebles
                         </button>
 

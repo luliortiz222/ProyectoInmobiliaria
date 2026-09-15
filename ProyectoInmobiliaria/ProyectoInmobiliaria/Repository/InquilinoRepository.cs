@@ -79,6 +79,93 @@ public class InquilinoRepository
         return lista;
     }
 
+    public List<Inquilino> ObtenerPaginados(string busqueda, int pagina, int cantidadPorPagina)
+    {
+        List<Inquilino> lista = new List<Inquilino>();
+
+        int desplazamiento = (pagina - 1) * cantidadPorPagina;
+
+        string query = @"
+        SELECT *
+        FROM Inquilino
+        WHERE Nombre LIKE @Busqueda
+           OR Apellido LIKE @Busqueda
+           OR Dni LIKE @Busqueda
+        ORDER BY IdInquilino
+        LIMIT @CantidadPorPagina OFFSET @Desplazamiento";
+
+        using (MySqlConnection conexion = new MySqlConnection(_cadenaConexion))
+        {
+            using (MySqlCommand comando = new MySqlCommand(query, conexion))
+            {
+                comando.Parameters.AddWithValue("@Busqueda", "%" + (busqueda ?? "") + "%");
+                comando.Parameters.AddWithValue("@CantidadPorPagina", cantidadPorPagina);
+                comando.Parameters.AddWithValue("@Desplazamiento", desplazamiento);
+
+                try
+                {
+                    conexion.Open();
+
+                    using (MySqlDataReader reader = comando.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            Inquilino i = new Inquilino
+                            {
+                                IdInquilino = Convert.ToInt32(reader["IdInquilino"]),
+                                Dni = reader["Dni"].ToString(),
+                                Nombre = reader["Nombre"].ToString(),
+                                Apellido = reader["Apellido"].ToString(),
+                                Email = reader["Email"].ToString(),
+                                Telefono = reader["Telefono"].ToString()
+                            };
+
+                            lista.Add(i);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error al obtener inquilinos paginados: " + ex.Message);
+                }
+            }
+        }
+
+        return lista;
+    }
+
+    public int ContarInquilinos(string busqueda)
+    {
+        int cantidad = 0;
+
+        string query = @"
+        SELECT COUNT(*)
+        FROM Inquilino
+        WHERE Nombre LIKE @Busqueda
+           OR Apellido LIKE @Busqueda
+           OR Dni LIKE @Busqueda";
+
+        using (MySqlConnection conexion = new MySqlConnection(_cadenaConexion))
+        {
+            using (MySqlCommand comando = new MySqlCommand(query, conexion))
+            {
+                comando.Parameters.AddWithValue("@Busqueda", "%" + (busqueda ?? "") + "%");
+
+                try
+                {
+                    conexion.Open();
+                    cantidad = Convert.ToInt32(comando.ExecuteScalar());
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error al contar inquilinos: " + ex.Message);
+                }
+            }
+        }
+
+        return cantidad;
+    }
+
     public Inquilino ObtenerPorId(int id)
     {
         Inquilino i = null;
@@ -148,26 +235,30 @@ public class InquilinoRepository
         }
     }
 
-    public void Eliminar(int id)
+    public bool Eliminar(int id)
+{
+    string query = "DELETE FROM Inquilino WHERE IdInquilino = @Id";
+
+    using (MySqlConnection conexion = new MySqlConnection(_cadenaConexion))
     {
-        string query = "DELETE FROM Inquilino WHERE IdInquilino = @Id";
-
-        using (MySqlConnection conexion = new MySqlConnection(_cadenaConexion))
+        using (MySqlCommand comando = new MySqlCommand(query, conexion))
         {
-            using (MySqlCommand comando = new MySqlCommand(query, conexion))
-            {
-                comando.Parameters.AddWithValue("@Id", id);
+            comando.Parameters.AddWithValue("@Id", id);
 
-                try
-                {
-                    conexion.Open();
-                    comando.ExecuteNonQuery();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Error al eliminar inquilino: " + ex.Message);
-                }
+            try
+            {
+                conexion.Open();
+
+                int filasAfectadas = comando.ExecuteNonQuery();
+
+                return filasAfectadas > 0;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error al eliminar inquilino: " + ex.Message);
+                return false;
             }
         }
     }
+}
 }

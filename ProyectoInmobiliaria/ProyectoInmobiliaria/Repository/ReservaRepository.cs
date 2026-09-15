@@ -59,10 +59,19 @@ namespace ProyectoInmobiliaria.Repository
             {
                 conexion.Open();
 
-                string sql = @"SELECT IdReserva, IdInquilino, IdInmueble,
-                                      MontoPorDia, FechaDesde, FechaHasta
-                               FROM Reserva
-                               WHERE IdReserva = @id";
+                string sql = @"
+            SELECT
+                IdReserva,
+                IdInquilino,
+                IdInmueble,
+                MontoPorDia,
+                FechaDesde,
+                FechaHasta,
+                IdUsuarioCreador,
+                IdUsuarioFinalizador,
+                FechaFinalizacion
+            FROM Reserva
+            WHERE IdReserva = @id";
 
                 using (MySqlCommand comando = new MySqlCommand(sql, conexion))
                 {
@@ -79,7 +88,22 @@ namespace ProyectoInmobiliaria.Repository
                                 IdInmueble = reader.GetInt32("IdInmueble"),
                                 MontoPorDia = reader.GetDecimal("MontoPorDia"),
                                 FechaDesde = reader.GetDateTime("FechaDesde"),
-                                FechaHasta = reader.GetDateTime("FechaHasta")
+                                FechaHasta = reader.GetDateTime("FechaHasta"),
+
+                                IdUsuarioCreador = reader.IsDBNull(
+                                    reader.GetOrdinal("IdUsuarioCreador"))
+                                    ? 0
+                                    : reader.GetInt32("IdUsuarioCreador"),
+
+                                IdUsuarioFinalizador = reader.IsDBNull(
+                                    reader.GetOrdinal("IdUsuarioFinalizador"))
+                                    ? (int?)null
+                                    : reader.GetInt32("IdUsuarioFinalizador"),
+
+                                FechaFinalizacion = reader.IsDBNull(
+                                    reader.GetOrdinal("FechaFinalizacion"))
+                                    ? (DateTime?)null
+                                    : reader.GetDateTime("FechaFinalizacion")
                             };
                         }
                     }
@@ -88,7 +112,6 @@ namespace ProyectoInmobiliaria.Repository
 
             return reserva;
         }
-
         // Verificar si un inmueble está disponible para ciertas fechas
         public bool EstaDisponible(int idInmueble, DateTime fechaDesde, DateTime fechaHasta)
         {
@@ -325,12 +348,54 @@ namespace ProyectoInmobiliaria.Repository
             return true;
         }
 
-        // Eliminar una reserva
-        public void Eliminar(int id)
+        public bool Finalizar(int idReserva, int idUsuarioFinalizador)
         {
             using (MySqlConnection conexion = new MySqlConnection(connectionString))
             {
                 conexion.Open();
+
+                string sql = @"
+            UPDATE Reserva
+            SET IdUsuarioFinalizador = @IdUsuarioFinalizador,
+                FechaFinalizacion = CURDATE()
+            WHERE IdReserva = @IdReserva
+              AND IdUsuarioFinalizador IS NULL";
+
+                using (MySqlCommand comando = new MySqlCommand(sql, conexion))
+                {
+                    comando.Parameters.AddWithValue("@IdUsuarioFinalizador", idUsuarioFinalizador);
+                    comando.Parameters.AddWithValue("@IdReserva", idReserva);
+
+                    int filasAfectadas = comando.ExecuteNonQuery();
+
+                    return filasAfectadas > 0;
+                }
+            }
+        }
+
+        // Eliminar una reserva
+        public bool Eliminar(int id)
+        {
+            using (MySqlConnection conexion = new MySqlConnection(connectionString))
+            {
+                conexion.Open();
+
+                string sqlVerificar = @"
+            SELECT COUNT(*)
+            FROM Pago
+            WHERE IdReserva = @IdReserva";
+
+                using (MySqlCommand comandoVerificar = new MySqlCommand(sqlVerificar, conexion))
+                {
+                    comandoVerificar.Parameters.AddWithValue("@IdReserva", id);
+
+                    int cantidadPagos = Convert.ToInt32(comandoVerificar.ExecuteScalar());
+
+                    if (cantidadPagos > 0)
+                    {
+                        return false;
+                    }
+                }
 
                 string sql = "DELETE FROM Reserva WHERE IdReserva = @id";
 
@@ -338,7 +403,9 @@ namespace ProyectoInmobiliaria.Repository
                 {
                     comando.Parameters.AddWithValue("@id", id);
 
-                    comando.ExecuteNonQuery();
+                    int filasAfectadas = comando.ExecuteNonQuery();
+
+                    return filasAfectadas > 0;
                 }
             }
         }

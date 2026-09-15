@@ -24,9 +24,36 @@ namespace ProyectoInmobiliaria.Controllers
         }
 
         // GET: /Inmueble
-        public IActionResult Index()
+        public IActionResult Index(string busqueda, int pagina = 1)
         {
-            var inmuebles = _inmuebleRepository.ObtenerTodos();
+            int cantidadPorPagina = 10;
+
+            int totalInmuebles = _inmuebleRepository.ContarInmuebles(busqueda);
+
+            int totalPaginas = (int)Math.Ceiling(
+                (double)totalInmuebles / cantidadPorPagina
+            );
+
+            if (totalPaginas > 0 && pagina > totalPaginas)
+            {
+                pagina = totalPaginas;
+            }
+
+            if (pagina < 1)
+            {
+                pagina = 1;
+            }
+
+            var inmuebles = _inmuebleRepository.ObtenerPaginados(
+                busqueda,
+                pagina,
+                cantidadPorPagina
+            );
+
+            ViewBag.Busqueda = busqueda;
+            ViewBag.PaginaActual = pagina;
+            ViewBag.TotalPaginas = totalPaginas;
+
             return View(inmuebles);
         }
 
@@ -50,9 +77,17 @@ namespace ProyectoInmobiliaria.Controllers
         }
 
         [HttpGet]
-        public IActionResult PorPropietario(int? idPropietario)
+        public IActionResult PorPropietario(int? idPropietario, string busqueda)
         {
-            ViewBag.Propietarios = _propietarioRepo.obtenerTodos();
+            ViewBag.Busqueda = busqueda;
+
+            if (!string.IsNullOrWhiteSpace(busqueda) && idPropietario == null)
+            {
+                ViewBag.Propietarios = _propietarioRepo.ObtenerPorBusqueda(busqueda);
+                return View(new List<Inmueble>());
+            }
+
+            ViewBag.Propietarios = _propietarioRepo.ObtenerPorBusqueda(busqueda ?? "");
 
             if (idPropietario == null)
             {
@@ -162,7 +197,6 @@ namespace ProyectoInmobiliaria.Controllers
         public IActionResult Edit(Inmueble inmueble)
         {
             _inmuebleRepository.Actualizar(inmueble);
-
             return RedirectToAction("Index");
         }
 

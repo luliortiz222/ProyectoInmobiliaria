@@ -139,6 +139,39 @@ namespace ProyectoInmobiliaria.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Administrador")]
+        public IActionResult Finalizar(int id)
+        {
+            var reserva = _reservaRepository.ObtenerPorId(id);
+
+            if (reserva == null)
+                return NotFound();
+
+            if (reserva.IdUsuarioFinalizador != null)
+            {
+                return View("Finalizar", reserva);
+            }
+
+            return View(reserva);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Administrador")]
+        public IActionResult FinalizarConfirmado(int idReserva)
+        {
+            string idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            int idUsuarioFinalizador = int.Parse(idString);
+
+            _reservaRepository.Finalizar(
+                idReserva,
+                idUsuarioFinalizador
+            );
+
+            return RedirectToAction("Details", new { id = idReserva });
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Administrador")]
         public IActionResult Delete(int id)
         {
             var reserva = _reservaRepository.ObtenerPorId(id);
@@ -155,7 +188,13 @@ namespace ProyectoInmobiliaria.Controllers
         [Authorize(Roles = "Administrador")]
         public IActionResult DeleteConfirmed(int id)
         {
-            _reservaRepository.Eliminar(id);
+            bool eliminado = _reservaRepository.Eliminar(id);
+
+            if (!eliminado)
+            {
+                TempData["Error"] = "No se puede eliminar la reserva porque tiene pagos asociados.";
+                return RedirectToAction("Index");
+            }
 
             return RedirectToAction("Index");
         }

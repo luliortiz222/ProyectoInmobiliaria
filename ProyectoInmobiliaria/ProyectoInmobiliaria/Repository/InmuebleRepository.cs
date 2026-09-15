@@ -160,6 +160,149 @@ namespace ProyectoInmobiliaria.Repository
             return inmuebles;
         }
 
+        public List<Inmueble> ObtenerPaginados(string busqueda, int pagina, int cantidadPorPagina)
+        {
+            List<Inmueble> inmuebles = new List<Inmueble>();
+
+            int desplazamiento = (pagina - 1) * cantidadPorPagina;
+
+            string query = @"
+        SELECT 
+            i.IdInmueble,
+            i.Direccion,
+            i.Cupo,
+            i.Coordenadas,
+            i.PrecioPorDia,
+            i.ImagenPortada,
+            i.Estado,
+            i.IdPropietario,
+            i.IdTipoInmueble,
+
+            p.Nombre AS NombrePropietario,
+            p.Apellido AS ApellidoPropietario,
+
+            t.Nombre AS NombreTipo
+
+        FROM Inmueble i
+
+        INNER JOIN Propietario p
+            ON i.IdPropietario = p.IdPropietario
+
+        INNER JOIN TipoInmueble t
+            ON i.IdTipoInmueble = t.IdTipoInmueble
+
+        WHERE i.Direccion LIKE @Busqueda
+           OR p.Nombre LIKE @Busqueda
+           OR p.Apellido LIKE @Busqueda
+           OR p.Dni LIKE @Busqueda
+           OR t.Nombre LIKE @Busqueda
+
+        ORDER BY i.IdInmueble
+
+        LIMIT @CantidadPorPagina OFFSET @Desplazamiento";
+
+            using (MySqlConnection conexion = new MySqlConnection(_cadenaDeConexion))
+            {
+                using (MySqlCommand comando = new MySqlCommand(query, conexion))
+                {
+                    comando.Parameters.AddWithValue("@Busqueda", "%" + (busqueda ?? "") + "%");
+                    comando.Parameters.AddWithValue("@CantidadPorPagina", cantidadPorPagina);
+                    comando.Parameters.AddWithValue("@Desplazamiento", desplazamiento);
+
+                    try
+                    {
+                        conexion.Open();
+
+                        using (MySqlDataReader reader = comando.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                Inmueble inmueble = new Inmueble
+                                {
+                                    IdInmueble = reader.GetInt32("IdInmueble"),
+                                    Direccion = reader.GetString("Direccion"),
+                                    Cupo = reader.GetInt32("Cupo"),
+                                    Coordenadas = reader.GetString("Coordenadas"),
+                                    PrecioPorDia = reader.GetDecimal("PrecioPorDia"),
+
+                                    ImagenPortada = reader.IsDBNull(
+                                        reader.GetOrdinal("ImagenPortada"))
+                                        ? ""
+                                        : reader.GetString("ImagenPortada"),
+
+                                    Estado = reader.GetBoolean("Estado"),
+                                    IdPropietario = reader.GetInt32("IdPropietario"),
+                                    IdTipoInmueble = reader.GetInt32("IdTipoInmueble"),
+
+                                    Dueño = new Propietario
+                                    {
+                                        IdPropietario = reader.GetInt32("IdPropietario"),
+                                        Nombre = reader.GetString("NombrePropietario"),
+                                        Apellido = reader.GetString("ApellidoPropietario")
+                                    },
+
+                                    Tipo = new TipoInmueble
+                                    {
+                                        IdTipoInmueble = reader.GetInt32("IdTipoInmueble"),
+                                        Nombre = reader.GetString("NombreTipo")
+                                    }
+                                };
+
+                                inmuebles.Add(inmueble);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Error al obtener inmuebles paginados: " + ex.Message);
+                    }
+                }
+            }
+
+            return inmuebles;
+        }
+
+        public int ContarInmuebles(string busqueda)
+        {
+            int cantidad = 0;
+
+            string query = @"
+        SELECT COUNT(*)
+        FROM Inmueble i
+
+        INNER JOIN Propietario p
+            ON i.IdPropietario = p.IdPropietario
+
+        INNER JOIN TipoInmueble t
+            ON i.IdTipoInmueble = t.IdTipoInmueble
+
+        WHERE i.Direccion LIKE @Busqueda
+           OR p.Nombre LIKE @Busqueda
+           OR p.Apellido LIKE @Busqueda
+           OR p.Dni LIKE @Busqueda
+           OR t.Nombre LIKE @Busqueda";
+
+            using (MySqlConnection conexion = new MySqlConnection(_cadenaDeConexion))
+            {
+                using (MySqlCommand comando = new MySqlCommand(query, conexion))
+                {
+                    comando.Parameters.AddWithValue("@Busqueda", "%" + (busqueda ?? "") + "%");
+
+                    try
+                    {
+                        conexion.Open();
+
+                        cantidad = Convert.ToInt32(comando.ExecuteScalar());
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Error al contar inmuebles: " + ex.Message);
+                    }
+                }
+            }
+
+            return cantidad;
+        }
         public List<Inmueble> ObtenerPorEstado(bool estado)
         {
             List<Inmueble> inmuebles = new List<Inmueble>();

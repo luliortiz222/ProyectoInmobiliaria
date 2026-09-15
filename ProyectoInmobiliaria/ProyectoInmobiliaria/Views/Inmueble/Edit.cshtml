@@ -31,7 +31,13 @@
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Precio por Día ($)</label>
-                                <input type="number" step="0.01" name="PrecioPorDia" class="form-control" value="@Model.PrecioPorDia.ToString().Replace(",", ".")" required />
+
+                                <input type="number"
+                                       step="0.01"
+                                       name="PrecioPorDia"
+                                       class="form-control"
+                                       value="@Model.PrecioPorDia.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)"
+                                       required />
                             </div>
                         </div>
 

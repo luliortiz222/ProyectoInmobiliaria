@@ -16,9 +16,35 @@ namespace ProyectoInmobiliaria.Controllers
         }
 
         // GET: /Inquilinos
-        public IActionResult Index()
+        public IActionResult Index(string busqueda, int pagina = 1)
         {
-            List<Inquilino> lista = _inquilinoRepository.ObtenerTodos();
+            int cantidadPorPagina = 10;
+
+            int totalInquilinos = _inquilinoRepository.ContarInquilinos(busqueda);
+
+            int totalPaginas = (int)Math.Ceiling(
+                (double)totalInquilinos / cantidadPorPagina
+            );
+
+            if (totalPaginas > 0 && pagina > totalPaginas)
+            {
+                pagina = totalPaginas;
+            }
+
+            if (pagina < 1)
+            {
+                pagina = 1;
+            }
+
+            var lista = _inquilinoRepository.ObtenerPaginados(
+                busqueda,
+                pagina,
+                cantidadPorPagina
+            );
+
+            ViewBag.Busqueda = busqueda;
+            ViewBag.PaginaActual = pagina;
+            ViewBag.TotalPaginas = totalPaginas;
 
             return View(lista);
         }
@@ -92,7 +118,16 @@ namespace ProyectoInmobiliaria.Controllers
                 return NotFound();
             }
 
-            _inquilinoRepository.Eliminar(idInquilino);
+            bool eliminado = _inquilinoRepository.Eliminar(idInquilino);
+
+            if (!eliminado)
+            {
+                TempData["Error"] = "No se puede eliminar este inquilino porque tiene reservas asociadas.";
+            }
+            else
+            {
+                TempData["Mensaje"] = "Inquilino eliminado correctamente.";
+            }
 
             return RedirectToAction("Index");
         }

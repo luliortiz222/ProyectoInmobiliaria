@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ProyectoInmobiliaria.models;
 using ProyectoInmobiliaria.Repository;
-using System.Linq;
-using System.IO;
 using System.Collections.Generic;
-
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using System.IO;
+using System.Linq;
 using System.Security.Claims;
 
 
@@ -75,11 +75,10 @@ namespace ProyectoInmobiliaria.Controllers
             CookieAuthenticationDefaults.AuthenticationScheme,
             new ClaimsPrincipal(claimsIdentity));
 
-            // AGREGA ESTA LÍNEA:
             TempData["MensajeBienvenida"] = $"¡Hola {usuario.Nombre}! Has iniciado sesión correctamente.";
 
             // 5. Lo mandamos a la página principal
-            return RedirectToAction("Index", "Inmueble");
+            return RedirectToAction("Index", "Home");
         }
 
         // GET: /Usuarios/Logout
@@ -88,10 +87,6 @@ namespace ProyectoInmobiliaria.Controllers
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Login", "Usuario");
         }
-
-
-
-
 
 
         // GET: Usuario/Create
@@ -125,6 +120,11 @@ namespace ProyectoInmobiliaria.Controllers
         [HttpPost]
         public IActionResult Create(Usuario usuario)
         {
+            if (!User.IsInRole("Administrador"))
+            {
+                usuario.Rol = "Empleado";
+            }
+
             if (!ModelState.IsValid)
             {
                 return View(usuario);
@@ -132,7 +132,7 @@ namespace ProyectoInmobiliaria.Controllers
 
             _usuarioRepository.Guardar(usuario);
 
-            return RedirectToAction("Login");
+            return RedirectToAction("Index");
         }
         // GET: Usuario/Edit/5
         [HttpGet]
@@ -143,6 +143,18 @@ namespace ProyectoInmobiliaria.Controllers
             if (usuario == null)
             {
                 return NotFound();
+            }
+
+            if (!User.IsInRole("Administrador"))
+            {
+                string idUsuarioLogueado = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                if (id != int.Parse(idUsuarioLogueado))
+                {
+                    TempData["Error"] = "Solo puedes modificar tu propio usuario si eres Empleado. Si eres Administrador, puedes modificar a todos los usuarios.";
+
+                    return RedirectToAction("Index");
+                }
             }
 
             string carpetaAvatares = Path.Combine(
@@ -168,6 +180,8 @@ namespace ProyectoInmobiliaria.Controllers
             return View(usuario);
         }
 
+
+
         // POST: Usuario/Edit
         [HttpPost]
         public IActionResult Edit(Usuario usuario)
@@ -177,12 +191,23 @@ namespace ProyectoInmobiliaria.Controllers
                 return View(usuario);
             }
 
+            if (!User.IsInRole("Administrador"))
+            {
+                string idUsuarioLogueado = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                if (usuario.IdUsuario != int.Parse(idUsuarioLogueado))
+                {
+                    TempData["Error"] = "Solo puedes modificar tu propio usuario si eres Empleado. Si eres Administrador, puedes modificar a todos los usuarios.";
+
+                    return RedirectToAction("Index");
+                }
+            }
+
             _usuarioRepository.Actualizar(usuario);
 
             return RedirectToAction("Index");
         }
 
-        // GET: Usuario/Details/5
         [HttpGet]
         public IActionResult Details(int id)
         {
@@ -196,8 +221,10 @@ namespace ProyectoInmobiliaria.Controllers
             return View(usuario);
         }
 
+
         // GET: Usuario/Delete/5
         [HttpGet]
+        [Authorize(Roles = "Administrador")]
         public IActionResult Delete(int id)
         {
             var usuario = _usuarioRepository.ObtenerPorId(id);
@@ -212,16 +239,12 @@ namespace ProyectoInmobiliaria.Controllers
 
         // POST: Usuario/Delete/5
         [HttpPost, ActionName("Delete")]
+        [Authorize(Roles = "Administrador")]
         public IActionResult DeleteConfirmed(int id)
         {
             _usuarioRepository.Eliminar(id);
 
             return RedirectToAction("Index");
-        }
-
-        private bool EsAdministrador()
-        {
-            return HttpContext.Session.GetString("Rol") == "Administrador";
         }
     }
 }
