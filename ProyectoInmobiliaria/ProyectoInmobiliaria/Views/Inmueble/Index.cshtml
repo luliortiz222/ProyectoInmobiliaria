@@ -91,15 +91,18 @@
                         <td class="align-middle">@item.Coordenadas</td>
                         <td class="align-middle">@item.PrecioPorDia</td>
                         
-                        <td class="aling-middle">
+                        <td class="align-middle">
                             @if (!string.IsNullOrEmpty(item.ImagenPortada))
                             {
-                                <span class="badge bg-info">Tiene foto</span>
+                                <img src="@item.ImagenPortada"
+                                     alt="Imagen del inmueble"
+                                     style="width: 100px; height: 70px; object-fit: cover;"
+                                     class="rounded" />
                             }
                             else
                             {
                                 <span class="text-muted">Sin foto</span>
-                            }       
+                            }
                         </td>
                         <td class="align-middle">
                             @if (item.Estado)

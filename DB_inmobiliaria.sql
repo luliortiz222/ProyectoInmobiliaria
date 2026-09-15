@@ -39,7 +39,7 @@ CREATE TABLE Inmueble (
     Direccion VARCHAR(200) NOT NULL,
     Cupo INT NOT NULL,
     Coordenadas VARCHAR(200) NOT NULL,
-    PrecioPorDia DECIMAL(10,2) NOT NULL,
+    PrecioPorDia DECIMAL(12,2) NOT NULL,
     ImagenPortada VARCHAR(300),
     Estado BOOLEAN NOT NULL DEFAULT TRUE, 
     IdPropietario INT NOT NULL,
