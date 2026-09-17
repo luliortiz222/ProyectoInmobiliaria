@@ -1,7 +1,7 @@
 # ProyectoInmobiliaria
 # Sistema de Gestión Inmobiliaria
 
-> Aplicación web desarrollada en ASP.NET Core MVC para la administración integral de propiedades, propietarios, inquilinos, inmuebles y reservas con persistencia en MySQL.
+> Aplicación web desarrollada en ASP.NET Core MVC para la administración integral de propiedades, propietarios, inquilinos, inmuebles, reservas, pagos y usuarios con persistencia en MySQL.
 
 ---
 
@@ -61,22 +61,29 @@ string cadenaConexion = "Server=localhost;Database=inmobiliaria;Uid=root;Pwd=adm
 ```text
 ProyectoInmobiliaria
 ├── Controllers/
+│   ├── HomeController.cs
 │   ├── InquilinosController.cs
 │   ├── PropietariosController.cs
 │   ├── InmuebleController.cs
 │   ├── TipoInmuebleController.cs
+│   ├── UsuarioController.cs
+│   ├── PagoController.cs
 │   └── ReservasController.cs
 ├── models/
 │   ├── Inquilino.cs
 │   ├── Propietario.cs
 │   ├── Inmueble.cs
 │   ├── TipoInmueble.cs
+│   ├── Usuario.cs
+│   ├── Pago.cs
 │   └── Reserva.cs
 ├── Repository/
 │   ├── InquilinoRepository.cs
 │   ├── PropietarioRepository.cs
 │   ├── InmuebleRepository.cs
 │   ├── TipoInmuebleRepository.cs
+│   ├── UsuarioRepository.cs
+│   ├── PagoRepository.cs
 │   └── ReservaRepository.cs
 ├── Views/
 │   ├── Home/
@@ -84,8 +91,20 @@ ProyectoInmobiliaria
 │   ├── Propietarios/
 │   ├── Inmueble/
 │   ├── TipoInmueble/
+│   ├── Pago/
 │   ├── Reservas/
 │   └── Shared/
 │       └── _Layout.cshtml
+├── wwwroot/
+│   └── avatars/
 └── Program.cs
 ```
+
+## Usuarios de Prueba
+
+El script de base de datos incluye la creación de los siguientes usuarios por defecto para pruebas de acceso al sistema:
+
+| Rol | Correo Electrónico | Contraseña | Nombre Completo |
+| :--- | :--- | :--- | :--- |
+| **Administrador** | `admin@inmobiliaria.com` | `123456` | Admin Sistema |
+| **Empleado** | `empleado@inmobiliaria.com` | `123456` | Empleado Sistema |
