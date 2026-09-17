@@ -116,6 +116,7 @@ namespace ProyectoInmobiliaria.Controllers
 
         // GET: Usuario/Create
         [HttpGet]
+        [Authorize(Roles = "Administrador")]
         public IActionResult Create()
         {
             string carpetaAvatares = Path.Combine(
@@ -143,13 +144,9 @@ namespace ProyectoInmobiliaria.Controllers
 
         // POST: Usuario/Create
         [HttpPost]
+        [Authorize(Roles = "Administrador")]
         public IActionResult Create(Usuario usuario)
         {
-            if (!User.IsInRole("Administrador"))
-            {
-                usuario.Rol = "Empleado";
-            }
-
             if (!ModelState.IsValid)
             {
                 return View(usuario);
