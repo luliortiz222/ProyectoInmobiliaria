@@ -68,7 +68,7 @@ ProyectoInmobiliaria
 │   ├── TipoInmuebleController.cs
 │   ├── UsuarioController.cs
 │   ├── PagoController.cs
-│   └── ReservasController.cs
+│   └── ReservaController.cs
 ├── models/
 │   ├── Inquilino.cs
 │   ├── Propietario.cs
@@ -90,7 +90,8 @@ ProyectoInmobiliaria
 │   ├── Inquilinos/
 │   ├── Propietarios/
 │   ├── Inmueble/
-│   ├── TipoInmueble/
+│   ├── TipoInmuebles/
+│   ├── Usuario/
 │   ├── Pago/
 │   ├── Reservas/
 │   └── Shared/
