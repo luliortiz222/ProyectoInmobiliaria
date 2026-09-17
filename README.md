@@ -8,7 +8,7 @@
 ## Integrantes del Grupo
 
 * **Ortiz Paez Lourdes**
-* **Silva Fabricio**
+* **Silva Fabricio Daniel**
 
 ---
 

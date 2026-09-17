@@ -83,3 +83,12 @@ CREATE TABLE Pago (
     FOREIGN KEY (IdUsuarioAnulador) REFERENCES Usuario(IdUsuario)
 );
 
+INSERT INTO Usuario
+(Email, Password, Nombre, Apellido, Rol)
+VALUES
+('admin@inmobiliaria.com', '123456', 'Admin', 'Sistema', 'Administrador');
+
+INSERT INTO Usuario
+(Email, Password, Nombre, Apellido, Rol)
+VALUES
+('empleado@inmobiliaria.com', '123456', 'Empleado', 'Sistema', 'Empleado');
