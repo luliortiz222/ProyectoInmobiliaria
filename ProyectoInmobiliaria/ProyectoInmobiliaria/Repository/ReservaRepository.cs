@@ -50,53 +50,119 @@ namespace ProyectoInmobiliaria.Repository
             return lista;
         }
 
-        public List<Reserva> ObtenerPaginados(string busqueda, int pagina, int cantidadPorPagina)
+        public Reserva ObtenerPorId(int id)
+        {
+            Reserva reserva = null;
+
+            using (MySqlConnection conexion = new MySqlConnection(connectionString))
+            {
+                conexion.Open();
+
+                string sql = @"SELECT IdReserva, IdInquilino, IdInmueble,
+                                      MontoPorDia, FechaDesde, FechaHasta
+                               FROM Reserva
+                               WHERE IdReserva = @id";
+
+                using (MySqlCommand comando = new MySqlCommand(sql, conexion))
+                {
+                    comando.Parameters.AddWithValue("@id", id);
+
+                    using (MySqlDataReader reader = comando.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            reserva = new Reserva
+                            {
+                                IdReserva = reader.GetInt32("IdReserva"),
+                                IdInquilino = reader.GetInt32("IdInquilino"),
+                                IdInmueble = reader.GetInt32("IdInmueble"),
+                                MontoPorDia = reader.GetDecimal("MontoPorDia"),
+                                FechaDesde = reader.GetDateTime("FechaDesde"),
+                                FechaHasta = reader.GetDateTime("FechaHasta")
+                            };
+                        }
+                    }
+                }
+            }
+
+            return reserva;
+        }
+
+        public List<Reserva> ObtenerPaginados(
+    string busqueda,
+    int? idInquilino,
+    int? idInmueble,
+    int pagina,
+    int cantidadPorPagina)
         {
             List<Reserva> lista = new List<Reserva>();
 
             int desplazamiento = (pagina - 1) * cantidadPorPagina;
 
             string sql = @"
-    SELECT 
-        r.IdReserva,
-        r.IdInquilino,
-        r.IdInmueble,
-        r.MontoPorDia,
-        r.FechaDesde,
-        r.FechaHasta,
-        r.IdUsuarioCreador,
-        r.IdUsuarioFinalizador,
-        r.FechaFinalizacion,
+        SELECT 
+            r.IdReserva,
+            r.IdInquilino,
+            r.IdInmueble,
+            r.MontoPorDia,
+            r.FechaDesde,
+            r.FechaHasta,
+            r.IdUsuarioCreador,
+            r.IdUsuarioFinalizador,
+            r.FechaFinalizacion,
 
-        CONCAT(i.Nombre, ' ', i.Apellido) AS NombreInquilino,
-        inm.Direccion AS DireccionInmueble
+            CONCAT(i.Nombre, ' ', i.Apellido) AS NombreInquilino,
+            inm.Direccion AS DireccionInmueble
 
-    FROM Reserva r
+        FROM Reserva r
 
-    INNER JOIN Inquilino i
-        ON r.IdInquilino = i.IdInquilino
+        INNER JOIN Inquilino i
+            ON r.IdInquilino = i.IdInquilino
 
-    INNER JOIN Inmueble inm
-        ON r.IdInmueble = inm.IdInmueble
+        INNER JOIN Inmueble inm
+            ON r.IdInmueble = inm.IdInmueble
 
-    WHERE CAST(r.IdReserva AS CHAR) LIKE @Busqueda
-       OR CAST(r.IdInquilino AS CHAR) LIKE @Busqueda
-       OR CAST(r.IdInmueble AS CHAR) LIKE @Busqueda
-       OR CAST(r.MontoPorDia AS CHAR) LIKE @Busqueda
+        WHERE (
+            CAST(r.IdReserva AS CHAR) LIKE @Busqueda
+            OR CAST(r.IdInquilino AS CHAR) LIKE @Busqueda
+            OR CAST(r.IdInmueble AS CHAR) LIKE @Busqueda
+            OR CAST(r.MontoPorDia AS CHAR) LIKE @Busqueda
+            OR CONCAT(i.Nombre, ' ', i.Apellido) LIKE @Busqueda
+            OR inm.Direccion LIKE @Busqueda
+        )
 
-    ORDER BY r.FechaDesde DESC
+        AND (@IdInquilino IS NULL OR r.IdInquilino = @IdInquilino)
 
-    LIMIT @CantidadPorPagina OFFSET @Desplazamiento";
+        AND (@IdInmueble IS NULL OR r.IdInmueble = @IdInmueble)
 
-            using (MySqlConnection conexion = new MySqlConnection(connectionString))
+        ORDER BY r.FechaDesde DESC
+
+        LIMIT @CantidadPorPagina
+        OFFSET @Desplazamiento";
+
+            using (MySqlConnection conexion =
+                   new MySqlConnection(connectionString))
             {
                 conexion.Open();
 
-                using (MySqlCommand comando = new MySqlCommand(sql, conexion))
+                using (MySqlCommand comando =
+                       new MySqlCommand(sql, conexion))
                 {
                     comando.Parameters.AddWithValue(
                         "@Busqueda",
                         "%" + (busqueda ?? "") + "%");
+
+                    comando.Parameters.AddWithValue(
+                        "@IdInquilino",
+                        idInquilino.HasValue
+                            ? idInquilino.Value
+                            : DBNull.Value);
+
+                    comando.Parameters.AddWithValue(
+                        "@IdInmueble",
+                        idInmueble.HasValue
+                            ? idInmueble.Value
+                            : DBNull.Value);
 
                     comando.Parameters.AddWithValue(
                         "@CantidadPorPagina",
@@ -106,17 +172,23 @@ namespace ProyectoInmobiliaria.Repository
                         "@Desplazamiento",
                         desplazamiento);
 
-                    using (MySqlDataReader reader = comando.ExecuteReader())
+                    using (MySqlDataReader reader =
+                           comando.ExecuteReader())
                     {
                         while (reader.Read())
                         {
                             Reserva reserva = new Reserva
                             {
                                 IdReserva = reader.GetInt32("IdReserva"),
+
                                 IdInquilino = reader.GetInt32("IdInquilino"),
+
                                 IdInmueble = reader.GetInt32("IdInmueble"),
+
                                 MontoPorDia = reader.GetDecimal("MontoPorDia"),
+
                                 FechaDesde = reader.GetDateTime("FechaDesde"),
+
                                 FechaHasta = reader.GetDateTime("FechaHasta"),
 
                                 IdUsuarioCreador = reader.IsDBNull(
@@ -134,8 +206,11 @@ namespace ProyectoInmobiliaria.Repository
                                     ? (DateTime?)null
                                     : reader.GetDateTime("FechaFinalizacion"),
 
-                                NombreInquilino = reader.GetString("NombreInquilino"),
-                                DireccionInmueble = reader.GetString("DireccionInmueble")
+                                NombreInquilino =
+                                    reader.GetString("NombreInquilino"),
+
+                                DireccionInmueble =
+                                    reader.GetString("DireccionInmueble")
                             };
 
                             lista.Add(reserva);
@@ -147,96 +222,67 @@ namespace ProyectoInmobiliaria.Repository
             return lista;
         }
 
-        public int ContarReservas(string busqueda)
+        public int ContarReservas(
+    string busqueda,
+    int? idInquilino,
+    int? idInmueble)
         {
             int cantidad = 0;
 
             string sql = @"
         SELECT COUNT(*)
-        FROM Reserva
-        WHERE CAST(IdReserva AS CHAR) LIKE @Busqueda
-           OR CAST(IdInquilino AS CHAR) LIKE @Busqueda
-           OR CAST(IdInmueble AS CHAR) LIKE @Busqueda
-           OR CAST(MontoPorDia AS CHAR) LIKE @Busqueda";
 
-            using (MySqlConnection conexion = new MySqlConnection(connectionString))
+        FROM Reserva r
+
+        INNER JOIN Inquilino i
+            ON r.IdInquilino = i.IdInquilino
+
+        INNER JOIN Inmueble inm
+            ON r.IdInmueble = inm.IdInmueble
+
+        WHERE (
+            CAST(r.IdReserva AS CHAR) LIKE @Busqueda
+            OR CAST(r.IdInquilino AS CHAR) LIKE @Busqueda
+            OR CAST(r.IdInmueble AS CHAR) LIKE @Busqueda
+            OR CAST(r.MontoPorDia AS CHAR) LIKE @Busqueda
+            OR CONCAT(i.Nombre, ' ', i.Apellido) LIKE @Busqueda
+            OR inm.Direccion LIKE @Busqueda
+        )
+
+        AND (@IdInquilino IS NULL OR r.IdInquilino = @IdInquilino)
+
+        AND (@IdInmueble IS NULL OR r.IdInmueble = @IdInmueble)";
+
+            using (MySqlConnection conexion =
+                   new MySqlConnection(connectionString))
             {
                 conexion.Open();
 
-                using (MySqlCommand comando = new MySqlCommand(sql, conexion))
+                using (MySqlCommand comando =
+                       new MySqlCommand(sql, conexion))
                 {
                     comando.Parameters.AddWithValue(
                         "@Busqueda",
                         "%" + (busqueda ?? "") + "%");
 
-                    cantidad = Convert.ToInt32(comando.ExecuteScalar());
+                    comando.Parameters.AddWithValue(
+                        "@IdInquilino",
+                        idInquilino.HasValue
+                            ? idInquilino.Value
+                            : DBNull.Value);
+
+                    comando.Parameters.AddWithValue(
+                        "@IdInmueble",
+                        idInmueble.HasValue
+                            ? idInmueble.Value
+                            : DBNull.Value);
+
+                    cantidad = Convert.ToInt32(
+                        comando.ExecuteScalar());
                 }
             }
 
             return cantidad;
-        }
-
-        // Buscar una reserva por ID
-        public Reserva ObtenerPorId(int id)
-        {
-            Reserva reserva = null;
-
-            using (MySqlConnection conexion = new MySqlConnection(connectionString))
-            {
-                conexion.Open();
-
-                string sql = @"
-            SELECT
-                IdReserva,
-                IdInquilino,
-                IdInmueble,
-                MontoPorDia,
-                FechaDesde,
-                FechaHasta,
-                IdUsuarioCreador,
-                IdUsuarioFinalizador,
-                FechaFinalizacion
-            FROM Reserva
-            WHERE IdReserva = @id";
-
-                using (MySqlCommand comando = new MySqlCommand(sql, conexion))
-                {
-                    comando.Parameters.AddWithValue("@id", id);
-
-                    using (MySqlDataReader reader = comando.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            reserva = new Reserva
-                            {
-                                IdReserva = reader.GetInt32("IdReserva"),
-                                IdInquilino = reader.GetInt32("IdInquilino"),
-                                IdInmueble = reader.GetInt32("IdInmueble"),
-                                MontoPorDia = reader.GetDecimal("MontoPorDia"),
-                                FechaDesde = reader.GetDateTime("FechaDesde"),
-                                FechaHasta = reader.GetDateTime("FechaHasta"),
-
-                                IdUsuarioCreador = reader.IsDBNull(
-                                    reader.GetOrdinal("IdUsuarioCreador"))
-                                    ? 0
-                                    : reader.GetInt32("IdUsuarioCreador"),
-
-                                IdUsuarioFinalizador = reader.IsDBNull(
-                                    reader.GetOrdinal("IdUsuarioFinalizador"))
-                                    ? (int?)null
-                                    : reader.GetInt32("IdUsuarioFinalizador"),
-
-                                FechaFinalizacion = reader.IsDBNull(
-                                    reader.GetOrdinal("FechaFinalizacion"))
-                                    ? (DateTime?)null
-                                    : reader.GetDateTime("FechaFinalizacion")
-                            };
-                        }
-                    }
-                }
-            }
-
-            return reserva;
         }
         // Verificar si un inmueble está disponible para ciertas fechas
         public bool EstaDisponible(int idInmueble, DateTime fechaDesde, DateTime fechaHasta)
