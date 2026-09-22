@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Hosting;
+using System.IO; 
 using System;
 
 
@@ -17,10 +19,12 @@ namespace ProyectoInmobiliaria.Controllers
     public class UsuarioController : Controller
     {
         private readonly UsuarioRepository _usuarioRepository;
+        private readonly IWebHostEnvironment _entorno;
 
-        public UsuarioController(UsuarioRepository usuarioRepository)
+        public UsuarioController(UsuarioRepository usuarioRepository, IWebHostEnvironment entorno)
         {
             _usuarioRepository = usuarioRepository;
+            _entorno = entorno;
         }
 
         // GET: Usuario
@@ -146,32 +150,14 @@ namespace ProyectoInmobiliaria.Controllers
         
         public IActionResult Create()
         {
-            string carpetaAvatares = Path.Combine(
-                Directory.GetCurrentDirectory(),
-                "wwwroot",
-                "avatars"
-            );
-
-            var avatares = new List<string>();
-
-            if (Directory.Exists(carpetaAvatares))
-            {
-                string[] archivos = Directory.GetFiles(carpetaAvatares);
-
-                foreach (string archivo in archivos)
-                {
-                    avatares.Add(Path.GetFileName(archivo));
-                }
-            }
-
-            ViewBag.Avatares = avatares;
+           
 
             return View();
         }
 
         // POST: Usuario/Create
         [HttpPost]
-        [Authorize(Roles = "Administrador")]
+        
         public IActionResult Create(Usuario usuario)
         {
             if (!ModelState.IsValid)
@@ -179,9 +165,39 @@ namespace ProyectoInmobiliaria.Controllers
                 return View(usuario);
             }
 
-            _usuarioRepository.Guardar(usuario);
+            try
+            {
+                if (usuario.ArchivoImagen != null && usuario.ArchivoImagen.Length > 0)
+                {
+                    string carpetaAvatares = Path.Combine(_entorno.WebRootPath, "avatars");
+                    if (!Directory.Exists(carpetaAvatares))
+                    {
+                        Directory.CreateDirectory(carpetaAvatares);
+                    }
+                    string nombreArchivo = Guid.NewGuid().ToString() + Path.GetExtension(usuario.ArchivoImagen.FileName);
+                    string rutaArchivo = Path.Combine(carpetaAvatares, nombreArchivo);
+                    using (var stream = new FileStream(rutaArchivo, FileMode.Create))
+                    {
+                        usuario.ArchivoImagen.CopyTo(stream);
+                    }
+                    usuario.Avatar = "/avatars/" + nombreArchivo;
+                }
+                else
+                {
+                    usuario.Avatar = " ";
 
-            return RedirectToAction("Index");
+                }
+                _usuarioRepository.Guardar(usuario);
+
+                return RedirectToAction("Index");
+
+            }
+            catch (Exception ex)
+            {
+                
+                return View(usuario);
+            }
+            
         }
         // GET: Usuario/Edit/5
         [HttpGet]

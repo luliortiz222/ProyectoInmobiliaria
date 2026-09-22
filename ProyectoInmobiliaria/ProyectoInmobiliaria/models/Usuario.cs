@@ -11,7 +11,8 @@
         public string? Apellido { get; set; }
         public string? Avatar { get; set; }
         public string? Rol { get; set; }
-       
+        public IFormFile? ArchivoImagen { get; set; }
+
         public Usuario()
         {
         }

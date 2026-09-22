@@ -31,7 +31,7 @@ namespace ProyectoInmobiliaria.Repository
                     comando.Parameters.AddWithValue("@Nombre", usuario.Nombre);
                     comando.Parameters.AddWithValue("@Apellido", usuario.Apellido);
                     comando.Parameters.AddWithValue("@Avatar", usuario.Avatar);
-                    comando.Parameters.AddWithValue("@Rol", usuario.Rol);
+                    comando.Parameters.AddWithValue("@Rol", usuario.Rol ?? "Empleado");
 
                     try
                     {
