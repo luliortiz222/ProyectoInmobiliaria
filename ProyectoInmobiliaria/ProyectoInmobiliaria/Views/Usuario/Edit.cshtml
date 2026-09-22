@@ -42,27 +42,25 @@
 
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Contraseña</label>
-                    <input type="text"
+                    <input type="password"
                            name="Password"
                            class="form-control"
                            value="@Model.Password" />
                 </div>
 
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">Rol</label>
+                    
+                    @if (Model.Rol == "Administrador")
+                    {
+                        <label class="form-label">Rol</label>
+                        <select name="Rol" class="form-select">
 
-                    <select name="Rol" class="form-select">
-                        @if (Model.Rol == "Administrador")
-                        {
                             <option value="Administrador" selected>Administrador</option>
                             <option value="Empleado">Empleado</option>
-                        }
-                        else
-                        {
-                            <option value="Administrador">Administrador</option>
-                            <option value="Empleado" selected>Empleado</option>
-                        }
-                    </select>
+
+
+                        </select>
+                    }
                 </div>
 
                 <div class="mb-4 mt-3">
