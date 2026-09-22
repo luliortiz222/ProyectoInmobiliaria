@@ -57,16 +57,36 @@ namespace ProyectoInmobiliaria.Repository
             int desplazamiento = (pagina - 1) * cantidadPorPagina;
 
             string sql = @"
-        SELECT IdReserva, IdInquilino, IdInmueble,
-               MontoPorDia, FechaDesde, FechaHasta,
-               IdUsuarioCreador, IdUsuarioFinalizador, FechaFinalizacion
-        FROM Reserva
-        WHERE CAST(IdReserva AS CHAR) LIKE @Busqueda
-           OR CAST(IdInquilino AS CHAR) LIKE @Busqueda
-           OR CAST(IdInmueble AS CHAR) LIKE @Busqueda
-           OR CAST(MontoPorDia AS CHAR) LIKE @Busqueda
-        ORDER BY FechaDesde DESC
-        LIMIT @CantidadPorPagina OFFSET @Desplazamiento";
+    SELECT 
+        r.IdReserva,
+        r.IdInquilino,
+        r.IdInmueble,
+        r.MontoPorDia,
+        r.FechaDesde,
+        r.FechaHasta,
+        r.IdUsuarioCreador,
+        r.IdUsuarioFinalizador,
+        r.FechaFinalizacion,
+
+        CONCAT(i.Nombre, ' ', i.Apellido) AS NombreInquilino,
+        inm.Direccion AS DireccionInmueble
+
+    FROM Reserva r
+
+    INNER JOIN Inquilino i
+        ON r.IdInquilino = i.IdInquilino
+
+    INNER JOIN Inmueble inm
+        ON r.IdInmueble = inm.IdInmueble
+
+    WHERE CAST(r.IdReserva AS CHAR) LIKE @Busqueda
+       OR CAST(r.IdInquilino AS CHAR) LIKE @Busqueda
+       OR CAST(r.IdInmueble AS CHAR) LIKE @Busqueda
+       OR CAST(r.MontoPorDia AS CHAR) LIKE @Busqueda
+
+    ORDER BY r.FechaDesde DESC
+
+    LIMIT @CantidadPorPagina OFFSET @Desplazamiento";
 
             using (MySqlConnection conexion = new MySqlConnection(connectionString))
             {
@@ -112,7 +132,10 @@ namespace ProyectoInmobiliaria.Repository
                                 FechaFinalizacion = reader.IsDBNull(
                                     reader.GetOrdinal("FechaFinalizacion"))
                                     ? (DateTime?)null
-                                    : reader.GetDateTime("FechaFinalizacion")
+                                    : reader.GetDateTime("FechaFinalizacion"),
+
+                                NombreInquilino = reader.GetString("NombreInquilino"),
+                                DireccionInmueble = reader.GetString("DireccionInmueble")
                             };
 
                             lista.Add(reserva);

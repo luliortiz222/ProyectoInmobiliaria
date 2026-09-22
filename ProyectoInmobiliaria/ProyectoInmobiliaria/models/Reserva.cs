@@ -13,5 +13,8 @@ namespace ProyectoInmobiliaria.models
 
         public int? IdUsuarioFinalizador { get; set; }
         public DateTime? FechaFinalizacion { get; set; }
+
+        public string NombreInquilino { get; set; }
+        public string DireccionInmueble { get; set; }
     }
 }
