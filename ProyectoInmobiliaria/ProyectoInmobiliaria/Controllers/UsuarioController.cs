@@ -24,35 +24,62 @@ namespace ProyectoInmobiliaria.Controllers
         }
 
         // GET: Usuario
+        [HttpGet]
+        [Authorize]
         public IActionResult Index(string busqueda, int pagina = 1)
         {
-            int cantidadPorPagina = 10;
-
-            int totalUsuarios = _usuarioRepository.ContarUsuarios(busqueda);
-
-            int totalPaginas = (int)Math.Ceiling(
-                (double)totalUsuarios / cantidadPorPagina);
-
-            if (totalPaginas > 0 && pagina > totalPaginas)
+            //ve todos los usuarios con búsqueda y paginación
+            if (User.IsInRole("Administrador"))
             {
-                pagina = totalPaginas;
+                int cantidadPorPagina = 10;
+
+                int totalUsuarios = _usuarioRepository.ContarUsuarios(busqueda);
+
+                int totalPaginas = (int)Math.Ceiling(
+                    (double)totalUsuarios / cantidadPorPagina);
+
+                if (totalPaginas > 0 && pagina > totalPaginas)
+                {
+                    pagina = totalPaginas;
+                }
+
+                if (pagina < 1)
+                {
+                    pagina = 1;
+                }
+
+                var usuarios = _usuarioRepository.ObtenerPaginados(
+                    busqueda,
+                    pagina,
+                    cantidadPorPagina);
+
+                ViewBag.Busqueda = busqueda;
+                ViewBag.PaginaActual = pagina;
+                ViewBag.TotalPaginas = totalPaginas;
+
+                return View(usuarios);
             }
 
-            if (pagina < 1)
+            //solamente puede ver su propio usuario
+            string idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (!int.TryParse(idString, out int idUsuarioLogueado))
             {
-                pagina = 1;
+                return Forbid();
             }
 
-            var usuarios = _usuarioRepository.ObtenerPaginados(
-                busqueda,
-                pagina,
-                cantidadPorPagina);
+            var usuarioPropio = _usuarioRepository.ObtenerPorId(idUsuarioLogueado);
 
-            ViewBag.Busqueda = busqueda;
-            ViewBag.PaginaActual = pagina;
-            ViewBag.TotalPaginas = totalPaginas;
+            if (usuarioPropio == null)
+            {
+                return NotFound();
+            }
 
-            return View(usuarios);
+            ViewBag.Busqueda = null;
+            ViewBag.PaginaActual = 1;
+            ViewBag.TotalPaginas = 1;
+
+            return View(new List<Usuario> { usuarioPropio });
         }
 
 
@@ -158,27 +185,30 @@ namespace ProyectoInmobiliaria.Controllers
         }
         // GET: Usuario/Edit/5
         [HttpGet]
+        [Authorize]
         public IActionResult Edit(int id)
         {
             var usuario = _usuarioRepository.ObtenerPorId(id);
 
             if (usuario == null)
-            {
                 return NotFound();
-            }
 
+            // El empleado solamente puede editarse a sí mismo
             if (!User.IsInRole("Administrador"))
             {
-                string idUsuarioLogueado = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                string idUsuarioLogueado =
+                    User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-                if (id != int.Parse(idUsuarioLogueado))
-                {
-                    TempData["Error"] = "Solo puedes modificar tu propio usuario si eres Empleado. Si eres Administrador, puedes modificar a todos los usuarios.";
+                int idLogueado = int.Parse(idUsuarioLogueado);
 
-                    return RedirectToAction("Index");
-                }
+                if (id != idLogueado)
+                    return Forbid();
             }
 
+            // Nunca mandar la contraseña a la vista
+            usuario.Password = null;
+
+            // Cargar avatares
             string carpetaAvatares = Path.Combine(
                 Directory.GetCurrentDirectory(),
                 "wwwroot",
@@ -197,6 +227,7 @@ namespace ProyectoInmobiliaria.Controllers
                 }
             }
 
+            // MUY IMPORTANTE
             ViewBag.Avatares = avatares;
 
             return View(usuario);
@@ -206,23 +237,52 @@ namespace ProyectoInmobiliaria.Controllers
 
         // POST: Usuario/Edit
         [HttpPost]
+        [Authorize]
         public IActionResult Edit(Usuario usuario)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(usuario);
-            }
+            var usuarioExistente =
+                _usuarioRepository.ObtenerPorId(usuario.IdUsuario);
 
+            if (usuarioExistente == null)
+                return NotFound();
+
+            // El empleado solo puede editarse a sí mismo
             if (!User.IsInRole("Administrador"))
             {
-                string idUsuarioLogueado = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                string idUsuarioLogueado =
+                    User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-                if (usuario.IdUsuario != int.Parse(idUsuarioLogueado))
+                int idLogueado = int.Parse(idUsuarioLogueado);
+
+                if (usuario.IdUsuario != idLogueado)
+                    return Forbid();
+
+                // El empleado NO puede cambiar su rol
+                usuario.Rol = usuarioExistente.Rol;
+            }
+
+            if (!ModelState.IsValid)
+            {
+                // Volver a cargar avatares
+                string carpetaAvatares = Path.Combine(
+                    Directory.GetCurrentDirectory(),
+                    "wwwroot",
+                    "avatars"
+                );
+
+                var avatares = new List<string>();
+
+                if (Directory.Exists(carpetaAvatares))
                 {
-                    TempData["Error"] = "Solo puedes modificar tu propio usuario si eres Empleado. Si eres Administrador, puedes modificar a todos los usuarios.";
-
-                    return RedirectToAction("Index");
+                    foreach (string archivo in Directory.GetFiles(carpetaAvatares))
+                    {
+                        avatares.Add(Path.GetFileName(archivo));
+                    }
                 }
+
+                ViewBag.Avatares = avatares;
+
+                return View(usuario);
             }
 
             _usuarioRepository.Actualizar(usuario);
@@ -231,6 +291,7 @@ namespace ProyectoInmobiliaria.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public IActionResult Details(int id)
         {
             var usuario = _usuarioRepository.ObtenerPorId(id);
@@ -239,6 +300,23 @@ namespace ProyectoInmobiliaria.Controllers
             {
                 return NotFound();
             }
+
+            if (!User.IsInRole("Administrador"))
+            {
+                string idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                if (!int.TryParse(idString, out int idUsuarioLogueado))
+                {
+                    return Forbid();
+                }
+
+                if (id != idUsuarioLogueado)
+                {
+                    return Forbid();
+                }
+            }
+
+            usuario.Password = null;
 
             return View(usuario);
         }

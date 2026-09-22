@@ -71,7 +71,7 @@
 
                     <div class="row g-3">
 
-                        @foreach (string avatar in ViewBag.Avatares)
+                        @foreach (string avatar in (ViewBag.Avatares as List<string> ?? new List<string>()))
                         {
                             string rutaAvatar = "/avatars/" + avatar;
 

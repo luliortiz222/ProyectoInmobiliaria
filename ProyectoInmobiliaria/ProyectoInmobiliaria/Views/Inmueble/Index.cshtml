@@ -140,7 +140,7 @@
     </div>
 
     <!-- Paginación -->
-    @if (ViewBag.TotalPaginas > 1)
+    @if (User.IsInRole("Administrador") && ViewBag.TotalPaginas > 1)
     {
         <nav class="mt-3">
 
