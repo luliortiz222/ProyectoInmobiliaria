@@ -23,7 +23,7 @@
 
 ## Instrucciones para Levantar la Base de Datos
 
-Para inicializar la base de datos en tu entorno local de MySQL, ejecutá el script script_inmobiliaria.sql incluido en este repositorio siguiendo estos pasos:
+Para inicializar la base de datos en tu entorno local de MySQL, ejecutá el script DB_inmobiliaria.sql incluido en este repositorio siguiendo estos pasos:
 
 ## Desde MySQL Workbench / DBeaver: 
 
@@ -31,7 +31,7 @@ Abrí tu gestor de base de datos (MySQL Workbench, DBeaver, HeidiSQL, etc.).
 
 Conéctate a tu servidor local de MySQL.
 
-Abrí el archivo script_inmobiliaria.sql (File -> Open Script).
+Abrí el archivo DB_inmobiliaria.sql (File -> Open Script).
 
 Ejecutá todo el script para crear la base de datos inmobiliaria y sus tablas correspondientes.
 
@@ -43,7 +43,7 @@ Abrí la terminal en la carpeta donde tenés el archivo .sql.
 Ejecutá el siguiente comando reemplazando root por tu usuario de MySQL:
 
 Bash
-mysql -u root -p < script_inmobiliaria.sql
+mysql -u root -p < DB_inmobiliaria.sql
 Ingresá tu contraseña de MySQL cuando la consola lo solicite.
 
 ---
@@ -68,7 +68,7 @@ ProyectoInmobiliaria
 │   ├── TipoInmuebleController.cs
 │   ├── UsuarioController.cs
 │   ├── PagoController.cs
-│   └── ReservasController.cs
+│   └── ReservaController.cs
 ├── models/
 │   ├── Inquilino.cs
 │   ├── Propietario.cs
@@ -90,7 +90,8 @@ ProyectoInmobiliaria
 │   ├── Inquilinos/
 │   ├── Propietarios/
 │   ├── Inmueble/
-│   ├── TipoInmueble/
+│   ├── TipoInmuebles/
+│   ├── Usuario/
 │   ├── Pago/
 │   ├── Reservas/
 │   └── Shared/
