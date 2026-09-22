@@ -143,7 +143,7 @@ namespace ProyectoInmobiliaria.Controllers
 
         // GET: Usuario/Create
         [HttpGet]
-        [Authorize(Roles = "Administrador")]
+        
         public IActionResult Create()
         {
             string carpetaAvatares = Path.Combine(
