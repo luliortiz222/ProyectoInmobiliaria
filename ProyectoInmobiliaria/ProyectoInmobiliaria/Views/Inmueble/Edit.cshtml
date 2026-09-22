@@ -12,7 +12,7 @@
         <div class="col-md-8 offset-md-2">
             <div class="card shadow-sm border-warning">
                 <div class="card-body">
-                    <form action="/Inmueble/Edit" method="post">
+                    <form action="/Inmueble/Edit" method="post" enctype="multipart/form-data">
                         
                         <!-- EL IDENTIFICADOR OCULTO (¡Vital para que el UPDATE funcione!) -->
                         <input type="hidden" name="IdInmueble" value="@Model.IdInmueble" />
@@ -47,10 +47,21 @@
                             <input type="text" name="Coordenadas" class="form-control" value="@Model.Coordenadas" />
                         </div>
 
-                        <!-- Imagen de Portada -->
-                        <div class="mb-3">
-                            <label class="form-label">URL Imagen de Portada</label>
-                            <input type="text" name="ImagenPortada" class="form-control" value="@Model.ImagenPortada" />
+                        <input type="hidden" name="ImagenPortada" value="@Model.ImagenPortada" />
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Actualizar Foto (Opcional)</label>
+
+                            <!-- Mostramos la foto actual en pequeñito para que sepa qué está editando -->
+                            @if (!string.IsNullOrEmpty(Model.ImagenPortada))
+                            {
+                                <div class="mb-2">
+                                    <img src="@Model.ImagenPortada" alt="Foto actual" class="img-thumbnail" style="width: 100px; height: 100px; object-fit: cover;" />
+                                    <span class="text-muted small d-block mt-1">Foto actual</span>
+                                </div>
+                            }
+
+                            <input type="file" name="ArchivoImagen" class="form-control" accept="image/*" />
                         </div>
 
                         <!-- Estado (Lógica para que aparezca tildado o no) -->

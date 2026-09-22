@@ -823,7 +823,7 @@ namespace ProyectoInmobiliaria.Repository
                     comando.Parameters.AddWithValue("@Cupo", inmueble.Cupo);
                     comando.Parameters.AddWithValue("@Coordenadas", inmueble.Coordenadas);
                     comando.Parameters.AddWithValue("@PrecioPorDia", inmueble.PrecioPorDia);
-                    comando.Parameters.AddWithValue("@ImagenPortada", inmueble.ImagenPortada);
+                    comando.Parameters.AddWithValue("@ImagenPortada", inmueble.ImagenPortada ?? "");
                     comando.Parameters.AddWithValue("@Estado", inmueble.Estado);
                     comando.Parameters.AddWithValue("@IdPropietario", inmueble.IdPropietario);
                     comando.Parameters.AddWithValue("@IdTipoInmueble", inmueble.IdTipoInmueble);

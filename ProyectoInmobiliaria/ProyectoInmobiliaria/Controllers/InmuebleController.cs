@@ -2,6 +2,8 @@
 using ProyectoInmobiliaria.models;
 using ProyectoInmobiliaria.Repository;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting; 
+using System.IO; 
 using System;
 
 namespace ProyectoInmobiliaria.Controllers
@@ -12,15 +14,18 @@ namespace ProyectoInmobiliaria.Controllers
         private readonly InmuebleRepository _inmuebleRepository;
         private readonly PropietarioRepository _propietarioRepo;
         private readonly TipoInmuebleRepository _tipoRepo;
+        private readonly IWebHostEnvironment _entorno;
 
         public InmuebleController(
             InmuebleRepository inmuebleRepository,
             PropietarioRepository propietarioRepo,
-            TipoInmuebleRepository tipoRepo)
+            TipoInmuebleRepository tipoRepo,
+            IWebHostEnvironment entorno)
         {
             _inmuebleRepository = inmuebleRepository;
             _propietarioRepo = propietarioRepo;
             _tipoRepo = tipoRepo;
+            _entorno = entorno;
         }
 
         // GET: /Inmueble
@@ -170,9 +175,42 @@ namespace ProyectoInmobiliaria.Controllers
         [HttpPost]
         public IActionResult Create(Inmueble inmueble)
         {
-            _inmuebleRepository.Guardar(inmueble);
+            try
+            {
+                if (inmueble.ArchivoImagen != null && inmueble.ArchivoImagen.Length > 0)
+                {
+                    string carpetaDestino = Path.Combine(_entorno.WebRootPath, "uploads");
 
-            return RedirectToAction("Index");
+
+                    if (!Directory.Exists(carpetaDestino))
+                    {
+                        Directory.CreateDirectory(carpetaDestino);
+                    }
+
+                    string nombreArchivo = Guid.NewGuid().ToString() + Path.GetExtension(inmueble.ArchivoImagen.FileName);
+                    string rutaFisicaCompleta = Path.Combine(carpetaDestino, nombreArchivo);
+
+                    using (var stream = new FileStream(rutaFisicaCompleta, FileMode.Create))
+                    {
+                        inmueble.ArchivoImagen.CopyTo(stream);
+                    }
+
+                    inmueble.ImagenPortada = "/uploads/" + nombreArchivo;
+
+                }
+                else
+                {
+                    inmueble.ImagenPortada = "";
+                }
+                _inmuebleRepository.Guardar(inmueble);
+
+                return RedirectToAction("Index");
+            }
+            catch(Exception ex)
+            {
+                return View(inmueble);
+            }
+            
         }
 
         // GET: /Inmueble/Edit/5
@@ -196,8 +234,36 @@ namespace ProyectoInmobiliaria.Controllers
         [HttpPost]
         public IActionResult Edit(Inmueble inmueble)
         {
-            _inmuebleRepository.Actualizar(inmueble);
-            return RedirectToAction("Index");
+            try
+            {
+                if (inmueble.ArchivoImagen != null && inmueble.ArchivoImagen.Length > 0)
+                {
+                    string carpetaDestino = Path.Combine(_entorno.WebRootPath, "uploads");
+                    if (!Directory.Exists(carpetaDestino))
+                    {
+                        Directory.CreateDirectory(carpetaDestino);
+                    }
+                    string nombreArchivo = Guid.NewGuid().ToString() + Path.GetExtension(inmueble.ArchivoImagen.FileName);
+                    string rutaFisicaCompleta = Path.Combine(carpetaDestino, nombreArchivo);
+                    using (var stream = new FileStream(rutaFisicaCompleta, FileMode.Create))
+                    {
+                        inmueble.ArchivoImagen.CopyTo(stream);
+                    }
+                    inmueble.ImagenPortada = "/uploads/" + nombreArchivo;
+                }
+                
+                _inmuebleRepository.Actualizar(inmueble);
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                // Manejar la excepción según sea necesario
+                ModelState.AddModelError("", "Error al subir la imagen: " + ex.Message);
+                ViewBag.Propietarios = _propietarioRepo.obtenerTodos();
+                ViewBag.TiposInmueble = _tipoRepo.ObtenerTodos();
+                return View(inmueble);
+            }
+            
         }
 
         // GET: /Inmueble/Details/5

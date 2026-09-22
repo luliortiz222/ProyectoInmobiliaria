@@ -12,7 +12,7 @@
         <div class="col-md-8 offset-md-2">
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <form action="/Inmueble/Create" method="post">
+                    <form action="/Inmueble/Create" method="post" enctype="multipart/form-data">
 
                         <!-- Dirección -->
                         <div class="mb-3">
@@ -39,9 +39,13 @@
                         </div>
 
                         <!-- Imagen de Portada (Por ahora un texto con la URL/Ruta) -->
-                        <div class="mb-3">
+                        @* <div class="mb-3">
                             <label class="form-label">URL Imagen de Portada</label>
-                            <input type="text" name="ImagenPortada" class="form-control" />
+                            <input type="file" name="ImagenPortada" class="form-control" />
+                        </div> *@
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Foto del Inmueble</label>
+                            <input type="file" name="ArchivoImagen" class="form-control" accept="image/*" />
                         </div>
 
                         <!-- Estado por defecto -->

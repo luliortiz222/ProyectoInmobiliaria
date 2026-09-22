@@ -60,6 +60,13 @@ namespace ProyectoInmobiliaria
                     app.UseCors("PermitirTodo");
                     app.UseAuthentication();
                     app.UseAuthorization();
+                    var cultureInfo = new System.Globalization.CultureInfo("en-US");
+                    app.UseRequestLocalization(new RequestLocalizationOptions
+                    {
+                        DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture(cultureInfo),
+                        SupportedCultures = new[] { cultureInfo },
+                        SupportedUICultures = new[] { cultureInfo }
+                    });
                     app.MapControllerRoute(
                         name: "default",
                         pattern: "{controller=Usuario}/{action=Login}/{id?}");

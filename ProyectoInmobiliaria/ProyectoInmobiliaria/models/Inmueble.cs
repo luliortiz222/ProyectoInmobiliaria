@@ -18,6 +18,7 @@ namespace ProyectoInmobiliaria.models
         public Propietario Dueño { get; set; }
         public TipoInmueble Tipo { get; set; }
 
+        public IFormFile ArchivoImagen { get; set; }
         public Inmueble()
         {
         }
