@@ -23,11 +23,18 @@ namespace ProyectoInmobiliaria.Controllers
             _inmuebleRepository = inmuebleRepository;
         }
 
-        public IActionResult Index(string busqueda, int pagina = 1)
+        public IActionResult Index(
+    string busqueda,
+    int? idInquilino,
+    int? idInmueble,
+    int pagina = 1)
         {
             int cantidadPorPagina = 10;
 
-            int totalReservas = _reservaRepository.ContarReservas(busqueda);
+            int totalReservas = _reservaRepository.ContarReservas(
+                busqueda,
+                idInquilino,
+                idInmueble);
 
             int totalPaginas = (int)Math.Ceiling(
                 (double)totalReservas / cantidadPorPagina);
@@ -44,10 +51,18 @@ namespace ProyectoInmobiliaria.Controllers
 
             var lista = _reservaRepository.ObtenerPaginados(
                 busqueda,
+                idInquilino,
+                idInmueble,
                 pagina,
                 cantidadPorPagina);
 
+            // Datos para los selects de búsqueda
+            ViewBag.Inquilinos = _inquilinoRepository.ObtenerTodos();
+            ViewBag.Inmuebles = _inmuebleRepository.ObtenerTodos();
+
             ViewBag.Busqueda = busqueda;
+            ViewBag.IdInquilino = idInquilino;
+            ViewBag.IdInmueble = idInmueble;
             ViewBag.PaginaActual = pagina;
             ViewBag.TotalPaginas = totalPaginas;
 
