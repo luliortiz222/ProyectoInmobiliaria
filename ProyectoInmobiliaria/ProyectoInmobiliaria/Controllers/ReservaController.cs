@@ -219,8 +219,24 @@ namespace ProyectoInmobiliaria.Controllers
                     new { id = idReserva });
             }
 
-            TempData["Mensaje"] =
-                "La reserva fue finalizada correctamente y la multa fue registrada como pago.";
+            Reserva reserva = _reservaRepository.ObtenerPorId(idReserva);
+
+            decimal multa = _reservaRepository.CalcularMulta(
+                reserva,
+                fechaTerminacion);
+
+            if (multa > 0)
+            {
+                TempData["Mensaje"] =
+                    $"La reserva fue finalizada correctamente. " +
+                    $"La multa de ${multa:N2} fue registrada como pago.";
+            }
+            else
+            {
+                TempData["Mensaje"] =
+                    "La reserva fue finalizada correctamente. " +
+                    "No correspondía multa porque finalizó en la fecha original.";
+            }
 
             return RedirectToAction(
                 "Details",
