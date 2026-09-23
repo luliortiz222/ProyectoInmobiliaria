@@ -265,6 +265,14 @@
                                 Editar
                             </a>
 
+                            @if (item.IdUsuarioFinalizador == null)
+                            {
+                                <a href="/Reservas/Renovar/@item.IdReserva"
+                                   class="btn btn-sm btn-outline-primary">
+                                    Renovar
+                                </a>
+                            }
+
                             @if (item.IdUsuarioFinalizador == null &&
                                  User.IsInRole("Administrador"))
                             {

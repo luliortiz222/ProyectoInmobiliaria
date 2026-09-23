@@ -1,0 +1,200 @@
+﻿@model ProyectoInmobiliaria.models.Reserva
+
+@{
+    ViewData["Title"] = "Renovar Reserva";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-md-7">
+
+            <div class="card shadow-sm">
+
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-arrow-repeat"></i>
+                        Renovar reserva #@Model.IdReserva
+                    </h4>
+                </div>
+
+                <div class="card-body p-4">
+
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle-fill"></i>
+                        La reserva original no será modificada.
+                        Se generará una nueva reserva con el mismo
+                        inquilino e inmueble.
+                    </div>
+
+                    <h5 class="mb-3">
+                        Reserva original
+                    </h5>
+
+                    <div class="mb-4">
+
+                        <p class="mb-2">
+                            <strong>Reserva:</strong>
+                            #@Model.IdReserva
+                        </p>
+
+                        <p class="mb-2">
+                            <strong>Inquilino:</strong>
+                            #@Model.IdInquilino
+                        </p>
+
+                        <p class="mb-2">
+                            <strong>Inmueble:</strong>
+                            #@Model.IdInmueble
+                        </p>
+
+                        <p class="mb-2">
+                            <strong>Fecha desde:</strong>
+                            @Model.FechaDesde.ToString("dd/MM/yyyy")
+                        </p>
+
+                        <p class="mb-2">
+                            <strong>Fecha hasta:</strong>
+                            @Model.FechaHasta.ToString("dd/MM/yyyy")
+                        </p>
+
+                        <p class="mb-0">
+                            <strong>Monto por día:</strong>
+                            $ @Model.MontoPorDia.ToString("N2")
+                        </p>
+
+                    </div>
+
+                    <hr />
+
+                    <h5 class="mb-3">
+                        Nueva reserva
+                    </h5>
+
+                    <form action="/Reservas/Renovar" method="post" id="formRenovar">
+
+                        <input type="hidden"
+                               name="idReserva"
+                               value="@Model.IdReserva" />
+
+                        <div class="mb-3">
+
+                            <label class="form-label fw-semibold">
+                                Nueva fecha desde
+                            </label>
+
+                            <input type="date"
+                                   name="nuevaFechaDesde"
+                                   class="form-control"
+                                   min="@Model.FechaHasta.ToString("yyyy-MM-dd")"
+                                   value="@Model.FechaHasta.ToString("yyyy-MM-dd")"
+                                   required />
+
+                            <div class="form-text">
+                                La renovación comienza desde la finalización
+                                de la reserva original.
+                            </div>
+
+                        </div>
+
+                        <div class="mb-3">
+
+                            <label class="form-label fw-semibold">
+                                Nueva fecha hasta
+                            </label>
+
+                            <input type="date"
+                                   name="nuevaFechaHasta"
+                                   class="form-control"
+                                   min="@Model.FechaHasta.AddDays(1).ToString("yyyy-MM-dd")"
+                                   required />
+
+                        </div>
+                        <div class="mb-4">
+
+                            <label class="form-label fw-semibold">
+                                Nuevo monto por día
+                            </label>
+
+                            <input type="number"
+                                   name="nuevoMontoPorDia"
+                                   id="nuevoMontoPorDia"
+                                   class="form-control"
+                                   min="0.01"
+                                   step="0.01"
+                                   required />
+
+                            <div class="form-text">
+                                Debe ingresar un monto diferente al de la reserva original.
+                                Monto original: $ @Model.MontoPorDia.ToString("N2")
+                            </div>
+
+                            <div id="mensajeMonto"
+                                 class="alert alert-danger mt-2 d-none">
+                                El nuevo monto por día debe ser diferente al monto original.
+                            </div>
+
+                        </div>
+
+                        <script>
+
+                        document.getElementById("formRenovar").addEventListener("submit", function(e) {
+
+                        const montoOriginal = @Model.MontoPorDia.ToString(
+                         System.Globalization.CultureInfo.InvariantCulture);
+
+                         const nuevoMonto = parseFloat(
+                         document.getElementById("nuevoMontoPorDia").value
+                         );
+
+                         const mensaje = document.getElementById("mensajeMonto");
+
+                         if (nuevoMonto === montoOriginal) {
+
+                         e.preventDefault();
+
+                         mensaje.classList.remove("d-none");
+
+                         return;
+                         }
+
+                         mensaje.classList.add("d-none");
+                        });
+
+                        </script>
+
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                            Se creará una nueva reserva.
+                            La reserva #@Model.IdReserva seguirá conservando
+                            sus fechas y monto originales.
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2">
+
+                            <a href="/Reservas/Details/@Model.IdReserva"
+                               class="btn btn-secondary">
+                                Cancelar
+                            </a>
+
+                            <button type="submit"
+                                    class="btn btn-primary">
+                                <i class="bi bi-arrow-repeat"></i>
+                                Renovar reserva
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

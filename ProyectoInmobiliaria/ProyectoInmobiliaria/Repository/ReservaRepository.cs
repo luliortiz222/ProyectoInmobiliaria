@@ -720,6 +720,106 @@ namespace ProyectoInmobiliaria.Repository
                 }
             }
         }
+
+        public bool Renovar(
+    int idReservaOriginal,
+    DateTime nuevaFechaDesde,
+    DateTime nuevaFechaHasta,
+    decimal nuevoMontoPorDia,
+    int idUsuarioCreador)
+        {
+            Reserva reservaOriginal = ObtenerPorId(idReservaOriginal);
+
+            if (reservaOriginal == null)
+            {
+                return false;
+            }
+
+            // No se puede renovar una reserva ya finalizada
+            if (reservaOriginal.IdUsuarioFinalizador != null)
+            {
+                return false;
+            }
+
+            // Las nuevas fechas deben ser válidas
+            if (nuevaFechaDesde >= nuevaFechaHasta)
+            {
+                return false;
+            }
+
+            // La renovación debe comenzar desde el final de la reserva original
+            if (nuevaFechaDesde.Date < reservaOriginal.FechaHasta.Date)
+            {
+                return false;
+            }
+
+            // El inmueble debe estar disponible para las nuevas fechas
+            if (!EstaDisponible(
+                reservaOriginal.IdInmueble,
+                nuevaFechaDesde,
+                nuevaFechaHasta))
+            {
+                return false;
+            }
+
+            using (MySqlConnection conexion =
+                   new MySqlConnection(connectionString))
+            {
+                conexion.Open();
+
+                string sql = @"
+            INSERT INTO Reserva
+            (
+                IdInquilino,
+                IdInmueble,
+                MontoPorDia,
+                FechaDesde,
+                FechaHasta,
+                IdUsuarioCreador
+            )
+            VALUES
+            (
+                @IdInquilino,
+                @IdInmueble,
+                @MontoPorDia,
+                @FechaDesde,
+                @FechaHasta,
+                @IdUsuarioCreador
+            )";
+
+                using (MySqlCommand comando =
+                       new MySqlCommand(sql, conexion))
+                {
+                    comando.Parameters.AddWithValue(
+                        "@IdInquilino",
+                        reservaOriginal.IdInquilino);
+
+                    comando.Parameters.AddWithValue(
+                        "@IdInmueble",
+                        reservaOriginal.IdInmueble);
+
+                    comando.Parameters.AddWithValue(
+                        "@MontoPorDia",
+                        nuevoMontoPorDia);
+
+                    comando.Parameters.AddWithValue(
+                        "@FechaDesde",
+                        nuevaFechaDesde.Date);
+
+                    comando.Parameters.AddWithValue(
+                        "@FechaHasta",
+                        nuevaFechaHasta.Date);
+
+                    comando.Parameters.AddWithValue(
+                        "@IdUsuarioCreador",
+                        idUsuarioCreador);
+
+                    int filasAfectadas = comando.ExecuteNonQuery();
+
+                    return filasAfectadas > 0;
+                }
+            }
+        }
         public bool Finalizar(int idReserva, int idUsuarioFinalizador)
         {
             using (MySqlConnection conexion = new MySqlConnection(connectionString))

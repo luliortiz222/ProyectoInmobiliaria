@@ -271,5 +271,99 @@ namespace ProyectoInmobiliaria.Controllers
 
             return RedirectToAction("Index");
         }
+
+        [HttpGet]
+        public IActionResult Renovar(int id)
+        {
+            var reserva = _reservaRepository.ObtenerPorId(id);
+
+            if (reserva == null)
+            {
+                return NotFound();
+            }
+
+            if (reserva.IdUsuarioFinalizador != null)
+            {
+                TempData["Error"] =
+                    "No se puede renovar una reserva que ya fue finalizada.";
+
+                return RedirectToAction(
+                    "Details",
+                    new { id = id });
+            }
+
+            return View(reserva);
+        }
+
+        [HttpPost]
+        [Authorize]
+        public IActionResult Renovar(
+    int idReserva,
+    DateTime nuevaFechaDesde,
+    DateTime nuevaFechaHasta,
+    decimal nuevoMontoPorDia)
+        {
+            string idString =
+                User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            int idUsuarioCreador = int.Parse(idString);
+
+            // Obtener la reserva original
+            Reserva reservaOriginal = _reservaRepository.ObtenerPorId(idReserva);
+
+            if (reservaOriginal == null)
+            {
+                TempData["Error"] =
+                    "No se encontró la reserva original.";
+
+                return RedirectToAction("Index");
+            }
+
+            // El nuevo monto debe ser mayor a cero
+            if (nuevoMontoPorDia <= 0)
+            {
+                TempData["Error"] =
+                    "El nuevo monto por día debe ser mayor a cero.";
+
+                return RedirectToAction(
+                    "Renovar",
+                    new { id = idReserva });
+            }
+
+            // El nuevo monto debe ser diferente al original
+            if (nuevoMontoPorDia == reservaOriginal.MontoPorDia)
+            {
+                TempData["Error"] =
+                    "El nuevo monto por día debe ser diferente al monto de la reserva original.";
+
+                return RedirectToAction(
+                    "Renovar",
+                    new { id = idReserva });
+            }
+
+            bool renovada = _reservaRepository.Renovar(
+                idReserva,
+                nuevaFechaDesde,
+                nuevaFechaHasta,
+                nuevoMontoPorDia,
+                idUsuarioCreador);
+
+            if (!renovada)
+            {
+                TempData["Error"] =
+                    "No se pudo renovar la reserva. Verifique las fechas, el monto o la disponibilidad del inmueble.";
+
+                return RedirectToAction(
+                    "Renovar",
+                    new { id = idReserva });
+            }
+
+            TempData["Mensaje"] =
+                "La reserva fue renovada correctamente. Se creó una nueva reserva sin modificar la original.";
+
+            return RedirectToAction(
+                "Details",
+                new { id = idReserva });
+        }
     }
 }
