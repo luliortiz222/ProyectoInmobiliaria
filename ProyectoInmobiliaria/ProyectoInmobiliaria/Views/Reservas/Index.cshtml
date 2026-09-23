@@ -255,10 +255,24 @@
                                 Detalles
                             </a>
 
+                            <a href="/Pago/PorReserva?id=@item.IdReserva"
+                               class="btn btn-sm btn-outline-primary">
+                                Pagos
+                            </a>
+
                             <a href="/Reservas/Edit/@item.IdReserva"
                                class="btn btn-sm btn-outline-warning">
                                 Editar
                             </a>
+
+                            @if (item.IdUsuarioFinalizador == null &&
+                                 User.IsInRole("Administrador"))
+                            {
+                                <a href="/Reservas/Finalizar/@item.IdReserva"
+                                   class="btn btn-sm btn-outline-success">
+                                    Finalizar
+                                </a>
+                            }
 
                             @if (User.IsInRole("Administrador"))
                             {

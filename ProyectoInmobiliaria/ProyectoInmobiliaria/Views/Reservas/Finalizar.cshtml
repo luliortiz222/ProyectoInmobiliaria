@@ -3,6 +3,23 @@
 @{
     ViewData["Title"] = "Finalizar Reserva";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var fechaMinima = Model.FechaDesde.ToString("yyyy-MM-dd");
+    var fechaMaxima = Model.FechaHasta.ToString("yyyy-MM-dd");
+
+    var fechaSugerida = DateTime.Today;
+
+    if (fechaSugerida < Model.FechaDesde)
+    {
+        fechaSugerida = Model.FechaDesde;
+    }
+
+    if (fechaSugerida > Model.FechaHasta)
+    {
+        fechaSugerida = Model.FechaHasta;
+    }
+
+    var fechaSugeridaInput = fechaSugerida.ToString("yyyy-MM-dd");
 }
 
 <div class="container mt-5">
@@ -96,7 +113,8 @@
 
                         <div class="alert alert-warning">
                             <i class="bi bi-exclamation-triangle-fill"></i>
-                            ¿Está seguro de que desea finalizar esta reserva?
+                            Puede finalizar la reserva antes de la fecha prevista.
+                            En ese caso se calculará una multa y se registrará como pago de la reserva.
                         </div>
 
                         <div class="mb-4">
@@ -121,9 +139,14 @@
                                 @Model.FechaDesde.ToString("dd/MM/yyyy")
                             </p>
 
-                            <p class="mb-0">
-                                <strong>Fecha hasta:</strong>
+                            <p class="mb-2">
+                                <strong>Fecha hasta original:</strong>
                                 @Model.FechaHasta.ToString("dd/MM/yyyy")
+                            </p>
+
+                            <p class="mb-0">
+                                <strong>Monto por día:</strong>
+                                $@Model.MontoPorDia.ToString("N2")
                             </p>
 
                         </div>
@@ -133,6 +156,96 @@
                             <input type="hidden"
                                    name="idReserva"
                                    value="@Model.IdReserva" />
+
+                            <div class="mb-4">
+
+                                <label for="fechaTerminacion" class="form-label">
+                                    <strong>Fecha efectiva de finalización</strong>
+                                </label>
+
+                                <input type="date"
+                                       id="fechaTerminacion"
+                                       name="fechaTerminacion"
+                                       class="form-control"
+                                       min="@fechaMinima"
+                                       max="@fechaMaxima"
+                                       value="@fechaSugeridaInput"
+                                       required />
+
+                                <div class="form-text">
+                                    La fecha debe estar entre
+                                    @Model.FechaDesde.ToString("dd/MM/yyyy")
+                                    y
+                                    @Model.FechaHasta.ToString("dd/MM/yyyy").
+                                </div>
+
+                            </div>
+
+                            <div class="card border-warning mb-4">
+
+                                <div class="card-header bg-light">
+                                    <strong>
+                                        <i class="bi bi-calculator"></i>
+                                        Cálculo de la multa
+                                    </strong>
+                                </div>
+
+                                <div class="card-body">
+
+                                    <p class="mb-2">
+                                        <strong>Días totales de la reserva:</strong>
+                                        <span id="diasTotales">0</span>
+                                    </p>
+
+                                    <p class="mb-2">
+                                        <strong>Días cumplidos:</strong>
+                                        <span id="diasCumplidos">0</span>
+                                    </p>
+
+                                    <p class="mb-2">
+                                        <strong>Días restantes:</strong>
+                                        <span id="diasRestantes">0</span>
+                                    </p>
+
+                                    <p class="mb-2">
+                                        <strong>Porcentaje de multa:</strong>
+                                        <span id="porcentajeMulta">0%</span>
+                                    </p>
+
+                                    <hr />
+
+                                    <div class="alert alert-danger mb-0">
+                                        <strong>
+                                            Multa:
+                                            $<span id="montoMulta">0,00</span>
+                                        </strong>
+                                    </div>
+
+                                    <div id="mensajeSinMulta"
+                                         class="alert alert-success mt-3 mb-0"
+                                         style="display:none;">
+                                        La reserva finaliza en su fecha original.
+                                        No corresponde multa.
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle-fill"></i>
+                                La fecha original de finalización
+                                <strong>@Model.FechaHasta.ToString("dd/MM/yyyy")</strong>
+                                no se modifica.
+                                La fecha ingresada se guarda como fecha efectiva de finalización.
+                            </div>
+
+                            <div class="alert alert-secondary">
+                                <i class="bi bi-credit-card-fill"></i>
+                                La multa se registra como un pago de esta reserva
+                                al momento de finalizarla.
+                                La reserva solamente se finaliza si el pago puede registrarse correctamente.
+                            </div>
 
                             <div class="d-flex justify-content-end gap-2">
 
@@ -145,7 +258,7 @@
                                 <button type="submit"
                                         class="btn btn-warning">
                                     <i class="bi bi-check-circle-fill"></i>
-                                    Sí, finalizar reserva
+                                    Pagar multa y finalizar
                                 </button>
 
                             </div>
@@ -162,3 +275,97 @@
     </div>
 
 </div>
+
+@if (Model.IdUsuarioFinalizador == null)
+{
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const fechaDesdeTexto = "@Model.FechaDesde.ToString("yyyy-MM-dd")";
+            const fechaHastaTexto = "@Model.FechaHasta.ToString("yyyy-MM-dd")";
+            const montoPorDia = @Model.MontoPorDia.ToString(
+                            System.Globalization.CultureInfo.InvariantCulture
+                    );
+
+            const fechaTerminacion = document.getElementById("fechaTerminacion");
+
+            const diasTotalesElemento = document.getElementById("diasTotales");
+            const diasCumplidosElemento = document.getElementById("diasCumplidos");
+            const diasRestantesElemento = document.getElementById("diasRestantes");
+            const porcentajeMultaElemento = document.getElementById("porcentajeMulta");
+            const montoMultaElemento = document.getElementById("montoMulta");
+            const mensajeSinMulta = document.getElementById("mensajeSinMulta");
+
+            function crearFecha(fechaTexto) {
+                return new Date(fechaTexto + "T00:00:00");
+            }
+
+            function calcularMulta() {
+
+                const fechaDesde = crearFecha(fechaDesdeTexto);
+                const fechaHasta = crearFecha(fechaHastaTexto);
+                const fechaFinal = crearFecha(fechaTerminacion.value);
+
+                const milisegundosPorDia = 1000 * 60 * 60 * 24;
+
+                const diasTotales = Math.round(
+                    (fechaHasta - fechaDesde) / milisegundosPorDia
+                );
+
+                const diasCumplidos = Math.round(
+                    (fechaFinal - fechaDesde) / milisegundosPorDia
+                );
+
+                const diasRestantes = Math.round(
+                    (fechaHasta - fechaFinal) / milisegundosPorDia
+                );
+
+                diasTotalesElemento.textContent = diasTotales;
+                diasCumplidosElemento.textContent = diasCumplidos;
+                diasRestantesElemento.textContent = diasRestantes;
+
+                let porcentaje = 0;
+                let multa = 0;
+
+                if (diasRestantes > 0) {
+
+                    if (diasCumplidos < diasTotales / 2) {
+                        porcentaje = 50;
+                    }
+                    else {
+                        porcentaje = 25;
+                    }
+
+                    multa =
+                        diasRestantes *
+                        montoPorDia *
+                        (porcentaje / 100);
+                }
+
+                porcentajeMultaElemento.textContent = porcentaje + "%";
+
+                montoMultaElemento.textContent = multa.toLocaleString(
+                    "es-AR",
+                    {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    }
+                );
+
+                if (diasRestantes === 0) {
+                    mensajeSinMulta.style.display = "block";
+                }
+                else {
+                    mensajeSinMulta.style.display = "none";
+                }
+            }
+
+            fechaTerminacion.addEventListener(
+                "change",
+                calcularMulta
+            );
+
+            calcularMulta();
+        });
+    </script>
+}

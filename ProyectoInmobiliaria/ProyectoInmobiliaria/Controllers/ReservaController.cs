@@ -195,18 +195,36 @@ namespace ProyectoInmobiliaria.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Administrador")]
-        public IActionResult FinalizarConfirmado(int idReserva)
+        public IActionResult FinalizarConfirmado(
+    int idReserva,
+    DateTime fechaTerminacion)
         {
-            string idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            string idString = User.FindFirstValue(
+                ClaimTypes.NameIdentifier);
 
             int idUsuarioFinalizador = int.Parse(idString);
 
-            _reservaRepository.Finalizar(
+            bool finalizado = _reservaRepository.FinalizarConMulta(
                 idReserva,
-                idUsuarioFinalizador
-            );
+                fechaTerminacion,
+                idUsuarioFinalizador);
 
-            return RedirectToAction("Details", new { id = idReserva });
+            if (!finalizado)
+            {
+                TempData["Error"] =
+                    "No se pudo finalizar la reserva. Verifique la fecha o si la reserva ya fue finalizada.";
+
+                return RedirectToAction(
+                    "Finalizar",
+                    new { id = idReserva });
+            }
+
+            TempData["Mensaje"] =
+                "La reserva fue finalizada correctamente y la multa fue registrada como pago.";
+
+            return RedirectToAction(
+                "Details",
+                new { id = idReserva });
         }
 
         [HttpGet]

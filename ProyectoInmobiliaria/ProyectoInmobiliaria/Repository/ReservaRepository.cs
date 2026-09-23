@@ -58,10 +58,19 @@ namespace ProyectoInmobiliaria.Repository
             {
                 conexion.Open();
 
-                string sql = @"SELECT IdReserva, IdInquilino, IdInmueble,
-                                      MontoPorDia, FechaDesde, FechaHasta
-                               FROM Reserva
-                               WHERE IdReserva = @id";
+                string sql = @"
+            SELECT
+                IdReserva,
+                IdInquilino,
+                IdInmueble,
+                MontoPorDia,
+                FechaDesde,
+                FechaHasta,
+                IdUsuarioCreador,
+                IdUsuarioFinalizador,
+                FechaFinalizacion
+            FROM Reserva
+            WHERE IdReserva = @id";
 
                 using (MySqlCommand comando = new MySqlCommand(sql, conexion))
                 {
@@ -78,7 +87,22 @@ namespace ProyectoInmobiliaria.Repository
                                 IdInmueble = reader.GetInt32("IdInmueble"),
                                 MontoPorDia = reader.GetDecimal("MontoPorDia"),
                                 FechaDesde = reader.GetDateTime("FechaDesde"),
-                                FechaHasta = reader.GetDateTime("FechaHasta")
+                                FechaHasta = reader.GetDateTime("FechaHasta"),
+
+                                IdUsuarioCreador = reader.IsDBNull(
+                                    reader.GetOrdinal("IdUsuarioCreador"))
+                                    ? 0
+                                    : reader.GetInt32("IdUsuarioCreador"),
+
+                                IdUsuarioFinalizador = reader.IsDBNull(
+                                    reader.GetOrdinal("IdUsuarioFinalizador"))
+                                    ? (int?)null
+                                    : reader.GetInt32("IdUsuarioFinalizador"),
+
+                                FechaFinalizacion = reader.IsDBNull(
+                                    reader.GetOrdinal("FechaFinalizacion"))
+                                    ? (DateTime?)null
+                                    : reader.GetDateTime("FechaFinalizacion")
                             };
                         }
                     }
@@ -520,6 +544,182 @@ namespace ProyectoInmobiliaria.Repository
             return true;
         }
 
+        public decimal CalcularMulta(Reserva reserva, DateTime fechaTerminacion)
+        {
+            // Si no termina antes de la fecha original, no hay multa
+            if (fechaTerminacion.Date >= reserva.FechaHasta.Date)
+            {
+                return 0;
+            }
+
+            // La fecha de terminación no puede ser anterior al inicio
+            if (fechaTerminacion.Date < reserva.FechaDesde.Date)
+            {
+                return 0;
+            }
+
+            int diasTotales = (reserva.FechaHasta.Date - reserva.FechaDesde.Date).Days;
+            int diasCumplidos = (fechaTerminacion.Date - reserva.FechaDesde.Date).Days;
+            int diasRestantes = (reserva.FechaHasta.Date - fechaTerminacion.Date).Days;
+
+            if (diasTotales <= 0 || diasRestantes <= 0)
+            {
+                return 0;
+            }
+
+            decimal porcentajeMulta;
+
+            if (diasCumplidos < diasTotales / 2.0)
+            {
+                porcentajeMulta = 0.50m;
+            }
+            else
+            {
+                porcentajeMulta = 0.25m;
+            }
+
+            decimal multa = diasRestantes
+                            * reserva.MontoPorDia
+                            * porcentajeMulta;
+
+            return Math.Round(multa, 2);
+        }
+
+        public bool FinalizarConMulta(
+         int idReserva,
+         DateTime fechaTerminacion,
+         int idUsuarioFinalizador)
+        {
+            Reserva reserva = ObtenerPorId(idReserva);
+
+            if (reserva == null)
+            {
+                return false;
+            }
+
+            // No permitir finalizar una reserva ya finalizada
+            if (reserva.IdUsuarioFinalizador != null)
+            {
+                return false;
+            }
+
+            // La fecha efectiva debe estar dentro del período original
+            if (fechaTerminacion.Date < reserva.FechaDesde.Date ||
+                fechaTerminacion.Date > reserva.FechaHasta.Date)
+            {
+                return false;
+            }
+
+            decimal multa = CalcularMulta(reserva, fechaTerminacion);
+
+            using (MySqlConnection conexion = new MySqlConnection(connectionString))
+            {
+                conexion.Open();
+
+                using (MySqlTransaction transaccion = conexion.BeginTransaction())
+                {
+                    try
+                    {
+                        // Si existe multa, se registra como pago
+                        if (multa > 0)
+                        {
+                            string sqlPago = @"
+                        INSERT INTO Pago
+                        (
+                            IdReserva,
+                            Concepto,
+                            FechaPago,
+                            Importe,
+                            Estado,
+                            IdUsuarioCreador
+                        )
+                        VALUES
+                        (
+                            @IdReserva,
+                            @Concepto,
+                            @FechaPago,
+                            @Importe,
+                            @Estado,
+                            @IdUsuarioCreador
+                        )";
+
+                            using (MySqlCommand comandoPago =
+                                   new MySqlCommand(sqlPago, conexion, transaccion))
+                            {
+                                comandoPago.Parameters.AddWithValue(
+                                    "@IdReserva", idReserva);
+
+                                comandoPago.Parameters.AddWithValue(
+                                    "@Concepto",
+                                    "Multa por finalización anticipada");
+
+                                comandoPago.Parameters.AddWithValue(
+                                    "@FechaPago",
+                                    fechaTerminacion.Date);
+
+                                comandoPago.Parameters.AddWithValue(
+                                    "@Importe",
+                                    multa);
+
+                                comandoPago.Parameters.AddWithValue(
+                                    "@Estado", true);
+
+                                comandoPago.Parameters.AddWithValue(
+                                    "@IdUsuarioCreador",
+                                    idUsuarioFinalizador);
+
+                                comandoPago.ExecuteNonQuery();
+                            }
+                        }
+
+                        // Finalizar la reserva sin modificar FechaHasta
+                        string sqlReserva = @"
+                    UPDATE Reserva
+                    SET IdUsuarioFinalizador = @IdUsuarioFinalizador,
+                        FechaFinalizacion = @FechaFinalizacion
+                    WHERE IdReserva = @IdReserva
+                      AND IdUsuarioFinalizador IS NULL";
+
+                        using (MySqlCommand comandoReserva =
+                               new MySqlCommand(sqlReserva, conexion, transaccion))
+                        {
+                            comandoReserva.Parameters.AddWithValue(
+                                "@IdUsuarioFinalizador",
+                                idUsuarioFinalizador);
+
+                            comandoReserva.Parameters.AddWithValue(
+                                "@FechaFinalizacion",
+                                fechaTerminacion.Date);
+
+                            comandoReserva.Parameters.AddWithValue(
+                                "@IdReserva",
+                                idReserva);
+
+                            int filasAfectadas = comandoReserva.ExecuteNonQuery();
+
+                            if (filasAfectadas == 0)
+                            {
+                                transaccion.Rollback();
+                                return false;
+                            }
+                        }
+
+                        transaccion.Commit();
+                        return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        transaccion.Rollback();
+
+                        Console.WriteLine(
+                            "Error al finalizar reserva con multa: "
+                            + ex.Message);
+
+                        return false;
+                    }
+                }
+            }
+        }
         public bool Finalizar(int idReserva, int idUsuarioFinalizador)
         {
             using (MySqlConnection conexion = new MySqlConnection(connectionString))
