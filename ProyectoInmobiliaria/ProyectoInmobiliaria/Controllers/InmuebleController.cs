@@ -175,6 +175,13 @@ namespace ProyectoInmobiliaria.Controllers
         [HttpPost]
         public IActionResult Create(Inmueble inmueble)
         {
+            if (inmueble.PorcentajeReserva < 0 || inmueble.PorcentajeReserva > 100)
+            {
+                ModelState.AddModelError("PorcentajeReserva", "El porcentaje debe estar entre 0 y 100.");
+                ViewBag.Propietarios = _propietarioRepo.obtenerTodos();
+                ViewBag.TipoInmueble = _tipoRepo.ObtenerTodos();
+                return View(inmueble);
+            }
             try
             {
                 if (inmueble.ArchivoImagen != null && inmueble.ArchivoImagen.Length > 0)
@@ -234,6 +241,13 @@ namespace ProyectoInmobiliaria.Controllers
         [HttpPost]
         public IActionResult Edit(Inmueble inmueble)
         {
+            if (inmueble.PorcentajeReserva < 0 || inmueble.PorcentajeReserva > 100)
+            {
+                ModelState.AddModelError("PorcentajeReserva", "El porcentaje debe estar entre 0 y 100.");
+                ViewBag.Propietarios = _propietarioRepo.obtenerTodos();
+                ViewBag.TiposInmueble = _tipoRepo.ObtenerTodos();
+                return View(inmueble);
+            }
             try
             {
                 if (inmueble.ArchivoImagen != null && inmueble.ArchivoImagen.Length > 0)

@@ -16,8 +16,10 @@ namespace ProyectoInmobiliaria.Repository
 
         public void Guardar(Inmueble inmueble)
         {
-            string query = @"INSERT INTO Inmueble (Direccion, Cupo, Coordenadas, PrecioPorDia, ImagenPortada,Estado, IdPropietario, IdTipoInmueble) 
-                            VALUES (@Direccion, @Cupo, @Coordenadas, @PrecioPorDia, @ImagenPortada, @Estado, @IdPropietario, @IdTipoInmueble)";
+            string query = @"INSERT INTO Inmueble 
+                (Direccion, Cupo, Coordenadas, PrecioPorDia, ImagenPortada, Estado, IdPropietario, IdTipoInmueble, PorcentajeReserva) 
+                VALUES 
+                (@Direccion, @Cupo, @Coordenadas, @PrecioPorDia, @ImagenPortada, @Estado, @IdPropietario, @IdTipoInmueble, @PorcentajeReserva)";
             using (MySqlConnection conexion = new MySqlConnection(_cadenaDeConexion))
             {
                 using (MySqlCommand comando = new MySqlCommand(query, conexion))
@@ -30,6 +32,7 @@ namespace ProyectoInmobiliaria.Repository
                     comando.Parameters.AddWithValue("@Estado", inmueble.Estado);
                     comando.Parameters.AddWithValue("@IdPropietario", inmueble.IdPropietario);
                     comando.Parameters.AddWithValue("@IdTipoInmueble", inmueble.IdTipoInmueble);
+                    comando.Parameters.AddWithValue("@PorcentajeReserva", inmueble.PorcentajeReserva);
                     try
                     {
                         conexion.Open();
@@ -88,6 +91,7 @@ namespace ProyectoInmobiliaria.Repository
             i.Estado,
             i.IdPropietario,
             i.IdTipoInmueble,
+            i.PorcentajeReserva,
 
             p.IdPropietario,
             p.Nombre AS NombrePropietario,
@@ -131,6 +135,7 @@ namespace ProyectoInmobiliaria.Repository
 
                                     IdPropietario = reader.GetInt32("IdPropietario"),
                                     IdTipoInmueble = reader.GetInt32("IdTipoInmueble"),
+                                    PorcentajeReserva = reader.GetDecimal("PorcentajeReserva"),
 
                                     Dueño = new Propietario
                                     {
@@ -177,6 +182,7 @@ namespace ProyectoInmobiliaria.Repository
             i.Estado,
             i.IdPropietario,
             i.IdTipoInmueble,
+            i.PorcentajeReserva,
 
             p.Nombre AS NombrePropietario,
             p.Apellido AS ApellidoPropietario,
@@ -233,6 +239,7 @@ namespace ProyectoInmobiliaria.Repository
                                     Estado = reader.GetBoolean("Estado"),
                                     IdPropietario = reader.GetInt32("IdPropietario"),
                                     IdTipoInmueble = reader.GetInt32("IdTipoInmueble"),
+                                    PorcentajeReserva = reader.GetDecimal("PorcentajeReserva"),
 
                                     Dueño = new Propietario
                                     {
@@ -318,6 +325,7 @@ namespace ProyectoInmobiliaria.Repository
             i.Estado,
             i.IdPropietario,
             i.IdTipoInmueble,
+            i.PorcentajeReserva,
 
             p.IdPropietario,
             p.Nombre AS NombrePropietario,
@@ -365,6 +373,7 @@ namespace ProyectoInmobiliaria.Repository
 
                                     IdPropietario = reader.GetInt32("IdPropietario"),
                                     IdTipoInmueble = reader.GetInt32("IdTipoInmueble"),
+                                    PorcentajeReserva = reader.GetDecimal("PorcentajeReserva"),
 
                                     Dueño = new Propietario
                                     {
@@ -409,6 +418,7 @@ namespace ProyectoInmobiliaria.Repository
             i.Estado,
             i.IdPropietario,
             i.IdTipoInmueble,
+            i.PorcentajeReserva,
 
             p.Nombre AS NombrePropietario,
             p.Apellido AS ApellidoPropietario,
@@ -456,6 +466,7 @@ namespace ProyectoInmobiliaria.Repository
 
                                     IdPropietario = reader.GetInt32("IdPropietario"),
                                     IdTipoInmueble = reader.GetInt32("IdTipoInmueble"),
+                                    PorcentajeReserva = reader.GetDecimal("PorcentajeReserva"),
 
                                     Dueño = new Propietario
                                     {
@@ -502,6 +513,7 @@ namespace ProyectoInmobiliaria.Repository
             i.Estado,
             i.IdPropietario,
             i.IdTipoInmueble,
+            i.PorcentajeReserva,
 
             p.Nombre AS NombrePropietario,
             p.Apellido AS ApellidoPropietario,
@@ -532,6 +544,7 @@ namespace ProyectoInmobiliaria.Repository
             i.Estado,
             i.IdPropietario,
             i.IdTipoInmueble,
+            i.PorcentajeReserva,
             p.Nombre,
             p.Apellido,
             t.Nombre
@@ -570,6 +583,7 @@ namespace ProyectoInmobiliaria.Repository
                                     IdPropietario = reader.GetInt32("IdPropietario"),
                                     IdTipoInmueble = reader.GetInt32("IdTipoInmueble"),
                                     CantidadReservas = reader.GetInt32("CantidadReservas"),
+                                    PorcentajeReserva = reader.GetDecimal("PorcentajeReserva"),
 
                                     Dueño = new Propietario
                                     {
@@ -616,6 +630,7 @@ namespace ProyectoInmobiliaria.Repository
             i.Estado,
             i.IdPropietario,
             i.IdTipoInmueble,
+            i.PorcentajeReserva,
 
             p.Nombre AS NombrePropietario,
             p.Apellido AS ApellidoPropietario,
@@ -669,6 +684,7 @@ namespace ProyectoInmobiliaria.Repository
 
                                     IdPropietario = reader.GetInt32("IdPropietario"),
                                     IdTipoInmueble = reader.GetInt32("IdTipoInmueble"),
+                                    PorcentajeReserva = reader.GetDecimal("PorcentajeReserva"),
 
                                     Dueño = new Propietario
                                     {
@@ -715,6 +731,7 @@ namespace ProyectoInmobiliaria.Repository
             i.Estado,
             i.IdPropietario,
             i.IdTipoInmueble,
+            i.PorcentajeReserva,
 
             p.Nombre AS NombrePropietario,
             p.Apellido AS ApellidoPropietario,
@@ -772,6 +789,7 @@ namespace ProyectoInmobiliaria.Repository
 
                                     IdPropietario = reader.GetInt32("IdPropietario"),
                                     IdTipoInmueble = reader.GetInt32("IdTipoInmueble"),
+                                    PorcentajeReserva = reader.GetDecimal("PorcentajeReserva"),
 
                                     Dueño = new Propietario
                                     {
@@ -806,15 +824,16 @@ namespace ProyectoInmobiliaria.Repository
         public void Actualizar(Inmueble inmueble)
         {
             string query = @"UPDATE Inmueble 
-                            SET Direccion = @Direccion, 
-                                Cupo = @Cupo, 
-                                Coordenadas = @Coordenadas, 
-                                PrecioPorDia = @PrecioPorDia, 
-                                ImagenPortada = @ImagenPortada, 
-                                Estado = @Estado, 
-                                IdPropietario = @IdPropietario, 
-                                IdTipoInmueble = @IdTipoInmueble 
-                            WHERE IdInmueble = @IdInmueble";
+                SET Direccion = @Direccion, 
+                    Cupo = @Cupo, 
+                    Coordenadas = @Coordenadas, 
+                    PrecioPorDia = @PrecioPorDia, 
+                    ImagenPortada = @ImagenPortada, 
+                    Estado = @Estado, 
+                    IdPropietario = @IdPropietario, 
+                    IdTipoInmueble = @IdTipoInmueble,
+                    PorcentajeReserva = @PorcentajeReserva
+                WHERE IdInmueble = @IdInmueble";
             using (MySqlConnection conexion = new MySqlConnection(_cadenaDeConexion))
             {
                 using (MySqlCommand comando = new MySqlCommand(query, conexion))
@@ -828,6 +847,7 @@ namespace ProyectoInmobiliaria.Repository
                     comando.Parameters.AddWithValue("@IdPropietario", inmueble.IdPropietario);
                     comando.Parameters.AddWithValue("@IdTipoInmueble", inmueble.IdTipoInmueble);
                     comando.Parameters.AddWithValue("@IdInmueble", inmueble.IdInmueble);
+                    comando.Parameters.AddWithValue("@PorcentajeReserva", inmueble.PorcentajeReserva);
                     try
                     {
                         conexion.Open();
@@ -854,7 +874,7 @@ namespace ProyectoInmobiliaria.Repository
             Inmueble inmueble = null;
             string query = @"
         SELECT i.IdInmueble, i.Direccion, i.Cupo, i.Coordenadas, i.PrecioPorDia, 
-               i.ImagenPortada, i.Estado, i.IdPropietario, i.IdTipoInmueble,
+               i.ImagenPortada, i.Estado, i.IdPropietario, i.IdTipoInmueble, i.PorcentajeReserva,
                p.Nombre AS NombrePropietario, p.Apellido AS ApellidoPropietario, p.Dni,
                t.Nombre AS NombreTipo
         FROM Inmueble i
@@ -883,6 +903,7 @@ namespace ProyectoInmobiliaria.Repository
                                 Estado = reader.GetBoolean("Estado"),
                                 IdPropietario = reader.GetInt32("IdPropietario"),
                                 IdTipoInmueble = reader.GetInt32("IdTipoInmueble"),
+                                PorcentajeReserva = reader.GetDecimal("PorcentajeReserva"),
 
                                 Dueño = new Propietario
                                 {

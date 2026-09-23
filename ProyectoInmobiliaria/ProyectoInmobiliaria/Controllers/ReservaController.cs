@@ -104,24 +104,109 @@ namespace ProyectoInmobiliaria.Controllers
         [HttpPost]
         public IActionResult Create(Reserva reserva)
         {
-            string idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            string idString = User.FindFirstValue(
+                ClaimTypes.NameIdentifier);
 
-            // Lo convertimos a número y se lo asignamos a la reserva
-            reserva.IdUsuarioCreador = int.Parse(idString);
-            bool guardado = _reservaRepository.Guardar(reserva);
+            int idUsuarioCreador = int.Parse(idString);
 
-            if (!guardado)
+            // Obtener el inmueble seleccionado
+            Inmueble inmueble =
+                _inmuebleRepository.ObtenerPorId(reserva.IdInmueble);
+
+            if (inmueble == null)
             {
                 ModelState.AddModelError(
                     "",
-                    "No se puede realizar la reserva. Verifique si las fechas o el inmueble ya está reservado."
-                );
+                    "No se encontró el inmueble seleccionado.");
 
-                ViewBag.Inquilinos = _inquilinoRepository.ObtenerTodos();
-                ViewBag.Inmuebles = _inmuebleRepository.ObtenerTodos();
+                ViewBag.Inquilinos =
+                    _inquilinoRepository.ObtenerTodos();
+
+                ViewBag.Inmuebles =
+                    _inmuebleRepository.ObtenerTodos();
 
                 return View(reserva);
             }
+
+
+            // El monto por día sale del inmueble
+            reserva.MontoPorDia =
+                inmueble.PrecioPorDia;
+
+
+            reserva.IdUsuarioCreador =
+                idUsuarioCreador;
+
+
+            if (inmueble.PorcentajeReserva < 0 ||
+                inmueble.PorcentajeReserva > 100)
+            {
+                ModelState.AddModelError(
+                    "",
+                    "El porcentaje de reserva del inmueble no es válido.");
+
+                ViewBag.Inquilinos =
+                    _inquilinoRepository.ObtenerTodos();
+
+                ViewBag.Inmuebles =
+                    _inmuebleRepository.ObtenerTodos();
+
+                return View(reserva);
+            }
+
+
+            // Guardar reserva + pago inicial
+            int idReserva =
+                _reservaRepository.Guardar(
+                    reserva,
+                    inmueble.PorcentajeReserva);
+
+
+            if (idReserva <= 0)
+            {
+                ModelState.AddModelError(
+                    "",
+                    "No se puede realizar la reserva. Verifique las fechas o si el inmueble ya está reservado.");
+
+                ViewBag.Inquilinos =
+                    _inquilinoRepository.ObtenerTodos();
+
+                ViewBag.Inmuebles =
+                    _inmuebleRepository.ObtenerTodos();
+
+                return View(reserva);
+            }
+
+
+            // Calcular importe inicial para mostrar confirmación
+            int dias =
+                (reserva.FechaHasta.Date -
+                 reserva.FechaDesde.Date).Days;
+
+            decimal totalAlquiler =
+                dias * reserva.MontoPorDia;
+
+            decimal pagoInicial =
+                Math.Round(
+                    totalAlquiler *
+                    inmueble.PorcentajeReserva / 100m,
+                    2);
+
+
+            if (pagoInicial > 0)
+            {
+                TempData["Mensaje"] =
+                    $"Reserva creada correctamente. " +
+                    $"Se registró un pago inicial de ${pagoInicial:N2} " +
+                    $"({inmueble.PorcentajeReserva:N2}% del alquiler).";
+            }
+            else
+            {
+                TempData["Mensaje"] =
+                    "Reserva creada correctamente. " +
+                    "El inmueble no requiere pago inicial.";
+            }
+
 
             return RedirectToAction("Index");
         }

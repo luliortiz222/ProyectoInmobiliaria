@@ -14,6 +14,7 @@ namespace ProyectoInmobiliaria.models
         public int IdPropietario { get; set; }
         public int IdTipoInmueble { get; set; }
         public int CantidadReservas { get; set; }
+        public decimal PorcentajeReserva { get; set; }
 
         public Propietario Dueño { get; set; }
         public TipoInmueble Tipo { get; set; }

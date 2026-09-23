@@ -436,12 +436,14 @@ namespace ProyectoInmobiliaria.Repository
         }
 
         // Guardar una nueva reserva
-        public bool Guardar(Reserva reserva)
+        public int Guardar(
+    Reserva reserva,
+    decimal porcentajeReserva)
         {
-            // Primero verificar que las fechas sean válidas
+            // Verificar que las fechas sean válidas
             if (reserva.FechaDesde >= reserva.FechaHasta)
             {
-                return false;
+                return 0;
             }
 
             // Verificar que el inmueble esté disponible
@@ -450,38 +452,179 @@ namespace ProyectoInmobiliaria.Repository
                 reserva.FechaDesde,
                 reserva.FechaHasta))
             {
-                return false;
+                return 0;
             }
 
-            using (MySqlConnection conexion = new MySqlConnection(connectionString))
+            // Verificar que el porcentaje sea válido
+            if (porcentajeReserva < 0 || porcentajeReserva > 100)
+            {
+                return 0;
+            }
+
+            using (MySqlConnection conexion =
+                   new MySqlConnection(connectionString))
             {
                 conexion.Open();
 
-                string sql = @"INSERT INTO Reserva
-                               (IdInquilino, IdInmueble, MontoPorDia, FechaDesde, FechaHasta, IdUsuarioCreador)
-                               VALUES
-                               (@idInquilino, @idInmueble, @montoPorDia, @fechaDesde, @fechaHasta, @idUsuarioCreador)";
-
-                try
+                using (MySqlTransaction transaccion =
+                       conexion.BeginTransaction())
                 {
-                    using (MySqlCommand comando = new MySqlCommand(sql, conexion))
+                    try
                     {
-                        comando.Parameters.AddWithValue("@idInquilino", reserva.IdInquilino);
-                        comando.Parameters.AddWithValue("@idInmueble", reserva.IdInmueble);
-                        comando.Parameters.AddWithValue("@montoPorDia", reserva.MontoPorDia);
-                        comando.Parameters.AddWithValue("@fechaDesde", reserva.FechaDesde);
-                        comando.Parameters.AddWithValue("@fechaHasta", reserva.FechaHasta);
-                        comando.Parameters.AddWithValue("@idUsuarioCreador", reserva.IdUsuarioCreador);
-                        
-                        comando.ExecuteNonQuery();
+                        // se crea la reserva
+
+                        string sqlReserva = @"
+                    INSERT INTO Reserva
+                    (
+                        IdInquilino,
+                        IdInmueble,
+                        MontoPorDia,
+                        FechaDesde,
+                        FechaHasta,
+                        IdUsuarioCreador
+                    )
+                    VALUES
+                    (
+                        @IdInquilino,
+                        @IdInmueble,
+                        @MontoPorDia,
+                        @FechaDesde,
+                        @FechaHasta,
+                        @IdUsuarioCreador
+                    )";
+
+                        int idReserva;
+
+                        using (MySqlCommand comandoReserva =
+                               new MySqlCommand(
+                                   sqlReserva,
+                                   conexion,
+                                   transaccion))
+                        {
+                            comandoReserva.Parameters.AddWithValue(
+                                "@IdInquilino",
+                                reserva.IdInquilino);
+
+                            comandoReserva.Parameters.AddWithValue(
+                                "@IdInmueble",
+                                reserva.IdInmueble);
+
+                            comandoReserva.Parameters.AddWithValue(
+                                "@MontoPorDia",
+                                reserva.MontoPorDia);
+
+                            comandoReserva.Parameters.AddWithValue(
+                                "@FechaDesde",
+                                reserva.FechaDesde.Date);
+
+                            comandoReserva.Parameters.AddWithValue(
+                                "@FechaHasta",
+                                reserva.FechaHasta.Date);
+
+                            comandoReserva.Parameters.AddWithValue(
+                                "@IdUsuarioCreador",
+                                reserva.IdUsuarioCreador);
+
+                            comandoReserva.ExecuteNonQuery();
+
+                            idReserva =
+                                Convert.ToInt32(
+                                    comandoReserva.LastInsertedId);
+                        }
+
+                        // se calcula el pago inicial 
+
+                        int dias =
+                            (reserva.FechaHasta.Date -
+                             reserva.FechaDesde.Date).Days;
+
+                        decimal totalAlquiler =
+                            dias * reserva.MontoPorDia;
+
+                        decimal importeInicial =
+                            Math.Round(
+                                totalAlquiler *
+                                porcentajeReserva / 100m,
+                                2);
+
+                        // se crea el pago inicial
+
+                        if (importeInicial > 0)
+                        {
+                            string sqlPago = @"
+                        INSERT INTO Pago
+                        (
+                            IdReserva,
+                            Concepto,
+                            FechaPago,
+                            Importe,
+                            Estado,
+                            IdUsuarioCreador
+                        )
+                        VALUES
+                        (
+                            @IdReserva,
+                            @Concepto,
+                            @FechaPago,
+                            @Importe,
+                            @Estado,
+                            @IdUsuarioCreador
+                        )";
+
+                            using (MySqlCommand comandoPago =
+                                   new MySqlCommand(
+                                       sqlPago,
+                                       conexion,
+                                       transaccion))
+                            {
+                                comandoPago.Parameters.AddWithValue(
+                                    "@IdReserva",
+                                    idReserva);
+
+                                comandoPago.Parameters.AddWithValue(
+                                    "@Concepto",
+                                    "Pago inicial de reserva");
+
+                                comandoPago.Parameters.AddWithValue(
+                                    "@FechaPago",
+                                    DateTime.Today);
+
+                                comandoPago.Parameters.AddWithValue(
+                                    "@Importe",
+                                    importeInicial);
+
+                                comandoPago.Parameters.AddWithValue(
+                                    "@Estado",
+                                    true);
+
+                                comandoPago.Parameters.AddWithValue(
+                                    "@IdUsuarioCreador",
+                                    reserva.IdUsuarioCreador);
+
+                                comandoPago.ExecuteNonQuery();
+                            }
+                        }
+
+                        // Confirmar
+
+                        transaccion.Commit();
+
+                        return idReserva;
                     }
-                }catch(Exception ex)
-                {
-                    Console.WriteLine("Error: " + ex.Message);
+                    catch (Exception ex)
+                    {
+                        // Si falla la reserva o el pago, no queda guardada ninguna de las dos cosas.
+
+                        transaccion.Rollback();
+
+                        Console.WriteLine(
+                            "Error al guardar reserva y pago inicial: "
+                            + ex.Message);
+
+                        return 0;
+                    }
                 }
             }
-
-            return true;
         }
 
         // Editar una reserva

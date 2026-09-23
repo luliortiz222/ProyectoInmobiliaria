@@ -83,6 +83,20 @@
                             </select>
                         </div>
 
+                        <div class="mb-3">
+                            <label class="form-label">Porcentaje de reserva (%)</label>
+                            <input type="number"
+                                   name="PorcentajeReserva"
+                                   class="form-control"
+                                   min="0"
+                                   max="100"
+                                   step="0.01"
+                                   required />
+                            <div class="form-text">
+                                Porcentaje del alquiler que se debe pagar al realizar la reserva.
+                            </div>
+                        </div>
+
                         <!-- Botones -->
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                             <a href="/Inmueble/Index" class="btn btn-secondary">Cancelar</a>

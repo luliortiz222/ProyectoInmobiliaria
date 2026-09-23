@@ -46,7 +46,8 @@
 
                                 @foreach (var inquilino in ViewBag.Inquilinos)
                                 {
-                                    <option value="@inquilino.IdInquilino">
+                                    <option value="@inquilino.IdInquilino"
+                                            selected="@(Model != null && Model.IdInquilino == inquilino.IdInquilino)">
                                         @inquilino.Nombre @inquilino.Apellido
                                         (DNI: @inquilino.Dni)
                                     </option>
@@ -66,6 +67,7 @@
                             </label>
 
                             <select name="IdInmueble"
+                                    id="IdInmueble"
                                     class="form-select"
                                     required>
 
@@ -75,13 +77,42 @@
 
                                 @foreach (var inmueble in ViewBag.Inmuebles)
                                 {
-                                    <option value="@inmueble.IdInmueble">
+                                    <option value="@inmueble.IdInmueble"
+                                            data-precio="@inmueble.PrecioPorDia"
+                                            data-porcentaje="@inmueble.PorcentajeReserva"
+                                            selected="@(Model != null && Model.IdInmueble == inmueble.IdInmueble)">
                                         @inmueble.Direccion
                                         - $@inmueble.PrecioPorDia por día
                                     </option>
                                 }
 
                             </select>
+
+                        </div>
+
+
+                        <!-- DATOS DE RESERVA DEL INMUEBLE -->
+
+                        <div id="datosReserva"
+                             class="alert alert-info"
+                             style="display:none;">
+
+                            <strong>Datos de la reserva</strong>
+
+                            <div class="mt-2">
+                                Porcentaje de reserva:
+                                <strong id="porcentajeReserva">0%</strong>
+                            </div>
+
+                            <div>
+                                Total del alquiler:
+                                <strong id="totalAlquiler">$0,00</strong>
+                            </div>
+
+                            <div>
+                                Pago inicial de reserva:
+                                <strong id="pagoInicial">$0,00</strong>
+                            </div>
 
                         </div>
 
@@ -96,10 +127,17 @@
 
                             <input type="number"
                                    name="MontoPorDia"
+                                   id="MontoPorDia"
                                    class="form-control"
                                    step="0.01"
                                    min="0"
+                                   value="@(Model?.MontoPorDia ?? 0)"
+                                   readonly
                                    required />
+
+                            <div class="form-text">
+                                El monto se obtiene automáticamente del inmueble seleccionado.
+                            </div>
 
                         </div>
 
@@ -116,8 +154,11 @@
 
                                 <input type="date"
                                        name="FechaDesde"
+                                       id="FechaDesde"
                                        class="form-control"
-                                       value="@DateTime.Today.ToString("yyyy-MM-dd")"
+                                       value="@(Model?.FechaDesde != null && Model.FechaDesde != DateTime.MinValue
+                                                                            ? Model.FechaDesde.ToString("yyyy-MM-dd")
+                                                                            : DateTime.Today.ToString("yyyy-MM-dd"))"
                                        required />
 
                             </div>
@@ -131,8 +172,11 @@
 
                                 <input type="date"
                                        name="FechaHasta"
+                                       id="FechaHasta"
                                        class="form-control"
-                                       value="@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")"
+                                       value="@(Model?.FechaHasta != null && Model.FechaHasta != DateTime.MinValue
+                                                                            ? Model.FechaHasta.ToString("yyyy-MM-dd")
+                                                                            : DateTime.Today.AddDays(1).ToString("yyyy-MM-dd"))"
                                        required />
 
                             </div>
@@ -165,3 +209,122 @@
     </div>
 
 </div>
+
+
+<script>
+
+    const selectInmueble = document.getElementById("IdInmueble");
+    const montoPorDia = document.getElementById("MontoPorDia");
+    const fechaDesde = document.getElementById("FechaDesde");
+    const fechaHasta = document.getElementById("FechaHasta");
+
+    const datosReserva = document.getElementById("datosReserva");
+    const porcentajeReserva = document.getElementById("porcentajeReserva");
+    const totalAlquiler = document.getElementById("totalAlquiler");
+    const pagoInicial = document.getElementById("pagoInicial");
+
+
+    function actualizarReserva() {
+
+        const opcion = selectInmueble.options[selectInmueble.selectedIndex];
+
+        if (!opcion || !opcion.value) {
+
+            datosReserva.style.display = "none";
+
+            montoPorDia.value = "";
+
+            return;
+        }
+
+
+        const precio = parseFloat(opcion.dataset.precio) || 0;
+        const porcentaje = parseFloat(opcion.dataset.porcentaje) || 0;
+
+
+        // Mostrar precio automáticamente
+        montoPorDia.value = precio.toFixed(2);
+
+
+        // Mostrar datos
+        datosReserva.style.display = "block";
+
+        porcentajeReserva.textContent =
+            porcentaje.toFixed(2) + "%";
+
+
+        calcularPagoInicial();
+    }
+
+
+    function calcularPagoInicial() {
+
+        const opcion = selectInmueble.options[selectInmueble.selectedIndex];
+
+        if (!opcion || !opcion.value) {
+            return;
+        }
+
+
+        const precio = parseFloat(montoPorDia.value) || 0;
+        const porcentaje = parseFloat(opcion.dataset.porcentaje) || 0;
+
+
+        if (!fechaDesde.value || !fechaHasta.value) {
+
+            totalAlquiler.textContent = "$0,00";
+            pagoInicial.textContent = "$0,00";
+
+            return;
+        }
+
+
+        const desde = new Date(fechaDesde.value + "T00:00:00");
+        const hasta = new Date(fechaHasta.value + "T00:00:00");
+
+
+        const diferencia =
+            (hasta - desde) / (1000 * 60 * 60 * 24);
+
+
+        if (diferencia <= 0) {
+
+            totalAlquiler.textContent = "$0,00";
+            pagoInicial.textContent = "$0,00";
+
+            return;
+        }
+
+
+        const total = diferencia * precio;
+
+        const inicial = total * porcentaje / 100;
+
+
+        totalAlquiler.textContent =
+            "$" + total.toLocaleString("es-AR", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+
+
+        pagoInicial.textContent =
+            "$" + inicial.toLocaleString("es-AR", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+
+    }
+
+
+    selectInmueble.addEventListener("change", actualizarReserva);
+
+    fechaDesde.addEventListener("change", calcularPagoInicial);
+
+    fechaHasta.addEventListener("change", calcularPagoInicial);
+
+
+    // Ejecutar al cargar
+    actualizarReserva();
+
+</script>
