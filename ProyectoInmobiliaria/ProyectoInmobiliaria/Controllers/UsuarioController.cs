@@ -224,27 +224,7 @@ namespace ProyectoInmobiliaria.Controllers
             // Nunca mandar la contraseña a la vista
             usuario.Password = null;
 
-            // Cargar avatares
-            string carpetaAvatares = Path.Combine(
-                Directory.GetCurrentDirectory(),
-                "wwwroot",
-                "avatars"
-            );
-
-            var avatares = new List<string>();
-
-            if (Directory.Exists(carpetaAvatares))
-            {
-                string[] archivos = Directory.GetFiles(carpetaAvatares);
-
-                foreach (string archivo in archivos)
-                {
-                    avatares.Add(Path.GetFileName(archivo));
-                }
-            }
-
-            // MUY IMPORTANTE
-            ViewBag.Avatares = avatares;
+            
 
             return View(usuario);
         }
@@ -277,33 +257,40 @@ namespace ProyectoInmobiliaria.Controllers
                 usuario.Rol = usuarioExistente.Rol;
             }
 
-            if (!ModelState.IsValid)
+            try
             {
-                // Volver a cargar avatares
-                string carpetaAvatares = Path.Combine(
-                    Directory.GetCurrentDirectory(),
-                    "wwwroot",
-                    "avatars"
-                );
-
-                var avatares = new List<string>();
-
-                if (Directory.Exists(carpetaAvatares))
+                if (usuario.ArchivoImagen != null && usuario.ArchivoImagen.Length > 0)
                 {
-                    foreach (string archivo in Directory.GetFiles(carpetaAvatares))
+                    string carpetaAvatares = Path.Combine(_entorno.WebRootPath, "avatars");
+                    if (!Directory.Exists(carpetaAvatares))
                     {
-                        avatares.Add(Path.GetFileName(archivo));
+                        Directory.CreateDirectory(carpetaAvatares);
                     }
+                    string nombreArchivo = Guid.NewGuid().ToString() + Path.GetExtension(usuario.ArchivoImagen.FileName);
+                    string rutaArchivo = Path.Combine(carpetaAvatares, nombreArchivo);
+                    using (var stream = new FileStream(rutaArchivo, FileMode.Create))
+                    {
+                        usuario.ArchivoImagen.CopyTo(stream);
+                    }
+                    usuario.Avatar = "/avatars/" + nombreArchivo;
                 }
+                else
+                {
+                    usuario.Avatar = " ";
 
-                ViewBag.Avatares = avatares;
+                }
+                _usuarioRepository.Actualizar(usuario);
 
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                // Manejar la excepción si ocurre un error al guardar la imagen
+                ModelState.AddModelError("", "Error al guardar la imagen: " + ex.Message);
                 return View(usuario);
             }
 
-            _usuarioRepository.Actualizar(usuario);
-
-            return RedirectToAction("Index");
+            
         }
 
         [HttpGet]
