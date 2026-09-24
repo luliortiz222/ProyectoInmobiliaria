@@ -184,7 +184,7 @@ namespace ProyectoInmobiliaria.Controllers
                 }
                 else
                 {
-                    usuario.Avatar = " ";
+                    usuario.Avatar = "";
 
                 }
                 _usuarioRepository.Guardar(usuario);
@@ -242,56 +242,75 @@ namespace ProyectoInmobiliaria.Controllers
             if (usuarioExistente == null)
                 return NotFound();
 
-            // El empleado solo puede editarse a sí mismo
             if (!User.IsInRole("Administrador"))
             {
                 string idUsuarioLogueado =
                     User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-                int idLogueado = int.Parse(idUsuarioLogueado);
+                if (!int.TryParse(idUsuarioLogueado, out int idLogueado))
+                    return Forbid();
 
                 if (usuario.IdUsuario != idLogueado)
                     return Forbid();
-
-                // El empleado NO puede cambiar su rol
-                usuario.Rol = usuarioExistente.Rol;
             }
 
             try
             {
-                if (usuario.ArchivoImagen != null && usuario.ArchivoImagen.Length > 0)
+                // Mantener la contraseña actual
+                usuario.Password = usuarioExistente.Password;
+
+                if (string.IsNullOrWhiteSpace(usuario.Rol))
                 {
-                    string carpetaAvatares = Path.Combine(_entorno.WebRootPath, "avatars");
+                    usuario.Rol = usuarioExistente.Rol;
+                }
+
+                // Si se subió un nuevo avatar
+                if (usuario.ArchivoImagen != null &&
+                    usuario.ArchivoImagen.Length > 0)
+                {
+                    string carpetaAvatares =
+                        Path.Combine(_entorno.WebRootPath, "avatars");
+
                     if (!Directory.Exists(carpetaAvatares))
                     {
                         Directory.CreateDirectory(carpetaAvatares);
                     }
-                    string nombreArchivo = Guid.NewGuid().ToString() + Path.GetExtension(usuario.ArchivoImagen.FileName);
-                    string rutaArchivo = Path.Combine(carpetaAvatares, nombreArchivo);
-                    using (var stream = new FileStream(rutaArchivo, FileMode.Create))
+
+                    string nombreArchivo =
+                        Guid.NewGuid().ToString()
+                        + Path.GetExtension(usuario.ArchivoImagen.FileName);
+
+                    string rutaArchivo =
+                        Path.Combine(carpetaAvatares, nombreArchivo);
+
+                    using (var stream = new FileStream(
+                        rutaArchivo,
+                        FileMode.Create))
                     {
                         usuario.ArchivoImagen.CopyTo(stream);
                     }
+
                     usuario.Avatar = "/avatars/" + nombreArchivo;
                 }
                 else
                 {
-                    usuario.Avatar = " ";
-
+                    usuario.Avatar = usuarioExistente.Avatar;
                 }
-                usuario.Password = usuarioExistente.Password; 
+
                 _usuarioRepository.Actualizar(usuario);
+
+                Console.WriteLine("Usuario actualizado con éxito");
 
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                // Manejar la excepción si ocurre un error al guardar la imagen
-                ModelState.AddModelError("", "Error al guardar la imagen: " + ex.Message);
+                ModelState.AddModelError(
+                    "",
+                    "Error al actualizar usuario: " + ex.Message);
+
                 return View(usuario);
             }
-
-            
         }
 
         [HttpGet]
