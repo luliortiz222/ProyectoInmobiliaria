@@ -279,6 +279,7 @@ namespace ProyectoInmobiliaria.Controllers
                     usuario.Avatar = " ";
 
                 }
+                usuario.Password = usuarioExistente.Password; 
                 _usuarioRepository.Actualizar(usuario);
 
                 return RedirectToAction("Index");
