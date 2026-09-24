@@ -103,7 +103,7 @@ namespace ProyectoInmobiliaria.Controllers
             var usuario = _usuarioRepository.ObtenerPorEmail(email);
 
             // 2. Verificamos si existe y si la clave coincide
-            if (usuario == null || usuario.Password != password)
+            if (usuario == null ||!BCrypt.Net.BCrypt.Verify(password, usuario.Password))
             {
                 ViewBag.Error = "Email o contraseña incorrectos.";
                 return View();

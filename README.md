@@ -98,6 +98,7 @@ ProyectoInmobiliaria
 │       └── _Layout.cshtml
 ├── wwwroot/
 │   └── avatars/
+│    └──uploads/
 └── Program.cs
 ```
 

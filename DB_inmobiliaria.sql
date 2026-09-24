@@ -86,9 +86,9 @@ CREATE TABLE Pago (
 INSERT INTO Usuario
 (Email, Password, Nombre, Apellido, Rol)
 VALUES
-('admin@inmobiliaria.com', '123456', 'Admin', 'Sistema', 'Administrador');
+('admin@inmobiliaria.com', '$2a$12$TFilc.KKX5trw0LXCg3l1O0wM6wlihexJ1A2fid2xz2yUOJU/pXmS', 'Admin', 'Sistema', 'Administrador');
 
 INSERT INTO Usuario
 (Email, Password, Nombre, Apellido, Rol)
 VALUES
-('empleado@inmobiliaria.com', '123456', 'Empleado', 'Sistema', 'Empleado');
+('empleado@inmobiliaria.com', '$2a$12$TFilc.KKX5trw0LXCg3l1O0wM6wlihexJ1A2fid2xz2yUOJU/pXmS', 'Empleado', 'Sistema', 'Empleado');

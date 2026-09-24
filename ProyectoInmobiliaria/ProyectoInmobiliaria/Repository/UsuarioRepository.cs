@@ -27,7 +27,8 @@ namespace ProyectoInmobiliaria.Repository
                 using (MySqlCommand comando = new MySqlCommand(query, conexion))
                 {
                     comando.Parameters.AddWithValue("@Email", usuario.Email);
-                    comando.Parameters.AddWithValue("@Password", usuario.Password);
+                    string passwordHash = BCrypt.Net.BCrypt.HashPassword(usuario.Password);
+                    comando.Parameters.AddWithValue("@Password", passwordHash);
                     comando.Parameters.AddWithValue("@Nombre", usuario.Nombre);
                     comando.Parameters.AddWithValue("@Apellido", usuario.Apellido);
                     comando.Parameters.AddWithValue("@Avatar", usuario.Avatar);
