@@ -24,6 +24,7 @@
   <ItemGroup>
     <Folder Include="Views\Inquilinos\" />
     <Folder Include="Views\Shared\" />
+    <Folder Include="wwwroot\avatars\" />
   </ItemGroup>
 
 </Project>
