@@ -197,5 +197,49 @@ namespace ProyectoInmobiliaria.Repository
                 }
             }
         }
+
+        public List<TipoInmueble> Buscar(string busqueda)
+        {
+            List<TipoInmueble> lista = new List<TipoInmueble>();
+
+            string query = @"
+        SELECT IdTipoInmueble, Nombre
+        FROM TipoInmueble
+        WHERE Nombre LIKE @Busqueda
+        ORDER BY Nombre
+        LIMIT 10";
+
+            using (MySqlConnection conexion =
+                   new MySqlConnection(connectionString))
+            {
+                using (MySqlCommand comando =
+                       new MySqlCommand(query, conexion))
+                {
+                    comando.Parameters.AddWithValue(
+                        "@Busqueda",
+                        "%" + (busqueda ?? "") + "%");
+
+                    conexion.Open();
+
+                    using (MySqlDataReader reader =
+                           comando.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            lista.Add(new TipoInmueble
+                            {
+                                IdTipoInmueble =
+                                    Convert.ToInt32(reader["IdTipoInmueble"]),
+
+                                Nombre =
+                                    reader["Nombre"].ToString()
+                            });
+                        }
+                    }
+                }
+            }
+
+            return lista;
+        }
     }
 }

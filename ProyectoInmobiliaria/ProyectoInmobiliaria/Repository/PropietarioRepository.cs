@@ -346,5 +346,63 @@ public class PropietarioRepository
         }
         return propietario;
     }
+
+    public List<Propietario> Buscar(string busqueda)
+    {
+        List<Propietario> lista = new List<Propietario>();
+
+        string query = @"
+        SELECT IdPropietario, Dni, Nombre, Apellido, Email, Telefono
+        FROM Propietario
+        WHERE Nombre LIKE @Busqueda
+           OR Apellido LIKE @Busqueda
+           OR Dni LIKE @Busqueda
+        ORDER BY Apellido, Nombre
+        LIMIT 10";
+
+        using (MySqlConnection conexion =
+               new MySqlConnection(_cadenaConexion))
+        {
+            using (MySqlCommand comando =
+                   new MySqlCommand(query, conexion))
+            {
+                comando.Parameters.AddWithValue(
+                    "@Busqueda",
+                    "%" + (busqueda ?? "") + "%");
+
+                conexion.Open();
+
+                using (MySqlDataReader reader =
+                       comando.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        lista.Add(new Propietario
+                        {
+                            IdPropietario =
+                                Convert.ToInt32(reader["IdPropietario"]),
+
+                            Dni =
+                                reader["Dni"].ToString(),
+
+                            Nombre =
+                                reader["Nombre"].ToString(),
+
+                            Apellido =
+                                reader["Apellido"].ToString(),
+
+                            Email =
+                                reader["Email"].ToString(),
+
+                            Telefono =
+                                reader["Telefono"].ToString()
+                        });
+                    }
+                }
+            }
+        }
+
+        return lista;
+    }
 }
 

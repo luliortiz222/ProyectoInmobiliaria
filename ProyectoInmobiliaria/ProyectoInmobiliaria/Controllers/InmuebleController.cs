@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting; 
 using System.IO; 
 using System;
+using System.Linq;
 
 namespace ProyectoInmobiliaria.Controllers
 {
@@ -29,11 +30,19 @@ namespace ProyectoInmobiliaria.Controllers
         }
 
         // GET: /Inmueble
-        public IActionResult Index(string busqueda, int pagina = 1)
+        public IActionResult Index(
+    string busqueda,
+    int? idPropietario,
+    int? idTipoInmueble,
+    int pagina = 1)
         {
             int cantidadPorPagina = 10;
 
-            int totalInmuebles = _inmuebleRepository.ContarInmuebles(busqueda);
+            int totalInmuebles = _inmuebleRepository.ContarInmuebles(
+                busqueda,
+                idPropietario,
+                idTipoInmueble
+            );
 
             int totalPaginas = (int)Math.Ceiling(
                 (double)totalInmuebles / cantidadPorPagina
@@ -52,10 +61,14 @@ namespace ProyectoInmobiliaria.Controllers
             var inmuebles = _inmuebleRepository.ObtenerPaginados(
                 busqueda,
                 pagina,
-                cantidadPorPagina
+                cantidadPorPagina,
+                idPropietario,
+                idTipoInmueble
             );
 
             ViewBag.Busqueda = busqueda;
+            ViewBag.IdPropietario = idPropietario;
+            ViewBag.IdTipoInmueble = idTipoInmueble;
             ViewBag.PaginaActual = pagina;
             ViewBag.TotalPaginas = totalPaginas;
 
@@ -318,5 +331,35 @@ namespace ProyectoInmobiliaria.Controllers
 
             return RedirectToAction("Index");
         }
+
+        [HttpGet]
+        public IActionResult BuscarPropietarios(string term)
+        {
+            var propietarios = _propietarioRepo.Buscar(term);
+
+            var resultado = propietarios.Select(p => new
+            {
+                id = p.IdPropietario,
+                text = $"{p.Nombre} {p.Apellido} (DNI: {p.Dni})"
+            });
+
+            return Json(resultado);
+        }
+
+        [HttpGet]
+        public IActionResult BuscarTiposInmueble(string term)
+        {
+            var tipos = _tipoRepo.Buscar(term);
+
+            var resultado = tipos.Select(t => new
+            {
+                id = t.IdTipoInmueble,
+                text = t.Nombre
+            });
+
+            return Json(resultado);
+        }
     }
+
+
 }
