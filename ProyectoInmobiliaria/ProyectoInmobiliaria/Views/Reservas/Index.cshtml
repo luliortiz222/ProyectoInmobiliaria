@@ -41,8 +41,7 @@
 
         <div class="card-body">
 
-            <form action="/Reservas/Index"
-                  method="get">
+            <form action="/Reservas/Index" method="get">
 
                 <!-- BUSCADOR GENERAL -->
 
@@ -82,7 +81,7 @@
 
                 <div class="row">
 
-                    <!-- INQUILINO -->
+                    <!-- SELECT INQUILINO -->
 
                     <div class="col-md-6 mb-3">
 
@@ -95,27 +94,14 @@
                                 class="form-select">
 
                             <option value="">
-                                Todos los inquilinos
                             </option>
 
-                            @foreach (var inquilino in ViewBag.Inquilinos)
+                            @if (ViewBag.IdInquilino != null)
                             {
-                                if (ViewBag.IdInquilino != null &&
-                                    ViewBag.IdInquilino == inquilino.IdInquilino)
-                                {
-                                    <option value="@inquilino.IdInquilino"
-                                            selected>
-                                        @inquilino.Nombre @inquilino.Apellido
-                                        - DNI: @inquilino.Dni
-                                    </option>
-                                }
-                                else
-                                {
-                                    <option value="@inquilino.IdInquilino">
-                                        @inquilino.Nombre @inquilino.Apellido
-                                        - DNI: @inquilino.Dni
-                                    </option>
-                                }
+                                <option value="@ViewBag.IdInquilino"
+                                        selected>
+                                    @ViewBag.InquilinoSeleccionado
+                                </option>
                             }
 
                         </select>
@@ -123,7 +109,7 @@
                     </div>
 
 
-                    <!-- INMUEBLE -->
+                    <!-- SELECT INMUEBLE -->
 
                     <div class="col-md-6 mb-3">
 
@@ -136,25 +122,14 @@
                                 class="form-select">
 
                             <option value="">
-                                Todos los inmuebles
                             </option>
 
-                            @foreach (var inmueble in ViewBag.Inmuebles)
+                            @if (ViewBag.IdInmueble != null)
                             {
-                                if (ViewBag.IdInmueble != null &&
-                                    ViewBag.IdInmueble == inmueble.IdInmueble)
-                                {
-                                    <option value="@inmueble.IdInmueble"
-                                            selected>
-                                        @inmueble.Direccion
-                                    </option>
-                                }
-                                else
-                                {
-                                    <option value="@inmueble.IdInmueble">
-                                        @inmueble.Direccion
-                                    </option>
-                                }
+                                <option value="@ViewBag.IdInmueble"
+                                        selected>
+                                    @ViewBag.InmuebleSeleccionado
+                                </option>
                             }
 
                         </select>
@@ -335,16 +310,96 @@
 
 <script>
 
+    // Select de inquilinos
+
     new TomSelect("#selectInquilino", {
+
+        valueField: "id",
+
+        labelField: "text",
+
+        searchField: "text",
+
         create: false,
+
         allowEmptyOption: true,
-        placeholder: "Buscar inquilino..."
+
+        maxOptions: 10,
+
+        placeholder: "Buscar inquilino...",
+
+        shouldLoad: function(query) {
+
+            return query.length >= 1;
+
+        },
+
+        load: function(query, callback) {
+
+            fetch("/Reservas/BuscarInquilinos?term=" + encodeURIComponent(query))
+
+                .then(response => response.json())
+
+                .then(data => {
+
+                    callback(data);
+
+                })
+
+                .catch(() => {
+
+                    callback([]);
+
+                });
+
+        }
+
     });
 
+    // Select de inmuebles
+
     new TomSelect("#selectInmueble", {
+
+        valueField: "id",
+
+        labelField: "text",
+
+        searchField: "text",
+
         create: false,
+
         allowEmptyOption: true,
-        placeholder: "Buscar inmueble por dirección..."
+
+        maxOptions: 10,
+
+        placeholder: "Buscar inmueble por dirección...",
+
+        shouldLoad: function(query) {
+
+            return query.length >= 1;
+
+        },
+
+        load: function(query, callback) {
+
+            fetch("/Reservas/BuscarInmuebles?term=" + encodeURIComponent(query))
+
+                .then(response => response.json())
+
+                .then(data => {
+
+                    callback(data);
+
+                })
+
+                .catch(() => {
+
+                    callback([]);
+
+                });
+
+        }
+
     });
 
 </script>

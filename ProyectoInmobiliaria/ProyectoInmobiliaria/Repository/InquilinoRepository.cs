@@ -261,4 +261,53 @@ public class InquilinoRepository
         }
     }
 }
+
+
+    public List<Inquilino> Buscar(string busqueda)
+    {
+        List<Inquilino> lista = new List<Inquilino>();
+
+        string query = @"
+        SELECT IdInquilino, Dni, Nombre, Apellido, Email, Telefono
+        FROM Inquilino
+        WHERE Nombre LIKE @Busqueda
+           OR Apellido LIKE @Busqueda
+           OR Dni LIKE @Busqueda
+        ORDER BY Apellido, Nombre
+        LIMIT 10";
+
+        using (MySqlConnection conexion =  new MySqlConnection(_cadenaConexion))
+        {
+            using (MySqlCommand comando =
+                   new MySqlCommand(query, conexion))
+            {
+                comando.Parameters.AddWithValue(
+                    "@Busqueda",
+                    "%" + (busqueda ?? "") + "%");
+
+                conexion.Open();
+
+                using (MySqlDataReader reader =
+                       comando.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        lista.Add(new Inquilino
+                        {
+                            IdInquilino = Convert.ToInt32(
+                                reader["IdInquilino"]),
+
+                            Dni = reader["Dni"].ToString(),
+                            Nombre = reader["Nombre"].ToString(),
+                            Apellido = reader["Apellido"].ToString(),
+                            Email = reader["Email"].ToString(),
+                            Telefono = reader["Telefono"].ToString()
+                        });
+                    }
+                }
+            }
+        }
+
+        return lista;
+    }
 }

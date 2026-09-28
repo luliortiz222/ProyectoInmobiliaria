@@ -23,6 +23,7 @@ namespace ProyectoInmobiliaria.Controllers
             _inmuebleRepository = inmuebleRepository;
         }
 
+        [HttpGet]
         public IActionResult Index(
     string busqueda,
     int? idInquilino,
@@ -56,18 +57,70 @@ namespace ProyectoInmobiliaria.Controllers
                 pagina,
                 cantidadPorPagina);
 
-            // Datos para los selects de búsqueda
-            ViewBag.Inquilinos = _inquilinoRepository.ObtenerTodos();
-            ViewBag.Inmuebles = _inmuebleRepository.ObtenerTodos();
+            if (idInquilino.HasValue)
+            {
+                var inquilino = _inquilinoRepository.ObtenerPorId(idInquilino.Value);
+
+                if (inquilino != null)
+                {
+                    ViewBag.InquilinoSeleccionado =
+                        $"{inquilino.Nombre} {inquilino.Apellido} (DNI: {inquilino.Dni})";
+                }
+            }
+
+            if (idInmueble.HasValue)
+            {
+                var inmueble = _inmuebleRepository.ObtenerPorId(idInmueble.Value);
+
+                if (inmueble != null)
+                {
+                    ViewBag.InmuebleSeleccionado = inmueble.Direccion;
+                }
+            }
+
 
             ViewBag.Busqueda = busqueda;
+
             ViewBag.IdInquilino = idInquilino;
+
             ViewBag.IdInmueble = idInmueble;
+
             ViewBag.PaginaActual = pagina;
+
             ViewBag.TotalPaginas = totalPaginas;
+
 
             return View(lista);
         }
+
+        [HttpGet]
+        public IActionResult BuscarInquilinos(string term)
+        {
+            var inquilinos = _inquilinoRepository.Buscar(term);
+
+            var resultado = inquilinos.Select(i => new
+            {
+                id = i.IdInquilino,
+                text = $"{i.Nombre} {i.Apellido} (DNI: {i.Dni})"
+            });
+
+            return Json(resultado);
+        }
+
+        [HttpGet]
+        public IActionResult BuscarInmuebles(string term)
+        {
+            var inmuebles = _inmuebleRepository.Buscar(term);
+
+            var resultado = inmuebles.Select(i => new
+            {
+                id = i.IdInmueble,
+                text = i.Direccion
+            });
+
+            return Json(resultado);
+        }
+
 
         [HttpGet]
         public IActionResult Vigentes()

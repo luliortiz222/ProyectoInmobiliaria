@@ -1019,5 +1019,90 @@ namespace ProyectoInmobiliaria.Repository
             }
             return inmueble;
         }
+
+        public List<Inmueble> Buscar(string busqueda)
+        {
+            List<Inmueble> lista = new List<Inmueble>();
+
+            string query = @"
+        SELECT
+            i.IdInmueble,
+            i.Direccion,
+            i.IdPropietario,
+            i.IdTipoInmueble,
+            p.Nombre AS NombrePropietario,
+            p.Apellido AS ApellidoPropietario,
+            t.Nombre AS NombreTipo
+
+        FROM Inmueble i
+
+        INNER JOIN Propietario p
+            ON i.IdPropietario = p.IdPropietario
+
+        INNER JOIN TipoInmueble t
+            ON i.IdTipoInmueble = t.IdTipoInmueble
+
+        WHERE i.Direccion LIKE @Busqueda
+           OR p.Nombre LIKE @Busqueda
+           OR p.Apellido LIKE @Busqueda
+           OR t.Nombre LIKE @Busqueda
+
+        ORDER BY i.Direccion
+
+        LIMIT 10";
+
+            using (MySqlConnection conexion =
+                   new MySqlConnection(_cadenaDeConexion))
+            {
+                using (MySqlCommand comando =
+                       new MySqlCommand(query, conexion))
+                {
+                    comando.Parameters.AddWithValue(
+                        "@Busqueda",
+                        "%" + (busqueda ?? "") + "%");
+
+                    conexion.Open();
+
+                    using (MySqlDataReader reader =
+                           comando.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            lista.Add(new Inmueble
+                            {
+                                IdInmueble = Convert.ToInt32(
+                                    reader["IdInmueble"]),
+
+                                Direccion =
+                                    reader["Direccion"].ToString(),
+
+                                IdPropietario =
+                                    Convert.ToInt32(reader["IdPropietario"]),
+
+                                IdTipoInmueble =
+                                    Convert.ToInt32(reader["IdTipoInmueble"]),
+
+                                Dueño = new Propietario
+                                {
+                                    Nombre =
+                                        reader["NombrePropietario"].ToString(),
+
+                                    Apellido =
+                                        reader["ApellidoPropietario"].ToString()
+                                },
+
+                                Tipo = new TipoInmueble
+                                {
+                                    Nombre =
+                                        reader["NombreTipo"].ToString()
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+
+            return lista;
+        }
     }
 }
