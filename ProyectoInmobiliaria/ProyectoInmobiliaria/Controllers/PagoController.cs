@@ -12,18 +12,29 @@ namespace ProyectoInmobiliaria.Controllers
     public class PagoController : Controller
     {
         private readonly PagoRepository _pagoRepository;
-        public PagoController(PagoRepository pagoRepository)
+        private readonly ReservaRepository _reservaRepository;
+        public PagoController(
+        PagoRepository pagoRepository,
+        ReservaRepository reservaRepository)
         {
             _pagoRepository = pagoRepository;
+            _reservaRepository = reservaRepository;
         }
 
         // GET: /Pagos
         [HttpGet]
-        public IActionResult Index(string busqueda, bool? estado, int pagina = 1)
+        public IActionResult Index(
+    string busqueda,
+    bool? estado,
+    int? idReserva,
+    int pagina = 1)
         {
             int cantidadPorPagina = 10;
 
-            int totalPagos = _pagoRepository.ContarPagos(busqueda, estado);
+            int totalPagos = _pagoRepository.ContarPagos(
+                busqueda,
+                estado,
+                idReserva);
 
             int totalPaginas = (int)Math.Ceiling(
                 (double)totalPagos / cantidadPorPagina);
@@ -41,11 +52,13 @@ namespace ProyectoInmobiliaria.Controllers
             var pagos = _pagoRepository.ObtenerPaginados(
                 busqueda,
                 estado,
+                idReserva,
                 pagina,
                 cantidadPorPagina);
 
             ViewBag.Busqueda = busqueda;
             ViewBag.Estado = estado;
+            ViewBag.IdReserva = idReserva;
             ViewBag.PaginaActual = pagina;
             ViewBag.TotalPaginas = totalPaginas;
 
@@ -143,6 +156,20 @@ namespace ProyectoInmobiliaria.Controllers
             _pagoRepository.AnularPago(IdPago, idUsuarioAnulador);
 
             return RedirectToAction("PorReserva", new { id = IdReserva });
+        }
+
+        [HttpGet]
+        public IActionResult BuscarReservas(string term)
+        {
+            var reservas = _reservaRepository.Buscar(term);
+
+            var resultado = reservas.Select(r => new
+            {
+                id = r.IdReserva,
+                text = $"Reserva #{r.IdReserva} - {r.NombreInquilino} - {r.DireccionInmueble}"
+            });
+
+            return Json(resultado);
         }
 
     }

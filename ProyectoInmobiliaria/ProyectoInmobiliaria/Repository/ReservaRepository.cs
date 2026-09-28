@@ -1024,5 +1024,87 @@ namespace ProyectoInmobiliaria.Repository
                 }
             }
         }
+
+        public List<Reserva> Buscar(string term)
+        {
+            List<Reserva> lista = new List<Reserva>();
+
+            string sql = @"
+        SELECT
+            r.IdReserva,
+            r.IdInquilino,
+            r.IdInmueble,
+            r.MontoPorDia,
+            r.FechaDesde,
+            r.FechaHasta,
+            CONCAT(i.Nombre, ' ', i.Apellido) AS NombreInquilino,
+            inm.Direccion AS DireccionInmueble
+        FROM Reserva r
+
+        INNER JOIN Inquilino i
+            ON r.IdInquilino = i.IdInquilino
+
+        INNER JOIN Inmueble inm
+            ON r.IdInmueble = inm.IdInmueble
+
+        WHERE
+            CAST(r.IdReserva AS CHAR) LIKE @Term
+            OR CONCAT(i.Nombre, ' ', i.Apellido) LIKE @Term
+            OR inm.Direccion LIKE @Term
+
+        ORDER BY r.IdReserva DESC
+
+        LIMIT 10";
+
+            using (MySqlConnection conexion =
+                   new MySqlConnection(connectionString))
+            {
+                conexion.Open();
+
+                using (MySqlCommand comando =
+                       new MySqlCommand(sql, conexion))
+                {
+                    comando.Parameters.AddWithValue(
+                        "@Term",
+                        "%" + (term ?? "") + "%");
+
+                    using (MySqlDataReader reader =
+                           comando.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            lista.Add(new Reserva
+                            {
+                                IdReserva =
+                                    reader.GetInt32("IdReserva"),
+
+                                IdInquilino =
+                                    reader.GetInt32("IdInquilino"),
+
+                                IdInmueble =
+                                    reader.GetInt32("IdInmueble"),
+
+                                MontoPorDia =
+                                    reader.GetDecimal("MontoPorDia"),
+
+                                FechaDesde =
+                                    reader.GetDateTime("FechaDesde"),
+
+                                FechaHasta =
+                                    reader.GetDateTime("FechaHasta"),
+
+                                NombreInquilino =
+                                    reader.GetString("NombreInquilino"),
+
+                                DireccionInmueble =
+                                    reader.GetString("DireccionInmueble")
+                            });
+                        }
+                    }
+                }
+            }
+
+            return lista;
+        }
     }
 }

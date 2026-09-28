@@ -130,23 +130,53 @@ namespace ProyectoInmobiliaria.Repository
             return pagos;
         }
 
-        public List<Pago> ObtenerPaginados(string busqueda, bool? estado, int pagina, int cantidadPorPagina)
+        public List<Pago> ObtenerPaginados(
+    string busqueda,
+    bool? estado,
+    int? idReserva,
+    int pagina,
+    int cantidadPorPagina)
         {
-            var pagos = new List<Pago>();
+            List<Pago> lista = new List<Pago>();
 
-            int desplazamiento = (pagina - 1) * cantidadPorPagina;
+            int desplazamiento =
+                (pagina - 1) * cantidadPorPagina;
 
-            string query = @"
-        SELECT *
-        FROM Pago
-        WHERE Concepto LIKE @Busqueda
-          AND (@Estado IS NULL OR Estado = @Estado)
-        ORDER BY FechaPago DESC
-        LIMIT @CantidadPorPagina OFFSET @Desplazamiento";
+            string sql = @"
+        SELECT
+            p.IdPago,
+            p.IdReserva,
+            p.Concepto,
+            p.FechaPago,
+            p.Importe,
+            p.Estado,
+            p.IdUsuarioCreador,
+            p.IdUsuarioAnulador
+        FROM Pago p
+
+        WHERE
+        (
+            CAST(p.IdPago AS CHAR) LIKE @Busqueda
+            OR CAST(p.IdReserva AS CHAR) LIKE @Busqueda
+            OR p.Concepto LIKE @Busqueda
+            OR CAST(p.Importe AS CHAR) LIKE @Busqueda
+        )
+
+        AND (@Estado IS NULL OR p.Estado = @Estado)
+
+        AND (@IdReserva IS NULL OR p.IdReserva = @IdReserva)
+
+        ORDER BY p.FechaPago DESC
+
+        LIMIT @CantidadPorPagina
+        OFFSET @Desplazamiento";
 
             using (MySqlConnection conexion = new MySqlConnection(cadenaDeConexion))
             {
-                using (MySqlCommand comando = new MySqlCommand(query, conexion))
+                conexion.Open();
+
+                using (MySqlCommand comando =
+                       new MySqlCommand(sql, conexion))
                 {
                     comando.Parameters.AddWithValue(
                         "@Busqueda",
@@ -154,7 +184,15 @@ namespace ProyectoInmobiliaria.Repository
 
                     comando.Parameters.AddWithValue(
                         "@Estado",
-                        estado.HasValue ? estado.Value : (object)DBNull.Value);
+                        estado.HasValue
+                            ? estado.Value
+                            : DBNull.Value);
+
+                    comando.Parameters.AddWithValue(
+                        "@IdReserva",
+                        idReserva.HasValue
+                            ? idReserva.Value
+                            : DBNull.Value);
 
                     comando.Parameters.AddWithValue(
                         "@CantidadPorPagina",
@@ -164,13 +202,12 @@ namespace ProyectoInmobiliaria.Repository
                         "@Desplazamiento",
                         desplazamiento);
 
-                    conexion.Open();
-
-                    using (MySqlDataReader reader = comando.ExecuteReader())
+                    using (MySqlDataReader reader =
+                           comando.ExecuteReader())
                     {
                         while (reader.Read())
                         {
-                            pagos.Add(new Pago
+                            Pago pago = new Pago
                             {
                                 idPago = reader.GetInt32("IdPago"),
                                 idReserva = reader.GetInt32("IdReserva"),
@@ -178,33 +215,55 @@ namespace ProyectoInmobiliaria.Repository
                                 fechaPago = reader.GetDateTime("FechaPago"),
                                 importe = reader.GetDecimal("Importe"),
                                 estado = reader.GetBoolean("Estado"),
-                                idUsuarioCreador = reader.GetInt32("IdUsuarioCreador"),
-                                idUsuarioAnulador = reader.IsDBNull(
-                                    reader.GetOrdinal("IdUsuarioAnulador"))
+
+                                idUsuarioCreador =
+                                    reader.GetInt32("IdUsuarioCreador"),
+
+                                idUsuarioAnulador =
+                                    reader.IsDBNull(
+                                        reader.GetOrdinal("IdUsuarioAnulador"))
                                     ? (int?)null
                                     : reader.GetInt32("IdUsuarioAnulador")
-                            });
+                            };
+
+                            lista.Add(pago);
                         }
                     }
                 }
             }
 
-            return pagos;
+            return lista;
         }
 
-        public int ContarPagos(string busqueda, bool? estado)
+        public int ContarPagos(
+    string busqueda,
+    bool? estado,
+    int? idReserva)
         {
             int cantidad = 0;
 
-            string query = @"
+            string sql = @"
         SELECT COUNT(*)
-        FROM Pago
-        WHERE Concepto LIKE @Busqueda
-          AND (@Estado IS NULL OR Estado = @Estado)";
+        FROM Pago p
+
+        WHERE
+        (
+            CAST(p.IdPago AS CHAR) LIKE @Busqueda
+            OR CAST(p.IdReserva AS CHAR) LIKE @Busqueda
+            OR p.Concepto LIKE @Busqueda
+            OR CAST(p.Importe AS CHAR) LIKE @Busqueda
+        )
+
+        AND (@Estado IS NULL OR p.Estado = @Estado)
+
+        AND (@IdReserva IS NULL OR p.IdReserva = @IdReserva)";
 
             using (MySqlConnection conexion = new MySqlConnection(cadenaDeConexion))
             {
-                using (MySqlCommand comando = new MySqlCommand(query, conexion))
+                conexion.Open();
+
+                using (MySqlCommand comando =
+                       new MySqlCommand(sql, conexion))
                 {
                     comando.Parameters.AddWithValue(
                         "@Busqueda",
@@ -212,11 +271,18 @@ namespace ProyectoInmobiliaria.Repository
 
                     comando.Parameters.AddWithValue(
                         "@Estado",
-                        estado.HasValue ? estado.Value : (object)DBNull.Value);
+                        estado.HasValue
+                            ? estado.Value
+                            : DBNull.Value);
 
-                    conexion.Open();
+                    comando.Parameters.AddWithValue(
+                        "@IdReserva",
+                        idReserva.HasValue
+                            ? idReserva.Value
+                            : DBNull.Value);
 
-                    cantidad = Convert.ToInt32(comando.ExecuteScalar());
+                    cantidad = Convert.ToInt32(
+                        comando.ExecuteScalar());
                 }
             }
 
